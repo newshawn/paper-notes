@@ -30,6 +30,34 @@
 - 长轨迹下 γ 衰减策略（IGPO 默认 γ=1 是否需要改）
 - 从 QA / search 场景迁移到 coding、GUI 操作的可迁移性
 
+## 目录结构
+
+```
+Raw/           原始论文 takeaway 笔记（append-only，永不修改）
+Wiki/          AI 维护的概念页（会被新论文改写）
+attachments/   图片、图表
+index.md       wiki 目录（按类别组织的 catalog）
+log.md         append-only 时间线（每次 ingest / compile 记录）
+schema.md      本文件
+README.md
+```
+
+## 两阶段 Ingest 工作流（重要）
+
+**Stage 1: Ingest（自动）**
+- 用户给论文（arxiv / PDF / 用户笔记）
+- Claude 生成 `Raw/<YYMM-shortname>.md`
+- Claude 在 `log.md` append 一条 ingest 记录
+- **Wiki 不立即更新**——给用户审阅 Raw 的窗口
+
+**Stage 2: Compile（用户触发）**
+- 用户说 "compile" 或 "更新 Wiki"
+- Claude 读 `log.md` 找出 uncompiled Raw
+- 扫描相关 Wiki 概念页，整合新论文
+- 更新 `index.md` 和 `log.md`
+
+设计意图：让你有机会在 Wiki 被改前先看 Raw、决定重点。
+
 ## Wiki 组织规则
 
 ### 概念页粒度
@@ -42,6 +70,9 @@
 
 ```markdown
 # <Concept>
+
+[coverage: high|medium|low]
+[last-updated: YYYY-MM-DD]
 
 ## Definition
 <一句话定义>
@@ -57,6 +88,11 @@
 - [[Concept-A]]
 - [[Concept-B]]
 ```
+
+**Coverage 标签含义**：
+- `high`：≥3 篇论文覆盖，主流方法明确，结论稳定
+- `medium`：2 篇论文，有初步共识，存在分歧
+- `low`：1 篇论文或尚在探索期，结论暂时性
 
 ### Raw 文件命名
 
@@ -95,8 +131,11 @@
 
 ## 整合规则
 
-1. 新增 Raw 后，Claude 须 grep 所有标签概念，更新相关 Wiki 页
-2. 当新论文与既有 Wiki 结论冲突，**不直接覆盖**——在 `## Contradictions / Open Questions` 里追加，引用两篇 Raw
-3. 新概念首次出现 ≥2 次（在不同 Raw 里）才建 Wiki 页，避免噪声
-4. Wiki 页引用 Raw 时用 `[<paper-id>]` 格式，方便溯源
-5. 相同方法的改进论文，在前作 Raw 笔记末尾 append `## Superseded by: [<new-paper-id>]`
+1. 新 Raw 默认**不**自动更新 Wiki（遵循两阶段规则）
+2. `compile` 时，grep 所有标签概念，更新相关 Wiki 页
+3. 当新论文与既有 Wiki 结论冲突，**不直接覆盖**——在 `## Contradictions / Open Questions` 里追加，引用两篇 Raw
+4. 新概念首次出现 ≥2 次（在不同 Raw 里）才建 Wiki 页，避免噪声
+5. Wiki 页引用 Raw 时用 `[<paper-id>]` 格式，方便溯源
+6. 相同方法的改进论文，在前作 Raw 笔记末尾 append `## Superseded by: [<new-paper-id>]`
+7. 每次 compile 后更新 `index.md` 的 coverage 标签和 last-updated
+8. 每次 ingest / compile 在 `log.md` 追加一行，格式见 log.md 头部说明
