@@ -105,6 +105,8 @@ README.md
 
 ### Raw 文件结构
 
+> **注**：2026-04-18 起新 ingest 用此**5-section + 理解型元素**格式。早期 10 篇（2505 - 2602）结构兼容，后续可按需补充 Delta / 因果链等元素。
+
 ```markdown
 # <Paper Title>
 
@@ -115,19 +117,38 @@ README.md
 - **Tags**: #credit-assignment #entropy #...
 
 ## TL;DR
-三句话内
+三条 bullet（结论 / 方法 / 为什么有效）+ 💡 一句话精华（140 字内）
 
 ## Method
-核心方法 + 公式
+核心思路 + 关键设计 + 对比表 +
+🧬 Delta from [前作]（核心改动一两句话）+
+流程示例（必须举例）+
+🧩 因果链（问题 → 根因 → 解法 → 效应）+
+⚠️ What would break this
 
 ## Key Results
-关键实验结论
+训练配置 + Benchmark 详解（三问：任务来源 / 执行环境 / 分数计算）+ 核心结果（含意外发现）
 
 ## Takeaway
-对我研究的启示
+对我研究的启示（可操作）+
+🧠 理解核验（3 个自检问题）
 
 ## Open Questions
+Limitation + 值得深入的方向
+
+## Superseded by
+如有后续论文改进本工作 [<new-paper-id>]
+
+## Related Wiki
+- [[Concept-A]]
 ```
+
+**5 个理解型元素的设计意图**：
+- 🧬 **Delta from 前作**：agentic RL credit assignment 领域全是小改动堆积，看清"vs 前作改了什么"才抓到演进链
+- 🧩 **因果链**：把"为什么有效"拆到机制层，而不是泛泛而谈
+- ⚠️ **What would break this**：边界条件，防止误用
+- 💡 **一句话精华**：能压缩就说明真懂
+- 🧠 **理解核验**：3 个自检问题——未来验证理解深度的锚
 
 ## 整合规则
 
