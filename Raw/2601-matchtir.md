@@ -8,6 +8,8 @@
 
 把 multi-turn TIR 的 credit assignment 显式建模为**二部图最优匹配**：预测 turn ↔ golden trace step。用 **KM 算法（硬匹配）** 或 **Optimal Transport（软匹配）** 派生 dense turn-level reward，再与 trajectory-level 信号做双层 advantage。依赖 ground-truth trace，在 FTRL / BFCL / ToolHop 上全面优于 trajectory-level baseline。
 
+💡 **一句话精华**：predicted turn ↔ golden trace 二部图最优匹配（KM 硬 / OT 软）派生 dense turn reward + dual-level advantage——强制 1-1 对应防止 policy 用相似工具 gaming 相似度分数。
+
 ## Method
 
 ### 构建 similarity matrix $S$
@@ -44,6 +46,24 @@ $$A = \alpha \cdot A_{\text{turn}} + (1-\alpha) \cdot A_{\text{trajectory}}$$
 
 直接用相似度分数会被**滥用**——policy 反复调用相似工具来累积高分。匹配策略强制"一个 golden tool call 只能对应一个 predicted"，防止这种 gaming。
 
+### 🧬 Delta from GRPO
+
+- **GRPO**：trajectory-level advantage，好坏 tool-call 不分
+- **MatchTIR**：**turn-level via bipartite matching**——三维相似度（name / param / content）+ KM 或 OT 分配（强制 1-1 或软 1-多）+ dual-level advantage（turn + trajectory 加权）
+
+### 🧩 因果链
+
+- **问题**：trajectory-level RL 不分好坏 tool-call；但直接用相似度会被 gaming
+- **根因**：(1) 共享 advantage 无法定位到 step；(2) 无约束的 reward 鼓励 policy 调相似工具累积
+- **解法**：构建 $S_{i,j}$ 三维相似度矩阵 → KM/OT 强制对齐约束（每个 golden step 只能对应一个 predicted）→ turn reward；加 dual-level 加权平衡局部 / 全局
+- **效应**：FTRL / BFCL / ToolHop 全面超 trajectory baseline；Qwen3-4B 在长程 multi-turn 打败多数 8B 级别竞争者
+
+### ⚠️ What would break this
+
+- **强依赖 golden trace**：开放场景（WebArena、GAIA）无结构化标答 → 直接无法用
+- **早期 policy 差时 OT 计划误导**：训练初期 predicted 轨迹都很差，OT 优化出的匹配可能把 credit 分错
+- **三维相似度权重需调**：name / param / content 各占多少，论文未系统消融
+
 ## Key Results
 
 - Benchmark：FTRL（in-domain）、BFCL、ToolHop（out-of-domain）
@@ -54,6 +74,12 @@ $$A = \alpha \cdot A_{\text{turn}} + (1-\alpha) \cdot A_{\text{trajectory}}$$
 1. **二部图匹配是干净的 credit 分配工具**——解决"哪个 predicted turn 对应哪个 golden step"这个根本模糊性
 2. **OT 比 KM 更平滑**：软匹配的训练信号更稳定
 3. **多维度相似度拆解（name / param / content）** 值得借鉴——单一 embedding 相似度容易被钻空子
+
+### 🧠 理解核验
+
+1. 为什么直接用 $S_{i,j}$ 作 reward 会被 gaming？gaming 的具体形式是什么？
+2. KM（硬匹配）和 OT（软匹配）在训练稳定性和最终性能上的权衡点在哪？
+3. 无 golden trace 场景（如 WebArena）怎么改造出自监督变体？best-of-N 作匹配目标的具体算法是什么？
 
 ## Open Questions
 
