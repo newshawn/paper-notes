@@ -99,6 +99,8 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum_{c'} H(c')}$$
 - **Entropy 阈值跨模型不通用**：7B 和 32B 的 entropy 分布尺度不同
 - **连续高熵区域**：ARPO 容易过度分支 → AEPO 的 penalty 是必需修正
 - **Entropy collapse**：RL 训练中 policy 越学越 confident → entropy 越来越低 → 后期触发 branching 的阈值自动失效
+- **超参数组合爆炸**（来自 retrofit 审视）：[2510-aepo] 引入 α/β/γ/k/ε 五个，[2509-empg] 的 k/k' 也难调——entropy-based 方法普遍需要任务专属调参，泛化成本高
+- **"Turn" 粒度对非 QA 任务不清晰**：[2601-at2po] entropy-guided tree expansion 在 QA 有天然 turn 边界，但 GUI / embodied 任务的 turn 定义模糊，entropy 该在哪个粒度算？
 
 ## 可深入的方向
 

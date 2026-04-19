@@ -103,6 +103,23 @@ Agentic 场景变 tractable 的关键：
 - Open-ended 任务（creative writing、long-form reasoning）空白
 - [2601-matchtir] 论文自己建议的方向：**用 best-of-N rollout 的最优 trajectory 作为匹配目标**（self-play credit assignment）
 
+### 6. 状态等价性 & 超参数泛化（跨方法共性陷阱）
+
+两个被各论文回避但实际影响可用性的基础问题：
+
+**状态等价性**
+- [2505-gigpo] "同状态聚类" 依赖状态判等——字符串完全相同？HTML 不同 viewport 算一个吗？论文未说
+- [2510-salt] trajectory graph 合并中间状态面临同样问题——阈值过严退化为 tree，过松则合并错位
+- 未有任一方法提出**任务无关的自适应等价判据**
+
+**超参数敏感性（限制方法可用性）**
+- [2507-arpo] entropy 阈值 τ 跨模型不鲁棒 + 后期 entropy collapse 令阈值失效
+- [2510-aepo] 新增 α / β / γ / k / ε 组合爆炸
+- [2509-empg] k / k' 难调
+- [2601-matchtir] 三维相似度（name / param / content）加权未系统消融
+
+**开放问题**：是否存在"自适应状态等价 + 自适应超参数"的通用机制？若有，可能解锁一大类方法的跨场景迁移。
+
 ## 可深入的方向（优先级排序）
 
 1. **IG + self-consistency**：无 GT 时用多次采样一致性作为 IG 代理（IGPO 建议）

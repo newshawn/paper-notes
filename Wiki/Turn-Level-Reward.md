@@ -69,8 +69,9 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 
 ### 2. Turn 粒度是否永远合理
 
-- [2601-at2po] 证明 turn > token + turn > sequence
+- [2601-at2po] 证明 turn > token + turn > sequence（在 QA 场景）
 - 但 turn 自身定义依赖任务：QA 的 turn = "一次搜索+观察"，coding 的 turn = ?
+- [2601-at2po retrofit 观察] **在非 QA 任务上"turn" 的自然边界模糊**——GUI / embodied / long-form 写作没有天然 turn 划分，需要人工定义，削弱了方法的通用性
 - 开放问题：有没有比 turn 更合理的粒度？如"语义子段"？
 
 ### 3. 没有 ground truth / golden trace 时的替代
@@ -89,6 +90,12 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 - [2505-gigpo] 使用 γ<1
 - 长轨迹（60 步）下 γ=1 让早期 step 信号被过度放大
 - 开放问题：γ 的任务自适应策略
+
+### 5. IG 在长答案下的数值稳定性（retrofit 新增）
+
+- [2510-igpo] 的 IG reward 依赖 $\pi_\theta(a \mid \text{context})$ —— GT 答案长度越长，概率越小（token 级乘积），IG 差分可能被浮点噪声淹没
+- QA 场景答案多为 short span，暂未暴露；但开放生成 / 长回答场景风险明显
+- **开放问题**：对长答案是否应使用 log-prob 差而非 prob 差？或按长度归一化？
 
 ## 可深入的方向
 

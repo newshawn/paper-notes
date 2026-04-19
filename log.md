@@ -4,6 +4,19 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-04-18] compile | post-retrofit refresh (10 raws → 3 wiki pages)
+
+- **Trigger**: retrofit 给 10 篇 Raw 加了 5 个理解型元素后的增量 compile
+- **Raws scanned**: 全部 10 篇（2505-gigpo, 2507-arpo, 2509-empg, 2509-treegrpo, 2510-aepo, 2510-igpo, 2510-salt, 2601-at2po, 2601-matchtir, 2602-rlanything）
+- **Wiki updated**:
+  - `Credit-Assignment-in-Agentic-RL.md` → 新增 Contradictions #6 "状态等价性 & 超参数泛化"（跨方法共性陷阱，来自 retrofit 的 What-breaks 观察整合）
+  - `Entropy-Guided-Exploration.md` → 潜在陷阱新增 2 条："超参数组合爆炸" + "Turn 粒度对非 QA 任务不清晰"
+  - `Turn-Level-Reward.md` → 扩充 #2 "Turn 粒度是否永远合理"，新增 #5 "IG 在长答案下的数值稳定性"
+- **Wiki created**: 无（没达到新概念的 ≥2 Raw 阈值触发）
+- **Candidates awaiting more papers**: 无新候选
+- **Contradictions recorded**: 主要是跨方法的 meta-level 矛盾（超参数、状态等价性）
+- **Rationale**: retrofit 的 5 元素本身是重构而非新 claim；compile 的边际价值是把 ⚠️ What-breaks 里提炼的共性陷阱汇总到 Wiki 的 Contradictions/Open Questions，形成跨论文的"问题地图"
+
 ## [2026-04-18] refactor | retrofit 10 legacy Raws with understanding-focused elements
 
 - **Reason**: 统一 Raw 格式——为早期 10 篇 5-section 简版补齐 5 个理解型元素（💡 一句话精华 / 🧬 Delta from 前作 / 🧩 因果链 / ⚠️ What would break this / 🧠 理解核验）
