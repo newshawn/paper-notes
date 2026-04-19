@@ -6,14 +6,51 @@
 
 配合 [`paper-notes` Claude Code plugin](../../.claude/plugins/paper-notes/plugin/README.md) 使用：
 
-```
-cd ~/Documents/PaperNotes
+```bash
+cd ~/Documents/PaperNotes    # 必须在 wiki root（或子目录）里才能用
 
-# 在 Claude Code 里：
-/paper-notes:ingest https://arxiv.org/abs/2510.XXXXX    # 吸入一篇新论文
-/paper-notes:compile                                    # 整合到 Wiki
-/paper-notes:query "entropy 触发 branching 的方法有哪些"  # 检索提问
-/paper-notes:lint                                       # 健康检查
+# —— 在 Claude Code 里依次使用 ——
+
+/paper-notes:ingest https://arxiv.org/abs/2510.XXXXX
+#   1. Walk up 找 wiki root → 读 schema.md / index.md / log.md tail
+#   2. WebFetch arxiv 页面 → 抽取 title / authors / venue / abstract
+#   3. WebFetch html 全文（fallback: PDF）
+#   4. curl -sL 下载 PDF → Raw/pdfs/<paper-id>.pdf
+#   5. 调用 paper-reading skill 方法论 → 按 5-section + 理解型元素生成笔记
+#   6. 写 Raw/<YYMM-shortname>.md
+#   7. log.md 顶部追加 "## [date] ingest | ..."
+#   ⚠️ 不动 Wiki/——两阶段设计，留审阅窗口
+
+/paper-notes:compile
+#   1. 读 log.md → 找最新 compile 之后所有 ingest 条目
+#   2. 报告即将整合的论文，请求你确认（>5 篇时）
+#   3. Grep 每篇 Raw 的 #tags → 按概念分组
+#   4. 对每个概念：
+#      - 已存在 Wiki 页 → 追加 [paper-id] 到 Key Claims
+#        · 若与既有结论冲突 → 写入 Contradictions（累积不覆盖）
+#      - 不存在且 ≥2 篇 Raw 涉及 → 建新概念页（wiki-template.md）
+#      - 只 1 篇涉及 → 暂不建，log 里标"候选概念"
+#   5. 更新 index.md 的 coverage 标签 + last-updated
+#   6. log.md 追加 compile 条目
+
+/paper-notes:query "entropy 触发 branching 的方法有哪些"
+#   1. 解析问题提取关键概念（entropy / branching）
+#   2. Grep Wiki/ 优先（整合答案），Raw/ 其次（具体 claim）
+#   3. Read 命中文件（限 5 Wiki + 5 Raw）
+#   4. 合成结构化回答：
+#      - 引领：整合性 claim（来自 Wiki）
+#      - 支撑：[paper-id] 引用（可点击跳转）
+#      - 矛盾：若 Wiki 有 Contradictions 则双方并列
+#   5. 检索命中少时明确说"wiki 覆盖不足"
+
+/paper-notes:lint
+#   1. 扫 [[Concept]] 链接 → 指向不存在的 Wiki 页？（broken-refs）
+#   2. 找 orphan Wiki（没有 Raw 引用它）
+#   3. 找 stale Raw（ingested 但从未 compile 进 Wiki）
+#   4. 找 stale Wiki（last-updated > 90 天）
+#   5. Schema 违规（文件名、必填字段、coverage 标签）
+#   6. Raw 缺对应 PDF（link 是 arxiv 但无 Raw/pdfs/<id>.pdf）
+#   ⚠️ 只输出报告——不 auto-fix，由你决定
 ```
 
 Plugin 未安装也能用——直接让 Claude 按 schema.md 的规则写 Raw / 更新 Wiki 即可。

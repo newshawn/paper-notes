@@ -150,6 +150,61 @@ Limitation + 值得深入的方向
 - 💡 **一句话精华**：能压缩就说明真懂
 - 🧠 **理解核验**：3 个自检问题——未来验证理解深度的锚
 
+## 受控标签（Approved Tags）
+
+> **核心约束**：Raw 笔记的 `Tags:` 字段 **只能**使用下列词汇。遇到论文引入的新概念，需先在本 section 登记新 tag（含一行定义），再写入 Raw。
+>
+> **目的**：防止 tag 漂移（`#entropy` / `#entropy-based` / `#entropy-guided` 三选一混用 → compile 时分裂成三个 Wiki 概念 → 知识库退化）。
+
+### 研究方向
+- `#credit-assignment` — trajectory reward → step/turn-level advantage 拆解
+- `#agentic-rl` — LLM Agent 的强化学习训练
+
+### 信号机制（step reward 从哪来）
+- `#reward-model` — 外部 reward model（含 generative RM）
+- `#no-reward-model` — 完全不依赖 RM
+- `#information-gain` — IG 作 turn reward（IGPO 类）
+- `#bipartite-matching` — predicted ↔ golden trace 匹配（MatchTIR 类）
+- `#entropy` — token / step entropy 作信号（ARPO/AEPO/EMPG/AT²PO）
+
+### Advantage 粒度
+- `#step-wise-reward` — 每步单独打分
+- `#turn-level-reward` — 每 turn 一个奖励
+- `#turn-level-is` — turn-level importance sampling
+
+### 采样结构
+- `#tree-rollout` — 显式树状采样（TreeGRPO/AT²PO）
+- `#branching` — 动态分支采样（ARPO）
+- `#branching-penalty` — 分支惩罚避免过度集中（AEPO）
+- `#same-state-grouping` — 相同状态聚类（GiGPO）
+- `#trajectory-graph` — 轨迹 DAG（SALT）
+
+### 梯度 / 优化
+- `#gradient-modulation` — entropy 调节梯度幅度（EMPG）
+- `#future-clarity` — 下一步 entropy 低给 bonus（EMPG）
+
+### 场景 / 应用
+- `#tool-use` — 工具调用
+- `#tool-integrated-reasoning` — TIR 框架
+- `#gui-agent` — 图形界面 agent
+- `#coding-agent` — 代码 agent
+- `#multi-turn-agent` — 多轮交互
+- `#long-horizon-agent` — 长程任务
+
+### 数据 / 假设
+- `#ground-truth-trace` — 依赖金标准轨迹
+- `#self-adaptive-env` — 环境自适应调整
+- `#plug-and-play` — 即插即用（不改 rollout）
+
+### 新增 tag 的流程
+
+1. Ingest 时 Claude 发现现有 tags 覆盖不了论文核心概念
+2. Claude 提示："建议新增 `#<name>` — 含义：<一行定义>。确认？(yes/no)"
+3. 用户 yes → Claude 编辑本 section 添加一行（含定义），**再**写入 Raw 的 Tags 字段
+4. 用户 no → 复用最接近的现有 tag
+
+**原则**：宁可复用近义 tag，不要随手新增。每个新 tag 都是对词汇表的承诺。
+
 ## 整合规则
 
 1. 新 Raw 默认**不**自动更新 Wiki（遵循两阶段规则）
