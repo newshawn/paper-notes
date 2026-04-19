@@ -170,7 +170,52 @@ Claude 几秒内答：
 
 ## 快速使用
 
-配合 [`paper-notes` Claude Code plugin](../../.claude/plugins/paper-notes/plugin/README.md) 使用：
+**两种使用方式，底层共用同一套 SKILL.md，不是两套逻辑**。按场景挑：
+
+| 场景 | 推荐方式 |
+|---|---|
+| 看到新论文随手 ingest | 💬 聊天 |
+| 批量 10 篇一次性处理 | 🖥️ 终端 slash |
+| 复杂需求（多篇对比 / follow-up 提问） | 💬 聊天 |
+| 自动化集成（cron / hook / 脚本） | 🖥️ 终端 slash |
+| 新人零学习 | 💬 聊天 |
+
+二者可在**同一个 wiki 上混用**，互不冲突。
+
+---
+
+### 💬 方式 A：聊天（推荐日常使用）
+
+把 arxiv 链接或 PDF 路径**直接发给 Claude**（桌面版 / 终端 / IDE 扩展任一 surface 都行），用自然语言描述意图：
+
+```
+"帮我 ingest 这篇：https://arxiv.org/abs/2510.XXXXX"
+"读一下 https://arxiv.org/abs/XXXX，重点讲 entropy 部分"
+"这篇 ingest 完后和 IGPO 对比下：https://arxiv.org/abs/XXXX"
+"把 ~/Downloads/paper.pdf 归档进 wiki"
+```
+
+Claude 做什么：
+
+1. 识别意图 → **调用 `paper-notes:ingest` skill**（等价于打 slash 命令，但从聊天触发）
+2. 按 SKILL.md 严格流程：抓论文 / 下 PDF / 写 Raw / 更新 log
+3. 完成后主动问：**"审阅 Raw 吗？满意就说 compile"**
+4. 你说 compile → 自动触发 compile + auto push
+
+**好处**：
+- 零学习成本（不用记命令名）
+- 支持**复杂多步请求**（"读 A 和 B，对比二者，重点看 entropy"）
+- 对话式 follow-up（"刚那篇再展开讲讲 🧬 Delta"）
+- 跨 surface 通用（Claude Code 任何客户端都行）
+- 新同事 / 合作者秒上手
+
+**适合**：日常 ingest、探索性提问、复杂多步需求、不熟悉 slash 命令的使用者。
+
+---
+
+### 🖥️ 方式 B：终端 slash 命令（推荐批量 / 稳态 / 自动化）
+
+前提：已装 [`paper-notes` Claude Code plugin](../../.claude/plugins/paper-notes/plugin/README.md)。
 
 ```bash
 cd ~/Documents/PaperNotes    # 必须在 wiki root（或子目录）里才能用
@@ -219,7 +264,28 @@ cd ~/Documents/PaperNotes    # 必须在 wiki root（或子目录）里才能用
 #   ⚠️ 只输出报告——不 auto-fix，由你决定
 ```
 
-Plugin 未安装也能用——直接让 Claude 按 schema.md 的规则写 Raw / 更新 Wiki 即可。
+**好处**：
+- **严格一致性**：Skill 按部就班，不偏
+- **可脚本化**：shell for loop 批量 ingest 一堆链接
+- **上下文懒加载**：Skill 命令触发时才加载，平时不占 context
+- **可审计**：终端 history 可追溯所有命令
+- **便于分享**：把命令序列发给同学他们照搬就行
+
+**适合**：批量处理、自动化工作流、稳态重复操作。
+
+---
+
+### Plugin 未装？
+
+**方式 A 完全不受影响**——直接在聊天里让 Claude 按 `schema.md` 规则工作即可。
+**方式 B 要先装 plugin**（见 [plugin README](../../.claude/plugins/paper-notes/plugin/README.md)）。
+
+### 建议的混合比例
+
+- **80% 聊天**：日常随手扔链接（方式 A）
+- **20% slash**：批量 / 自动化 / 严格场景（方式 B）
+
+二者接口不同但**底层是同一个 SKILL.md**——生成的 Raw / Wiki 内容完全一致。
 
 ## 目录结构
 
