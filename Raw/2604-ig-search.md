@@ -54,7 +54,7 @@ $$\tilde{A}_{i,p} = \hat{A}_i + \alpha \cdot \frac{\tilde{IG}_t}{|\mathcal{Q}_t|
   - IGPO 是 **turn-level IG**：$\pi(a|context_t) - \pi(a|context_{t-1})$（连续 turn 的 prob 差）
   - IG-Search 是 **step-level IG with counterfactual**：每个 search step 跟"随机文档对照组"比
   - **作者批评 IGPO** "conflates reasoning, querying, and retrieval"——IGPO 混了三种贡献源；IG-Search 用 random docs **分离出检索贡献**
-  - Appendix J 承诺 cross-protocol 对比（未在提供内容中显示）
+  - Appendix J 给出 cross-protocol 对比（Qwen2.5-3B-Instruct，F1）：**IG-Search 0.518 vs IGPO 0.489（+2.9）**——**且 IG-Search 用更弱的 retriever（E5 + Wikipedia 2018 dump vs IGPO 的 Google Search API）和更小 rollout budget（G=5/T=5 vs G=16/T=10）**
 - **vs MR-Search（2025 最强 trajectory baseline）**：保留 trajectory reward，新增 step-level IG 信号
 - **vs GiGPO [2505-gigpo](2505-gigpo.md)**：GiGPO 用 state recurrence 聚类，要求相同状态；IG-Search 不要求状态等价，**用文档 counterfactual 替代**——multi-hop 场景 IG-Search 赢 6/7（GiGPO 只在 Bamboogle single-hop 上胜 0.641 vs 0.424）
 
@@ -122,6 +122,19 @@ Multi-hop 改进最显著：HotpotQA +1.7, 2Wiki +1.4, Musique +1.4
 Qwen2.5-7B (Table 3)：IG-Search-Instruct **0.479** (+1.9 vs MR-Search 0.460)
 
 **意外**：GiGPO 在 Bamboogle 上 0.641 vs IG-Search 0.424——**同状态聚类在浅 single-hop 上是更强的信号**（Bamboogle 题简单，5 个 rollout 大概率状态重合，GiGPO 优势尽显）
+
+**Cross-Protocol 对比 IGPO（Appendix J, Table 8, Qwen2.5-3B-Instruct, F1）**：
+
+作者承认 IGPO 和 IG-Search 训练/评测 setup 差异大（不同 retriever、不同 rollout budget、不同训练数据），不适合放主表；但 IGPO 报 word-level F1，作者算了 IG-Search 在同指标下的值跨协议比：
+
+| 方法 | NQ | TriviaQA | PopQA | HotpotQA | 2Wiki | Musique | Bamboogle | Avg |
+|---|---|---|---|---|---|---|---|---|
+| IGPO (w/ F1+IG) | 0.419 | 0.692 | 0.490 | 0.478 | **0.514** | 0.248 | **0.584** | 0.489 |
+| **IG-Search-Instruct** | **0.542** | 0.692 | **0.501** | **0.551** | 0.507 | **0.276** | 0.554 | **0.518** |
+
+- **IG-Search +2.9 F1 平均**，且在 5/7 benchmark 上超 IGPO
+- 关键点：**IG-Search 用弱 retriever（E5 + 2018 Wikipedia）+ 小 budget（G=5, T=5）打败了 IGPO（Google Search API + G=16, T=10）**——说明 counterfactual step reward 的信号质量比检索能力/采样规模更重要
+- **IGPO 仍胜的两个**：2Wiki（+0.007）和 Bamboogle（+0.030）——Bamboogle 再次印证 "single-hop 浅题不利 step-level signal"（前面 GiGPO 也是在 Bamboogle 赢）
 
 ## Takeaway
 

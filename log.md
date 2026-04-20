@@ -4,6 +4,16 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-04-20] refactor | 2604-ig-search Raw 补 Appendix J 数据
+
+- **动机**：先前 ingest 时 arxiv HTML fetch 被截断，Raw 里 Delta 段写的是"Appendix J 承诺 cross-protocol 对比（未在提供内容中显示）"，留了信息空洞
+- **操作**：Read PDF 第 20-25 页直接抓 Appendix J 原文 + Table 8
+- **补充内容**：
+  - Delta from IGPO 段补上 Appendix J 结论："IG-Search 0.518 vs IGPO 0.489 (+2.9 F1)，且 IG-Search 用更弱的 retriever（E5 + 2018 Wiki dump vs IGPO 的 Google Search API）和更小 rollout budget（G=5/T=5 vs G=16/T=10）"
+  - Key Results 新增 "Cross-Protocol 对比 IGPO" 子段，含完整 Table 8（7 个 benchmark 的 F1 并列对比）+ 3 条解读（IG-Search 5/7 胜 / 弱 retriever + 小 budget 仍赢 / Bamboogle 仍印证"single-hop 浅题不利 step-level signal"）
+- **不改 Wiki**：红线 #1，仅 Raw 补数据不算 compile。下次 compile 时可让 Search-Augmented-RL.md 引用这个具体数字
+- **关联 Contradictions**：Appendix J 两个反例（2Wiki / Bamboogle IGPO 胜）进一步佐证 Credit-Assignment Contradiction #1（粒度选择按任务深度看）
+
 ## [2026-04-20] compile | 2 raws → 2 wiki pages updated + 1 new wiki page created
 
 - **Raws compiled**: 2603-mr-search, 2505-autorefine
