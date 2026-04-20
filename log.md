@@ -4,6 +4,30 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-04-20] compile | 2 raws → 2 wiki pages updated + 1 new wiki page created
+
+- **Raws compiled**: 2603-mr-search, 2505-autorefine
+- **Wiki updated**:
+  - `Credit-Assignment-in-Agentic-RL.md`:
+    - Key Claims +5 条（turn-level RLOO + γ ablation / meta-episode 正交性 / stairstep reward / refine synergy / **小模型 scaffolding 假说 跨 3 篇印证**）
+    - 新增 Contradiction #8 "小模型从 CA scaffolding 获益更大"（3 篇论文数字证据 + 3 个可能解释 + 开放研究方向）
+    - 可深入方向 +3 条（#10 小模型 × CA 专项研究 / #11 meta-episode × dense IG / #12 refine × counterfactual IG）
+    - Related 新增 `[[Search-Augmented-RL]]` 和 `[[Small-Model-Scaffolding]]`（待建）
+  - `Turn-Level-Reward.md`:
+    - Key Claims +2 条（RLOO + 小模型 scaffolding 引用）
+    - 可深入方向 +1 条（meta-episode × turn-level 双轴）
+    - Related 新增 `[[Search-Augmented-RL]]`
+- **Wiki created**: `Search-Augmented-RL.md`（coverage high，4 篇覆盖：AutoRefine / IGPO / MR-Search / IG-Search）——演进脉络、Key Claims、4 个 Contradictions、7 个可深入方向、和其他方向的接口讨论
+- **Wiki candidates（仍待更多论文）**:
+  - `Small-Model-Scaffolding` —— 已 ≥3 篇独立观察（IGPO + MR-Search + EAPO），理论上可建，但观察散在各 Raw 里、暂先汇总到 Credit-Assignment Contradiction #8
+  - `Token-Level-Credit`（EAPO，仍 1 篇）
+  - `Counterfactual-Baseline`（IG-Search，仍 1 篇）
+  - `Meta-RL-for-Agents`（MR-Search，仍 1 篇）
+- **Contradictions recorded**:
+  - 粒度选择（episode/turn/step）—— AutoRefine 浅任务反而优于 IG-Search 细粒度
+  - Reward hacking 风险（R_ret gaming / short-query gaming）
+- **Rationale**: MR-Search + AutoRefine 填上了"搜索 RL 生态图"——加上 IGPO/IG-Search 形成完整 4 篇演进。最大 insight 是**小模型 scaffolding 假说**跨 3 篇独立印证，潜在论文方向级别。新建 `Search-Augmented-RL` wiki 作为这个子领域的专门汇总。
+
 ## [2026-04-20] ingest | 2505-autorefine AutoRefine: Search and Refine During Think
 
 - **Raw**: Raw/2505-autorefine.md

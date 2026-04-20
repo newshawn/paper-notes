@@ -11,6 +11,7 @@ Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 | [Credit-Assignment-in-Agentic-RL](Wiki/Credit-Assignment-in-Agentic-RL.md) | high | 2026-04-20 |
 | [Entropy-Guided-Exploration](Wiki/Entropy-Guided-Exploration.md) | high | 2026-04-20 |
 | [Turn-Level-Reward](Wiki/Turn-Level-Reward.md) | high | 2026-04-20 |
+| [Search-Augmented-RL](Wiki/Search-Augmented-RL.md) | high | 2026-04-20 |
 
 ### 方法论（待建）
 
@@ -21,6 +22,7 @@ Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 - `Advantage-Collapse`（IGPO 明确讨论；GRPO 是病源）
 - `Token-Level-Credit`（EAPO，目前仅 1 篇——但粒度维度独特，候选）
 - `Counterfactual-Baseline`（IG-Search，目前仅 1 篇）
+- `Small-Model-Scaffolding`（IGPO + MR-Search 独立观察，**已 ≥2**——值得单独建页，仍 pending）
 
 ## Raw 论文笔记（按时间倒序）
 
@@ -47,5 +49,7 @@ Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 - **Tree rollout**：TreeGRPO → AT²PO（树状采样 + turn-wise credit）
 - **Dense reward without human labels**：IGPO（turn-IG）、IG-Search（counterfactual IG）、MatchTIR（bipartite match）、RLAnything（RM as judge）
 - **Granularity of IS/clip**：token (GRPO) → sequence (GSPO) → turn (AT²PO)
-- **Credit granularity ladder**：token (EAPO) → step (GiGPO / SALT / IG-Search) → turn (IGPO / MatchTIR)
+- **Credit granularity ladder**：token (EAPO) → step (GiGPO / SALT / IG-Search) → turn (IGPO / MatchTIR / MR-Search) → episode (AutoRefine)
 - **Entropy as signal, multi-stage**：branching (ARPO/AEPO) → gradient reshape (EMPG / AEPO sg) → advantage scaling (EAPO)
+- **Search-augmented RL 生态**：AutoRefine（protocol）→ IGPO（turn-IG）→ MR-Search（meta-episode）→ IG-Search（counterfactual IG）
+- **Small model scaffolding**（跨 3 篇观察）：IGPO 3B +15.3、MR-Search 3B +19.3% rel、EAPO Four Quadrant——小模型从显式 CA 获益 2× 于大模型

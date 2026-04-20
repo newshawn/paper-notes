@@ -81,6 +81,11 @@ Agentic 场景变 tractable 的关键：
 - [2604-eapo] **Accuracy 与 diversity 同时提升**（反 trade-off 罕见现象）——暗示高熵 token 承载 generalizable 信号
 - [2604-ig-search] **Counterfactual IG** 明确批评 IGPO "conflates reasoning/querying/retrieval"——用随机文档剥离 topical relevance 隔离纯检索贡献
 - [2604-ig-search] **Per-token modulation 防 reward hacking**：只调 query tokens + 除以 `|Q_t|`（防刷长 query 骗高 IG）
+- [2603-mr-search] **Turn-level RLOO advantage** critic-free 可行：G=5 leave-one-out + γ=1 discount；γ=0 ablation 掉 2.2 点 → turn-level credit 必要性的 ablation 实证
+- [2603-mr-search] **Meta-episode reflection** 是 credit assignment 的正交维度：跨 N=3 个 episodes 的 self-correction 不可被单 episode RL 获得
+- [2505-autorefine] **Stairstep 非线性 reward** `R_overall = R_ans if R_ans>0 else 0.1 if R_ret>0 else 0` 显著优于线性加权 `R_ans + R_ret`——reward shaping 的 heuristic
+- [2505-autorefine] 显式 **refine step**（4x 压缩 docs）降低 policy 认知负荷；refine 和 dual reward 必须合一（ablation: 任一单独 → 退回 baseline）
+- **小模型 scaffolding 假说（跨 3 篇印证）**：[2510-igpo] 3B +15.3 / 7B +6.8；[2603-mr-search] 3B +19.3% / 7B +9.2%；[2604-eapo] Four Quadrant 分析暗示类似方向——**小模型从显式 credit assignment scaffolding 获益显著大于大模型**，是可深入的独立研究方向（见 Contradictions #8）
 
 ## Contradictions / Open Questions
 
@@ -161,6 +166,26 @@ IG-Search 作者明确批评 IGPO "conflates reasoning, querying, and retrieval 
 
 两者**正交**——research opportunity: 合并成"turn-level IG × step-level counterfactual IG"双层设计（见 可深入的方向 #8）。
 
+### 8. 小模型从 CA scaffolding 获益更大（2026-04 新发现，三点成线）
+
+三篇独立研究一致观察到**小模型（3B）从显式 credit assignment 获益显著大于大模型（7B）**：
+
+| 方法 | 3B 提升 | 7B 提升 | 比值 |
+|---|---|---|---|
+| [2510-igpo] | **+15.3** (32.3→47.6) | +6.8 | **2.3×** |
+| [2603-mr-search] | **+19.3% rel** (34.7→41.4) | +9.2% rel | **2.1×** |
+| [2604-eapo] | 未分 scale 对比，但 Four Quadrant 实证 "PHR 驱动 generalize beyond rollouts" 暗示类似 |
+
+**可能的解释（假说）**：
+- **内化假说**：大模型通过 pre-training 已内化部分"隐式 credit assignment"能力，显式 signal 的边际收益递减
+- **容量假说**：小模型 reasoning 容量不足，每个额外的"正确信号"（dense reward / meta-episode / entropy weighting）能产生实质更正；大模型已经学到较多 shortcut
+- **Signal-to-noise**：小模型 policy 分布更平，细粒度 credit signal 更容易被"听进去"
+
+**开放问题**：
+- **未系统研究**：没有论文专门对比 1B/3B/7B/13B/30B 的 CA 技术收益曲线
+- **Research opportunity**：**小模型专属 CA 技术栈**——系统研究哪些 CA 方法在 <7B 上最有效，为"小而精"模型设计专用训练协议
+- 如果小模型从 scaffolding 获益大是系统性现象 → 可能解释为何 IGPO / EAPO / MR-Search 各自在 3B 上都有惊人数字，这是**方法论 + 模型规模**的交互效应
+
 ## 可深入的方向（优先级排序）
 
 1. **IG + self-consistency**：无 GT 时用多次采样一致性作为 IG 代理（IGPO 建议）
@@ -172,12 +197,17 @@ IG-Search 作者明确批评 IGPO "conflates reasoning, querying, and retrieval 
 7. **Token-level × Turn-level credit 组合** [2604-eapo × 2510-igpo/2601-at2po]：EAPO 的 token-entropy 调制 + turn-level IG 正交维度，没人合过
 8. **Turn + Counterfactual IG 双层** [2510-igpo × 2604-ig-search]：IGPO 测整体提升 + IG-Search 测纯检索，叠加可能解决 "conflation" 问题
 9. **Four Quadrant 分析法通用化** [2604-eapo]：polarity × entropy 2×2 能否迁到 step / turn 粒度？如"正确 turn 的高熵 vs 低熵"是否也有类似模式？
+10. **小模型 × CA scaffolding 系统研究** [2510-igpo × 2603-mr-search × 2604-eapo]：3 篇一致观察 3B 获益 >> 7B（见 Contradictions #8）——**最有论文 potential 的方向**，因为是"方法论 × 模型规模"的交互现象，几乎没人系统研究
+11. **Meta-episode × dense IG** [2603-mr-search × 2510-igpo/2604-ig-search]：跨 episode reflection + 单 episode 内 dense IG 的正交合并——可能既保留"跨 attempt 自我校正"又获得"非零 turn 信号"
+12. **Refine step × counterfactual IG** [2505-autorefine × 2604-ig-search]：在 AutoRefine 的 refine 块后算 counterfactual IG（真 refine vs 空 refine vs 随机 refine）——更精细衡量 refine 质量
 
 ## Related
 
 - [[Turn-Level-Reward]]
 - [[Entropy-Guided-Exploration]]
+- [[Search-Augmented-RL]] — 搜索 RL 生态（IGPO / IG-Search / MR-Search / AutoRefine）
 - [[Tree-Based-Rollout]]（待建）
 - [[Importance-Sampling-Granularity]]（待建）
 - [[Generative-Reward-Model]]（待建）
 - [[Advantage-Collapse]]（待建）
+- [[Small-Model-Scaffolding]]（待建，观察已 ≥3 篇但散落在各 Raw 里）

@@ -71,6 +71,8 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 - [2602-rlanything] 当 RM 足够好时，**只用 step reward（不用 outcome）效果更好**——turn-level 信号足以定义任务
 - [2604-ig-search] **Counterfactual IG** 区分"检索贡献" vs IGPO 的"turn-level 综合提升"——两种 IG 正交可合并
 - [2604-ig-search] **Per-token selective modulation** 是防 reward hacking 的巧思——只调 query tokens 避免污染 reasoning
+- [2603-mr-search] **Turn-level RLOO advantage** 是 critic-free 的工程实用选择——G-1 leave-one-out 归一化 + γ=1 discount；γ=0 ablation 掉 2.2 点实证 turn-level credit 必要
+- [2603-mr-search] 小模型获益显著大（3B +19.3% vs 7B +9.2%）——再次印证 **小模型 scaffolding 假说**（详见 [[Credit-Assignment-in-Agentic-RL]] Contradictions #8）
 
 ## Contradictions / Open Questions
 
@@ -138,9 +140,12 @@ IG-Search 作者批评 IGPO "conflates reasoning, querying, and retrieval"——
 
 6. **Counterfactual 推广到非检索**：非 search 场景（GUI / tool-use）如何定义 "random baseline"？用 null tool output？用随机其他 action？
 
+7. **Meta-episode × turn-level credit 双轴** [2603-mr-search × 2510-igpo/2604-ig-search]：meta-episode 捕获"跨 attempt 自我校正"（MR-Search）+ 单 episode 内 dense IG（IGPO/IG-Search）——两个维度正交，合并可能同时解决 "always non-zero signal" 和 "跨 attempt exploration"
+
 ## Related
 
 - [[Credit-Assignment-in-Agentic-RL]]
 - [[Entropy-Guided-Exploration]]
+- [[Search-Augmented-RL]] — 搜索 RL 生态，多种 turn-level / step-level 实现
 - [[Tree-Based-Rollout]]（待建）
 - [[Advantage-Collapse]]（待建）
