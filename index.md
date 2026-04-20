@@ -8,9 +8,9 @@ Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 
 | 页面 | Coverage | Last updated |
 |---|---|---|
-| [Credit-Assignment-in-Agentic-RL](Wiki/Credit-Assignment-in-Agentic-RL.md) | high | 2026-04-18 |
-| [Entropy-Guided-Exploration](Wiki/Entropy-Guided-Exploration.md) | high | 2026-04-18 |
-| [Turn-Level-Reward](Wiki/Turn-Level-Reward.md) | high | 2026-04-18 |
+| [Credit-Assignment-in-Agentic-RL](Wiki/Credit-Assignment-in-Agentic-RL.md) | high | 2026-04-20 |
+| [Entropy-Guided-Exploration](Wiki/Entropy-Guided-Exploration.md) | high | 2026-04-20 |
+| [Turn-Level-Reward](Wiki/Turn-Level-Reward.md) | high | 2026-04-20 |
 
 ### 方法论（待建）
 
@@ -19,11 +19,15 @@ Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 - `Importance-Sampling-Granularity`（GRPO / GSPO / AT²PO）
 - `Generative-Reward-Model`（RLAnything，目前仅 1 篇）
 - `Advantage-Collapse`（IGPO 明确讨论；GRPO 是病源）
+- `Token-Level-Credit`（EAPO，目前仅 1 篇——但粒度维度独特，候选）
+- `Counterfactual-Baseline`（IG-Search，目前仅 1 篇）
 
 ## Raw 论文笔记（按时间倒序）
 
 | Paper ID | Title | Tags | Ingested |
 |---|---|---|---|
+| [2604-ig-search](Raw/2604-ig-search.md) | IG-Search | #credit-assignment #information-gain #step-wise-reward #tool-use | 2026-04-20 |
+| [2604-eapo](Raw/2604-eapo.md) | EAPO | #credit-assignment #entropy #gradient-modulation #token-level-reward | 2026-04-20 |
 | [2602-rlanything](Raw/2602-rlanything.md) | RLAnything | #credit-assignment #reward-model | 2026-04-17 |
 | [2601-matchtir](Raw/2601-matchtir.md) | MatchTIR | #credit-assignment #bipartite-matching | 2026-04-18 |
 | [2601-at2po](Raw/2601-at2po.md) | AT²PO | #turn-level-is #tree-rollout | 2026-04-18 |
@@ -39,5 +43,7 @@ Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 
 - **Entropy as signal**：ARPO → AEPO → AT²PO → EMPG（熵作为探索触发器 / 梯度调节器）
 - **Tree rollout**：TreeGRPO → AT²PO（树状采样 + turn-wise credit）
-- **Dense reward without human labels**：IGPO（IG）、MatchTIR（bipartite match）、RLAnything（RM as judge）
+- **Dense reward without human labels**：IGPO（turn-IG）、IG-Search（counterfactual IG）、MatchTIR（bipartite match）、RLAnything（RM as judge）
 - **Granularity of IS/clip**：token (GRPO) → sequence (GSPO) → turn (AT²PO)
+- **Credit granularity ladder**：token (EAPO) → step (GiGPO / SALT / IG-Search) → turn (IGPO / MatchTIR)
+- **Entropy as signal, multi-stage**：branching (ARPO/AEPO) → gradient reshape (EMPG / AEPO sg) → advantage scaling (EAPO)

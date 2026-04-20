@@ -1,7 +1,7 @@
 # Turn-Level Reward
 
 [coverage: high]
-[last-updated: 2026-04-18]
+[last-updated: 2026-04-20]
 
 ## Definition
 
@@ -17,13 +17,25 @@ Trajectory-level reward 的三个病：
 
 ## 主流设计
 
-### 1. Information Gain [2510-igpo]
+### 1. Information Gain（两种变种）
+
+**1a. Turn-to-turn temporal-difference** [2510-igpo]
 
 $$r_{i,t} = \pi_\theta(a \mid q, o_{i,\leq t}) - \pi_\theta(a \mid q, o_{i,\leq t-1})$$
 
 - 用 policy 自己生成 GT 答案的概率**增量**作 reward
-- **Always non-zero**，消除 advantage collapse
+- Always non-zero，消除 advantage collapse
 - 无需外部 RM、无需 MC 采样
+- ⚠️ 混合 reasoning + querying + retrieval 三种贡献
+
+**1b. Counterfactual baseline** [2604-ig-search]
+
+$$IG_t = \log \pi(a^* \mid \mathcal{C}_t^{\text{real}}) - \frac{1}{N}\sum_j \log \pi(a^* \mid \mathcal{C}_t^{\text{rand},j})$$
+
+- 随机文档来自同 batch 其他题（保长度、剥离相关性）
+- 只 modulate query tokens（不动 reasoning / answer）
+- 除以 `|Q_t|` 防刷长 query 骗高 IG
+- ✨ **隔离纯粹的检索贡献**——明确批评 IGPO "conflates"
 
 ### 2. Step-level Grouping [2505-gigpo]
 
@@ -57,6 +69,8 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 - [2510-igpo] **3B 小模型** 用 turn-level dense reward 提升 +15.3（vs 7B 的 +6.8）——小模型更依赖 turn-level 信号
 - [2601-at2po] Turn-level IS 是 token-level (GRPO) 和 sequence-level (GSPO) 之间的正确粒度
 - [2602-rlanything] 当 RM 足够好时，**只用 step reward（不用 outcome）效果更好**——turn-level 信号足以定义任务
+- [2604-ig-search] **Counterfactual IG** 区分"检索贡献" vs IGPO 的"turn-level 综合提升"——两种 IG 正交可合并
+- [2604-ig-search] **Per-token selective modulation** 是防 reward hacking 的巧思——只调 query tokens 避免污染 reasoning
 
 ## Contradictions / Open Questions
 
@@ -97,6 +111,16 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 - QA 场景答案多为 short span，暂未暴露；但开放生成 / 长回答场景风险明显
 - **开放问题**：对长答案是否应使用 log-prob 差而非 prob 差？或按长度归一化？
 
+### 6. Temporal-difference IG vs Counterfactual IG（2026-04 新增）
+
+[2510-igpo] 的 IG 是 `P(a|turn_t) - P(a|turn_{t-1})`（时间差）；[2604-ig-search] 的 IG 是 `P(a|real docs) - P(a|random docs)`（真假差）。**测量的东西不一样**：
+- IGPO：新 turn（含新 reasoning + 新 query + 新 retrieval）的**综合贡献**
+- IG-Search：**纯粹的检索质量**（控制 reasoning 和 query 长度）
+
+IG-Search 作者批评 IGPO "conflates reasoning, querying, and retrieval"——但 IGPO 在 non-search 场景（纯多步推理 QA）依然适用；IG-Search 强依赖检索步骤。
+
+**开放问题**：二者正交吗？turn-level 综合 IG + step-level 反事实 IG 的双层叠加是否会有更好 credit assignment？
+
 ## 可深入的方向
 
 1. **非 QA 场景的 IG 迁移**：
@@ -109,6 +133,10 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 3. **Turn 的自动切分**：当前依赖 tool-call 或 think/action 标签切分，能否用 model-internal signal（如 attention pattern）无监督切分？
 
 4. **Self-supervised golden trace**：best-of-N rollout 的最优 trajectory → 作为 MatchTIR 风格匹配目标 → 闭环 credit assignment，不依赖人工标注
+
+5. **IGPO × IG-Search 双层 IG** [2510-igpo × 2604-ig-search]：turn 综合 + step 反事实的正交组合，可能既保留 "always non-zero" 又剥离 "conflation"
+
+6. **Counterfactual 推广到非检索**：非 search 场景（GUI / tool-use）如何定义 "random baseline"？用 null tool output？用随机其他 action？
 
 ## Related
 

@@ -1,7 +1,7 @@
 # Entropy-Guided Exploration
 
 [coverage: high]
-[last-updated: 2026-04-18]
+[last-updated: 2026-04-20]
 
 ## Definition
 
@@ -12,6 +12,7 @@
 - **[2507-arpo]** Tool call 返回后的前 10-50 个 token entropy 明显升高——这是天然的 branching trigger
 - **[2509-empg]** Softmax policy gradient 的 norm 与 entropy 单调耦合：$\mathbb{E}[\|\nabla \log \pi\|^2] = 1 - \exp(-H_2(\pi))$ → 高熵 token 梯度天然大，会被 clip 截断
 - **[2510-aepo]** GRPO 的 clip 项使高熵 token 梯度为 0：高熵 → $\delta = \pi/\pi_{old}$ 偏大 → 超出 clip 区间 → 梯度消失
+- **[2604-eapo]** Softmax gradient 的 $\nabla_{z_v} L \propto (1-\pi_{o_t})$ 让高熵 token 天然承载更多信号；Four Quadrant 实证 PHR (positive high-entropy) 是 reasoning improvement 主引擎，PLR 需 **5.5× 步数**达同 accuracy
 
 ## 用法 1：Entropy 作为 Branching Trigger
 
@@ -78,6 +79,22 @@ Tree credit assignment 时子节点 value 按 entropy 加权而非均值：
 
 $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum_{c'} H(c')}$$
 
+## 用法 5：Entropy 作为 Token-Level Advantage 调制器
+
+### [2604-eapo] EAPO: Four Quadrant Decomposition + 按 entropy re-weight
+
+$$\hat{A}^{CA}_{i,t} = \hat{A}_{i,t} + \alpha \cdot \text{sign}(\hat{A}_{i,t}) \cdot \text{detach}(\hat{A}^H_{i,t})$$
+
+**Four Quadrant**（polarity × entropy 2×2 分析框架）：
+- **PHR** (Positive High-entropy)：**主引擎**——reinforce 不确定成功，能 generalize beyond rollouts
+- **PLR** (Positive Low-entropy)：需 5.5× 步数达同 accuracy，diversity 低 12%
+- **NHR** (Negative High-entropy)：1.5× 快收敛
+- **NLR** (Negative Low-entropy)：早期帮助但快速 saturate
+
+**核心直觉**：RLVR 均分 advantage 抹平了 softmax gradient 的天然偏好（`∇ ∝ (1-π)` 让高熵 token 承载更多信号）——EAPO 显式恢复。
+
+**α=0.2, φ=2；detach() 避免 entropy 项回传梯度（防 reward hacking）**；sign() 保持与 reward polarity 同向。
+
 ## 核心矛盾：方向相反的做法
 
 | 视角 | 高 entropy → ... |
@@ -85,6 +102,7 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum_{c'} H(c')}$$
 | [2507-arpo] / [2510-aepo] 采样阶段 | **多采**（值得探索） |
 | [2510-aepo] 梯度阶段 | **保留梯度**（别让它消失） |
 | [2509-empg] 梯度阶段 | **降权梯度**（别让它主导） |
+| [2604-eapo] advantage 阶段 | **放大 \|Ã\|**（承载更多 reward 信号） |
 
 **可能的调和**：
 - "采样时" 和 "更新时" 的 entropy 含义不同
@@ -108,6 +126,8 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum_{c'} H(c')}$$
 2. **Entropy 自适应阈值**：随训练进度动态调整 τ，避免 collapse
 3. **组合 EMPG 降权 × AEPO 保留**：看起来矛盾，但可能在不同 advantage sign 下组合有意义
 4. **Entropy 跨 turn 的依赖建模**：连续高熵的 penalty 还是 bonus？目前两派都有
+5. **EMPG 降权 vs EAPO 放大：为何都对？**（新矛盾）——EMPG 对 step-level **梯度**降权高熵，EAPO 对 token-level **advantage** 放大高熵。可能解释：二者操作的是不同量（梯度 vs advantage），不冲突——但值得统一理论 framework
+6. **Four Quadrant 分析法迁移** [2604-eapo]：polarity × entropy 2×2 能否扩展到 step / turn 粒度？识别不同贡献模式
 
 ## Related
 

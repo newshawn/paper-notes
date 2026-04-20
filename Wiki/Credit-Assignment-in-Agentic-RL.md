@@ -1,7 +1,7 @@
 # Credit Assignment in Agentic RL
 
 [coverage: high]
-[last-updated: 2026-04-18]
+[last-updated: 2026-04-20]
 
 ## Definition
 
@@ -53,8 +53,19 @@ Agentic 场景变 tractable 的关键：
 
 | 方法 | 信号 | 适用场景 |
 |---|---|---|
-| [2510-igpo] | Turn 结束后 policy 生成 GT 答案概率的增量（IG） | 答案可验证的 QA |
+| [2510-igpo] | Turn 结束后 policy 生成 GT 答案概率的增量（turn-to-turn IG） | 答案可验证的 QA |
+| [2604-ig-search] | Search step 的 counterfactual IG（真文档 vs 随机文档 log-prob 差） | Search-augmented QA，需 gold answer |
 | [2601-matchtir] | Predicted turn ↔ golden trace 二部图匹配（KM 或 OT） | 有 golden trace 的 tool-use |
+
+**IG 两种设计对立**：IGPO 测"turn 间整体理解提升"（混推理+检索）；IG-Search 用随机文档 counterfactual 测"纯检索贡献"。详见 Contradictions #7。
+
+### 5. Token-Level Credit 路线（最细粒度）
+
+| 方法 | 核心机制 | 特点 |
+|---|---|---|
+| [2604-eapo] | Four Quadrant (polarity × entropy) + 按 token entropy 调 \|Ã\| | RLVR 场景；α=0.2, φ=2；PHR 象限是主引擎 |
+
+**独特维度**：之前 credit assignment 都在 step / turn 粒度；EAPO 下探到 token——按 entropy 给每个 token 不同权重。与其他路线**正交**，可组合（见 可深入的方向）。
 
 ## Key Claims（跨论文整合）
 
@@ -66,6 +77,10 @@ Agentic 场景变 tractable 的关键：
 - [2601-at2po] Token-level IS 方差大、sequence-level 粒度过粗 → **turn-level IS** 是正确的折中
 - [2510-aepo] GRPO 的 clip 项让高熵 token 梯度为 0 → **sg(δ) 技巧**绕过
 - [2601-matchtir] 直接用相似度分数作 reward 会被 gaming（反复调相似工具）；需要 KM / OT 这种硬约束
+- [2604-eapo] **Token 级不是均分**：softmax gradient `∇ ∝ (1-π)` 暗示高熵 token 承载更多信号；Four Quadrant 实证 PHR (positive high-entropy) 是 reasoning improvement 主引擎，PLR 需 **5.5× 步数**达同 accuracy
+- [2604-eapo] **Accuracy 与 diversity 同时提升**（反 trade-off 罕见现象）——暗示高熵 token 承载 generalizable 信号
+- [2604-ig-search] **Counterfactual IG** 明确批评 IGPO "conflates reasoning/querying/retrieval"——用随机文档剥离 topical relevance 隔离纯检索贡献
+- [2604-ig-search] **Per-token modulation 防 reward hacking**：只调 query tokens + 除以 `|Q_t|`（防刷长 query 骗高 IG）
 
 ## Contradictions / Open Questions
 
@@ -91,11 +106,20 @@ Agentic 场景变 tractable 的关键：
 - 长轨迹（ALFWorld 60 步）下 γ=1 可能让早期 step 信号被过度放大
 - **未系统研究**
 
-### 4. Credit 粒度层级
+### 4. Credit 粒度层级（IS 粒度 vs Advantage 粒度）
 
+两种粒度常被混淆，2026-04 compile 明确区分：
+
+**Importance Sampling 粒度**（GRPO 比较 ratios 的单位）
 - Token（GRPO）< Turn（AT²PO）< Sequence（GSPO）
-- [2601-at2po] 的 "turn-level IS + Part A gradient / Part B constant ratio" 设计值得作为通用模板
-- **开放问题**：除了 turn 还有更合理的粒度吗？（如 "语义子段"）
+- [2601-at2po] 的 "turn-level IS + Part A gradient / Part B constant ratio" 是推荐折中
+
+**Advantage 粒度**（reward 如何分配给 tokens / steps / turns）
+- **Token 级** [2604-eapo]：按 entropy 给每个 token 不同 |Ã|
+- **Step 级** [2505-gigpo][2510-salt][2604-ig-search]：按 state-grouping / graph / per-step IG
+- **Turn 级** [2510-igpo][2601-matchtir]：按 turn-IG / bipartite match
+
+**开放问题**：两种粒度**正交**——能否组合 turn-level advantage + token-level entropy 调制？（见 可深入的方向 #7）
 
 ### 5. 无 ground truth 怎么办？
 
@@ -120,6 +144,23 @@ Agentic 场景变 tractable 的关键：
 
 **开放问题**：是否存在"自适应状态等价 + 自适应超参数"的通用机制？若有，可能解锁一大类方法的跨场景迁移。
 
+### 7. IG 的两种设计：时间差 vs 反事实（2026-04 新增）
+
+[2510-igpo] 和 [2604-ig-search] 都用 Information Gain 作 reward，但**测量对象完全不同**：
+
+**[2510-igpo] turn-level temporal-difference IG**
+- $r_t = \pi(a \mid context_t) - \pi(a \mid context_{t-1})$
+- 测"新 turn 带来的理解提升"——**混合 reasoning + querying + retrieval 三种贡献**
+
+**[2604-ig-search] step-level counterfactual IG**
+- $IG_t = \log \pi(a^* \mid real) - \text{avg}_j \log \pi(a^* \mid random_j)$
+- 随机文档来自同 batch 其他题（保长度，剥离相关性）
+- **隔离纯粹的检索贡献**
+
+IG-Search 作者明确批评 IGPO "conflates reasoning, querying, and retrieval within each turn"。但反过来：IGPO 在**无 search 场景**（纯多步推理 QA）仍然适用，IG-Search 强依赖检索步骤才能构造 counterfactual。
+
+两者**正交**——research opportunity: 合并成"turn-level IG × step-level counterfactual IG"双层设计（见 可深入的方向 #8）。
+
 ## 可深入的方向（优先级排序）
 
 1. **IG + self-consistency**：无 GT 时用多次采样一致性作为 IG 代理（IGPO 建议）
@@ -128,6 +169,9 @@ Agentic 场景变 tractable 的关键：
 4. **小模型专属 credit assignment**：IGPO 的 +15.3 暗示小模型有独特需求，值得专门研究
 5. **Self-play golden trace**（MatchTIR 建议）：消除对标注 trace 的依赖
 6. **梯度缩放 × entropy balance**（EMPG × AEPO）：方向相反但可能互补，组合消融值得做
+7. **Token-level × Turn-level credit 组合** [2604-eapo × 2510-igpo/2601-at2po]：EAPO 的 token-entropy 调制 + turn-level IG 正交维度，没人合过
+8. **Turn + Counterfactual IG 双层** [2510-igpo × 2604-ig-search]：IGPO 测整体提升 + IG-Search 测纯检索，叠加可能解决 "conflation" 问题
+9. **Four Quadrant 分析法通用化** [2604-eapo]：polarity × entropy 2×2 能否迁到 step / turn 粒度？如"正确 turn 的高熵 vs 低熵"是否也有类似模式？
 
 ## Related
 

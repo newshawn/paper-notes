@@ -4,6 +4,34 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-04-20] compile | 2 raws → 3 wiki pages updated
+
+- **Raws compiled**: 2604-eapo, 2604-ig-search
+- **Wiki updated**:
+  - `Credit-Assignment-in-Agentic-RL.md`:
+    - 新增 Route 5 "Token-Level Credit"（EAPO）
+    - Route 4 Dense Reward 加 IG-Search 行
+    - Key Claims +4 条（token 非均分 / accuracy+diversity / counterfactual critique IGPO / per-token reward hacking 防护）
+    - Contradiction #4 重构：区分 IS 粒度 vs Advantage 粒度
+    - 新增 Contradiction #7 "IG 的两种设计：时间差 vs 反事实"
+    - 可深入方向 +3 条（#7 token×turn / #8 IGPO×IG-Search / #9 Four Quadrant 通用化）
+  - `Turn-Level-Reward.md`:
+    - 主流设计 #1 重构为 "两种变种" (1a turn-to-turn + 1b counterfactual)
+    - Key Claims +2 条
+    - 新增 Contradiction #6 "Temporal-difference IG vs Counterfactual IG"
+    - 可深入方向 +2 条（IGPO×IG-Search 双层 / counterfactual 推广到非检索）
+  - `Entropy-Guided-Exploration.md`:
+    - 核心观察 + EAPO 关于 softmax gradient 的观察
+    - 新增 用法 5 "Entropy 作为 Token-Level Advantage 调制器"
+    - 核心矛盾表 +EAPO 行（advantage 阶段放大）
+    - 可深入方向 +2 条（EMPG 降权 vs EAPO 放大的调和 / Four Quadrant 迁移）
+- **Wiki created**: 无（Token-Level-Credit 和 Counterfactual-Baseline 只有 1 篇涉及，未达 ≥2 阈值，已登记到 index.md 候选）
+- **Candidates awaiting more papers**:
+  - `Token-Level-Credit`（EAPO 目前仅 1 篇）
+  - `Counterfactual-Baseline`（IG-Search 目前仅 1 篇）
+- **Contradictions recorded**: IGPO vs IG-Search (conflation vs isolation of retrieval contribution) → 形成 Credit-Assignment Wiki #7 和 Turn-Level-Reward Wiki #6 的双重记载
+- **Rationale**: 2 篇都引入新维度——EAPO 把 credit assignment 下探到 token 粒度 + Four Quadrant 分析法；IG-Search 用 counterfactual baseline 对 IGPO 的 turn-IG 构成理论挑战。Wiki 主要新增是"IG 两种设计对立"这个 meta 观察（单看任一篇都看不出来）。
+
 ## [2026-04-20] ingest | 2604-ig-search IG-Search: Step-Level IG for Search-Augmented Reasoning
 
 - **Raw**: Raw/2604-ig-search.md
