@@ -4,6 +4,22 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-04-20] ingest | 2505-autorefine AutoRefine: Search and Refine During Think
+
+- **Raw**: Raw/2505-autorefine.md
+- **PDF**: Raw/pdfs/2505-autorefine.pdf (1.0 MB)
+- **Tags**: #credit-assignment #no-reward-model #tool-use #multi-turn-agent
+- **Wiki touched**: none (two-stage — compile pending)
+- **Notable**: MR-Search / IG-Search 都 cite 它作 baseline；"refine-during-think" 成领域标准起点。复合 reward 的非线性组合（stairstep vs linear）是可迁移的工程 insight
+
+## [2026-04-20] ingest | 2603-mr-search Meta-RL with Self-Reflection for Agentic Search
+
+- **Raw**: Raw/2603-mr-search.md
+- **PDF**: Raw/pdfs/2603-mr-search.pdf (1.1 MB)
+- **Tags**: #credit-assignment #no-reward-model #turn-level-reward #multi-turn-agent #tool-use
+- **Wiki touched**: none (two-stage — compile pending)
+- **Notable**: Allen AI（Nathan Lambert, Noah Smith）；引入 meta-RL + self-reflection 维度——跨 episode 自我校正与 turn-level credit 正交；3B +19.3% rel（vs 7B +9.2%）再次印证小模型从 scaffolding 获益更大的假说
+
 ## [2026-04-20] compile | 2 raws → 3 wiki pages updated
 
 - **Raws compiled**: 2604-eapo, 2604-ig-search

@@ -28,6 +28,7 @@ Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 |---|---|---|---|
 | [2604-ig-search](Raw/2604-ig-search.md) | IG-Search | #credit-assignment #information-gain #step-wise-reward #tool-use | 2026-04-20 |
 | [2604-eapo](Raw/2604-eapo.md) | EAPO | #credit-assignment #entropy #gradient-modulation #token-level-reward | 2026-04-20 |
+| [2603-mr-search](Raw/2603-mr-search.md) | MR-Search | #credit-assignment #turn-level-reward #multi-turn-agent #tool-use | 2026-04-20 |
 | [2602-rlanything](Raw/2602-rlanything.md) | RLAnything | #credit-assignment #reward-model | 2026-04-17 |
 | [2601-matchtir](Raw/2601-matchtir.md) | MatchTIR | #credit-assignment #bipartite-matching | 2026-04-18 |
 | [2601-at2po](Raw/2601-at2po.md) | AT²PO | #turn-level-is #tree-rollout | 2026-04-18 |
@@ -38,6 +39,7 @@ Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 | [2509-treegrpo](Raw/2509-treegrpo.md) | TreeGRPO | #tree-rollout | 2026-04-18 |
 | [2507-arpo](Raw/2507-arpo.md) | ARPO | #entropy #branching | 2026-04-18 |
 | [2505-gigpo](Raw/2505-gigpo.md) | GiGPO | #step-wise-reward #same-state-grouping | 2026-04-18 |
+| [2505-autorefine](Raw/2505-autorefine.md) | AutoRefine | #credit-assignment #tool-use #multi-turn-agent | 2026-04-20 |
 
 ## 主题地图（可深入方向）
 
