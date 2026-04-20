@@ -206,7 +206,7 @@ Group papers by shared tags/concepts.
 For each concept:
 1. Try to find existing Wiki page at `Wiki/<Title-Case-Name>.md` (apply schema.md's naming rule)
 2. **If exists**:
-   - Append new paper's claim to Key Claims section with `[<paper-id>]` prefix
+   - Append new paper's claim to Key Claims section with markdown link citation: `[<paper-id>](../Raw/<paper-id>.md)` （**2026-04-20 起新格式——不用纯方括号 `[paper-id]`，不用 `[[Concept]]` wiki-link**）
    - If claim **contradicts** an existing claim (different methods, opposite direction): append to `## Contradictions / Open Questions` with citations to both Raws — DO NOT overwrite the existing claim
    - Update `[last-updated: YYYY-MM-DD]` header
    - Reconsider `[coverage: ...]` tag based on paper count (per schema.md thresholds)
@@ -214,6 +214,12 @@ For each concept:
    - Check creation threshold from schema.md (default: ≥2 Raws across different papers mention the concept)
    - If threshold met: load `references/wiki-template.md`, create `Wiki/<Title-Case>.md` populated with all papers touching this concept
    - If not met: skip — note in report as "candidate concept, awaiting more papers"
+
+**Link format reference**（always use markdown links, never `[[]]` or bare `[id]`）:
+- Wiki → Raw: `[<paper-id>](../Raw/<paper-id>.md)`
+- Wiki → Wiki: `[Concept](Concept.md)` (same dir)
+- Raw → Wiki: `[Concept](../Wiki/Concept.md)`
+- Raw → Raw: `[<other-id>](<other-id>.md)` (same dir)
 
 ### Step 4: update index.md
 
@@ -278,9 +284,13 @@ If the query was substantive and might be re-asked: offer "Save this answer to `
 
 Run these checks (Bash + Grep):
 
-1. **Broken cross-references**: For each `[[Concept-Name]]` in Wiki/ and Raw/, verify `Wiki/Concept-Name.md` exists.
+1. **Broken cross-references**: For each markdown link `[<text>](<path>)` in Wiki/ and Raw/, verify target file exists. Common patterns to check:
+   - Wiki → Raw: `[id](../Raw/id.md)` — verify `Raw/id.md` exists
+   - Wiki → Wiki: `[Concept](Concept.md)` — verify `Wiki/Concept.md` exists
+   - Raw → Wiki: `[Concept](../Wiki/Concept.md)` — verify `Wiki/Concept.md` exists
+   - **Flag any legacy `[[Concept]]` or bare `[paper-id]` not wrapped as link**——应该已经迁移到 markdown 链接（2026-04-20 起）
 
-2. **Orphan Wiki pages**: For each `Wiki/*.md`, check it is referenced by at least one `Raw/*.md` (via `[paper-id]` or inline mention) or by `index.md`.
+2. **Orphan Wiki pages**: For each `Wiki/*.md`, check it is referenced by at least one `Raw/*.md` (via `[paper-id](paper-id.md)` or inline mention) or by `index.md`.
 
 3. **Stale Raws**: Raws in `Raw/` not referenced by any `Wiki/*.md` `Key Claims`. Check their log.md entries — if ingested but never compiled (log.md has `ingest` but no subsequent `compile` touching that paper-id), flag.
 

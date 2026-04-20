@@ -17,10 +17,10 @@
 
 | 时间 | 方法 | 核心创新 | 改动类型 |
 |---|---|---|---|
-| 2025-05 | [2505-autorefine] | `<refine>` 显式蒸馏步骤 + stairstep dual reward | **协议 + reward shaping** |
-| 2025-10 | [2510-igpo] | Turn-level IG (temporal-difference): `P(a|t) - P(a|t-1)` | **Dense reward 设计** |
-| 2026-03 | [2603-mr-search] | Meta-episode (N=3) + reflection + turn-level RLOO | **训练范式 + algorithm** |
-| 2026-04 | [2604-ig-search] | Step-level IG with counterfactual random docs | **Dense reward 细化** |
+| 2025-05 | [2505-autorefine](../Raw/2505-autorefine.md) | `<refine>` 显式蒸馏步骤 + stairstep dual reward | **协议 + reward shaping** |
+| 2025-10 | [2510-igpo](../Raw/2510-igpo.md) | Turn-level IG (temporal-difference): `P(a|t) - P(a|t-1)` | **Dense reward 设计** |
+| 2026-03 | [2603-mr-search](../Raw/2603-mr-search.md) | Meta-episode (N=3) + reflection + turn-level RLOO | **训练范式 + algorithm** |
+| 2026-04 | [2604-ig-search](../Raw/2604-ig-search.md) | Step-level IG with counterfactual random docs | **Dense reward 细化** |
 
 **共同演进方向**：从"怎么整体训"（AutoRefine 协议）→ "如何细化 credit"（IGPO turn-IG）→ "如何跨 episode 学习"（MR-Search）→ "如何精确定位检索贡献"（IG-Search）。逐步向更细、更精准的 credit assignment 前进。
 
@@ -28,37 +28,37 @@
 
 ### 关于 retrieval-augmented 训练本身
 
-- [2505-autorefine] **显式分离"信息蒸馏"** 是降低 policy 认知负荷的关键——refine 把 600+ tokens 噪声 docs 压到 100-200 tokens 关键 facts，4x 压缩
-- [2505-autorefine] **Refine 和 dual reward 必须合一**——任一单独 → 退回 baseline；两者 synergy 显著
-- [2505-autorefine][2510-igpo][2603-mr-search][2604-ig-search] **Multi-hop 是 search-RL 的主战场**——所有方法的 gain 都在 multi-hop benchmarks（HotpotQA / 2Wiki / Musique / Bamboogle）更大。多跳推理对检索质量的依赖度远高于 single-hop
+- [2505-autorefine](../Raw/2505-autorefine.md) **显式分离"信息蒸馏"** 是降低 policy 认知负荷的关键——refine 把 600+ tokens 噪声 docs 压到 100-200 tokens 关键 facts，4x 压缩
+- [2505-autorefine](../Raw/2505-autorefine.md) **Refine 和 dual reward 必须合一**——任一单独 → 退回 baseline；两者 synergy 显著
+- [2505-autorefine](../Raw/2505-autorefine.md)[2510-igpo](../Raw/2510-igpo.md)[2603-mr-search](../Raw/2603-mr-search.md)[2604-ig-search](../Raw/2604-ig-search.md) **Multi-hop 是 search-RL 的主战场**——所有方法的 gain 都在 multi-hop benchmarks（HotpotQA / 2Wiki / Musique / Bamboogle）更大。多跳推理对检索质量的依赖度远高于 single-hop
 
 ### 关于 credit assignment 设计
 
-- [2505-autorefine] **Stairstep 非线性 reward** (`R_ans if R_ans>0 else 0.1 if R_ret>0`) 显著优于线性加权——避免次要信号干扰主任务
-- [2510-igpo] **IG reward always non-zero** 直接消除 advantage collapse；但 **混合 reasoning + querying + retrieval 三种贡献**
-- [2603-mr-search] **Turn-level RLOO advantage**（critic-free, G-1 leave-one-out）是 search-RL 的工程实用选择；γ=0 ablation 掉 2.2 点实证 discount factor 对 turn-level credit 的必要性
-- [2604-ig-search] **Counterfactual random docs** 隔离纯检索贡献——明确批评 IGPO 的 conflation
-- [2604-ig-search] **Per-token selective modulation**（只调 query tokens + 除以 `|Q_t|`）是防 reward hacking 的巧思
+- [2505-autorefine](../Raw/2505-autorefine.md) **Stairstep 非线性 reward** (`R_ans if R_ans>0 else 0.1 if R_ret>0`) 显著优于线性加权——避免次要信号干扰主任务
+- [2510-igpo](../Raw/2510-igpo.md) **IG reward always non-zero** 直接消除 advantage collapse；但 **混合 reasoning + querying + retrieval 三种贡献**
+- [2603-mr-search](../Raw/2603-mr-search.md) **Turn-level RLOO advantage**（critic-free, G-1 leave-one-out）是 search-RL 的工程实用选择；γ=0 ablation 掉 2.2 点实证 discount factor 对 turn-level credit 的必要性
+- [2604-ig-search](../Raw/2604-ig-search.md) **Counterfactual random docs** 隔离纯检索贡献——明确批评 IGPO 的 conflation
+- [2604-ig-search](../Raw/2604-ig-search.md) **Per-token selective modulation**（只调 query tokens + 除以 `|Q_t|`）是防 reward hacking 的巧思
 
 ### 关于规模与 scaffolding
 
-- [2510-igpo] **3B 小模型 +15.3 vs 7B +6.8**（比值 2.3×）
-- [2603-mr-search] **3B +19.3% rel vs 7B +9.2% rel**（比值 2.1×）
-- **两个独立实验一致观察小模型获益显著大**——search-RL 场景下 "小模型 scaffolding 假说"成立。详见 [[Credit-Assignment-in-Agentic-RL]] Contradiction #8
+- [2510-igpo](../Raw/2510-igpo.md) **3B 小模型 +15.3 vs 7B +6.8**（比值 2.3×）
+- [2603-mr-search](../Raw/2603-mr-search.md) **3B +19.3% rel vs 7B +9.2% rel**（比值 2.1×）
+- **两个独立实验一致观察小模型获益显著大**——search-RL 场景下 "小模型 scaffolding 假说"成立。详见 [Credit-Assignment-in-Agentic-RL](Credit-Assignment-in-Agentic-RL.md) Contradiction #8
 
 ### Baseline 传承
 
-- [2505-autorefine] 是 [2603-mr-search] 和 [2604-ig-search] 的 baseline——**已成领域标准起点**
-- [2510-igpo] 的 IG 思路被 [2604-ig-search] 继承并批判性改造
+- [2505-autorefine](../Raw/2505-autorefine.md) 是 [2603-mr-search](../Raw/2603-mr-search.md) 和 [2604-ig-search](../Raw/2604-ig-search.md) 的 baseline——**已成领域标准起点**
+- [2510-igpo](../Raw/2510-igpo.md) 的 IG 思路被 [2604-ig-search](../Raw/2604-ig-search.md) 继承并批判性改造
 
 ## Contradictions / Open Questions
 
 ### 1. IG 的两种设计：temporal-difference vs counterfactual
 
-见 [[Credit-Assignment-in-Agentic-RL]] Contradiction #7。
+见 [Credit-Assignment-in-Agentic-RL](Credit-Assignment-in-Agentic-RL.md) Contradiction #7。
 
-- **[2510-igpo] turn-to-turn IG**：`P(a|context_t) - P(a|context_{t-1})`——混合所有贡献
-- **[2604-ig-search] counterfactual IG**：`log P(a|real) - avg log P(a|random)`——只隔离检索
+- **[2510-igpo](../Raw/2510-igpo.md) turn-to-turn IG**：`P(a|context_t) - P(a|context_{t-1})`——混合所有贡献
+- **[2604-ig-search](../Raw/2604-ig-search.md) counterfactual IG**：`log P(a|real) - avg log P(a|random)`——只隔离检索
 
 IG-Search 作者批评 IGPO "conflates reasoning, querying, retrieval"。但 IGPO 在 **无 search 场景**（多步推理 QA without retrieval）仍然适用，IG-Search 强依赖 counterfactual 所以必须有 search step。
 
@@ -89,14 +89,14 @@ IG-Search 作者批评 IGPO "conflates reasoning, querying, retrieval"。但 IGP
 
 ### 4. Reward hacking 的空间
 
-- [2505-autorefine] `R_ret`（gold answer 在 refine 里出现）可能被 gaming——policy 学会硬塞 gold-like phrase（作者未讨论）
-- [2604-ig-search] 除以 `|Q_t|` 部分缓解 query-length hacking，但**还有"反向 gaming"风险**：policy 可能学生成特别短但不精准的 query 骗高 IG ratio
+- [2505-autorefine](../Raw/2505-autorefine.md) `R_ret`（gold answer 在 refine 里出现）可能被 gaming——policy 学会硬塞 gold-like phrase（作者未讨论）
+- [2604-ig-search](../Raw/2604-ig-search.md) 除以 `|Q_t|` 部分缓解 query-length hacking，但**还有"反向 gaming"风险**：policy 可能学生成特别短但不精准的 query 骗高 IG ratio
 
 **Open**: retrieval 场景的通用反 gaming 方法？
 
 ## 可深入的方向
 
-1. **IGPO × IG-Search 双层 IG**（[[Credit-Assignment-in-Agentic-RL]] #8）：temporal-difference IG（综合贡献）+ counterfactual IG（纯检索）—— 二者正交
+1. **IGPO × IG-Search 双层 IG**（[Credit-Assignment-in-Agentic-RL](Credit-Assignment-in-Agentic-RL.md) #8）：temporal-difference IG（综合贡献）+ counterfactual IG（纯检索）—— 二者正交
 2. **Meta-episode × dense IG** [2603-mr-search × 2510-igpo/2604-ig-search]：跨 attempt reflection + 单 episode dense reward → 双轴 credit
 3. **Refine × counterfactual IG** [2505-autorefine × 2604-ig-search]：在 refine 块后算 IG（真 refine vs 空 refine vs 随机 refine）——更精细衡量 refine 质量
 4. **Small model × search-RL scaffolding**（IGPO 3B +15.3, MR-Search 3B +19.3%）：系统研究 1B/3B/7B/13B/30B 的 CA 技术收益曲线。**本领域最未开发**且**最有论文 potential** 的方向
@@ -106,13 +106,13 @@ IG-Search 作者批评 IGPO "conflates reasoning, querying, retrieval"。但 IGP
 
 ## 和本 wiki 其他方向的接口
 
-- **→ Entropy-based 路线（[[Entropy-Guided-Exploration]]）**：目前 search-RL 没人用 entropy-guided branching（ARPO/AEPO/AT²PO），可能因为 search tool call 本身就是 entropy spike 点，显式 branching 策略未必受益——值得 ablation
+- **→ Entropy-based 路线（[Entropy-Guided-Exploration](Entropy-Guided-Exploration.md)）**：目前 search-RL 没人用 entropy-guided branching（ARPO/AEPO/AT²PO），可能因为 search tool call 本身就是 entropy spike 点，显式 branching 策略未必受益——值得 ablation
 - **→ Tree-based rollout**（TreeGRPO / AT²PO）：search 场景天然有分支（不同 query 走不同检索路径），但**搜索 RL 没人做显式 tree rollout**——是个空白
 - **→ Graph-based**（SALT）：不同 rollout 可能撞上相似 retrieved context → SALT 的 DAG 合并在 search 场景值得试
 
 ## Related
 
-- [[Credit-Assignment-in-Agentic-RL]]
-- [[Turn-Level-Reward]]
-- [[Entropy-Guided-Exploration]]
-- [[Small-Model-Scaffolding]]（待建，已 ≥3 篇观察）
+- [Credit-Assignment-in-Agentic-RL](Credit-Assignment-in-Agentic-RL.md)
+- [Turn-Level-Reward](Turn-Level-Reward.md)
+- [Entropy-Guided-Exploration](Entropy-Guided-Exploration.md)
+- [Small-Model-Scaffolding](Small-Model-Scaffolding.md)（待建，已 ≥3 篇观察）

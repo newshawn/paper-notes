@@ -81,8 +81,8 @@ $$R_t^{(i)} = \sum_{k=t}^{T} \gamma^{k-t} r_k^{(i)}$$
 - 折扣 γ 设置（论文未详细消融）
 
 ## Superseded by
-- [2601-at2po] 显式树结构 + turn-level IS，更 principled
+- [2601-at2po](2601-at2po.md) 显式树结构 + turn-level IS，更 principled
 
 ## Related Wiki
-- [[Credit-Assignment-in-Agentic-RL]]
-- [[Tree-Based-Rollout]]
+- [Credit-Assignment-in-Agentic-RL](../Wiki/Credit-Assignment-in-Agentic-RL.md)
+- [Tree-Based-Rollout](../Wiki/Tree-Based-Rollout.md)

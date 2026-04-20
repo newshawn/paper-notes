@@ -89,5 +89,5 @@ $$A = \alpha \cdot A_{\text{turn}} + (1-\alpha) \cdot A_{\text{trajectory}}$$
 4. 三个维度的加权如何调？
 
 ## Related Wiki
-- [[Credit-Assignment-in-Agentic-RL]]
-- [[Turn-Level-Reward]]
+- [Credit-Assignment-in-Agentic-RL](../Wiki/Credit-Assignment-in-Agentic-RL.md)
+- [Turn-Level-Reward](../Wiki/Turn-Level-Reward.md)

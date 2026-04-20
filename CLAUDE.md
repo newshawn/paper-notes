@@ -40,6 +40,19 @@ Skill 详细工作流见 [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/pa
 - `Wiki/<Title-Case>.md` — 例：`Credit-Assignment-in-Agentic-RL.md`
 - `log.md` **顶部追加**（newest first），格式见 [`plugin/skills/paper-notes/references/log-format.md`](plugin/skills/paper-notes/references/log-format.md)
 
+## 链接格式（2026-04-20 起）
+
+**全部用 markdown 链接格式，GitHub 可渲染为可点链接**：
+
+- **Wiki → Raw**：`[<paper-id>](../Raw/<paper-id>.md)` — 例：`[2510-igpo](../Raw/2510-igpo.md)`
+- **Wiki → Wiki**（同目录）：`[Concept](Concept.md)` — 例：`[Turn-Level-Reward](Turn-Level-Reward.md)`
+- **Raw → Wiki**：`[Concept](../Wiki/Concept.md)`
+- **Raw → Raw**（同目录）：`[<other-id>](<other-id>.md)`
+
+**不要用**：
+- ❌ 纯方括号 `[2510-igpo]`（不是链接，点不动）
+- ❌ Wiki-link `[[Concept-Name]]`（GitHub 不渲染）
+
 ## 绝对不做
 
 - ❌ 修改 `Wiki/` 里现有的 `Key Claims` 段落（所有新信息走 `Contradictions` 或追加）

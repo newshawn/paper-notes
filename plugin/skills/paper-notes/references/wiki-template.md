@@ -14,21 +14,21 @@
 
 | 方法 | 核心机制 | 特点 |
 |---|---|---|
-| [2510-igpo] | IG 作 turn reward | 无需外部 RM，always non-zero |
-| [2601-matchtir] | 二部图匹配 | 依赖 golden trace |
+| [2510-igpo](../Raw/2510-igpo.md) | IG 作 turn reward | 无需外部 RM，always non-zero |
+| [2601-matchtir](../Raw/2601-matchtir.md) | 二部图匹配 | 依赖 golden trace |
 >
 
 ## Key Claims（跨论文整合）
 
-- [<paper-id>] <具体主张 + 支撑数字>
-- [<paper-id>] <另一主张>
+- [<paper-id>](../Raw/<paper-id>.md) <具体主张 + 支撑数字>
+- [<paper-id>](../Raw/<paper-id>.md) <另一主张>
 
 ## Contradictions / Open Questions
 
 <论文间的冲突。**不直接覆盖**原有 claim，在这里记录两派观点并引用 Raws。
 示例：
-- [2507-arpo] 主张高 entropy = 值得探索 → 多采
-- [2509-empg] 主张高 entropy = 梯度不稳 → 降权
+- [2507-arpo](../Raw/2507-arpo.md) 主张高 entropy = 值得探索 → 多采
+- [2509-empg](../Raw/2509-empg.md) 主张高 entropy = 梯度不稳 → 降权
 - 可能的调和：两者适用不同阶段（采样 vs 更新）
 >
 
@@ -38,5 +38,5 @@
 
 ## Related
 
-- [[Concept-A]]
-- [[Concept-B]]
+- [Concept-A](Concept-A.md)
+- [Concept-B](Concept-B.md)

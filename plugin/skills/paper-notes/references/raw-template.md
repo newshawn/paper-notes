@@ -113,5 +113,5 @@
 
 ## Related Wiki
 
-- [[Concept-A]]
-- [[Concept-B]]
+- [Concept-A](../Wiki/Concept-A.md)
+- [Concept-B](../Wiki/Concept-B.md)

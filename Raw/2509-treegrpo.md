@@ -83,9 +83,9 @@ Q_A
 - Scaling（更深树）的性能表现？
 
 ## Superseded by
-- [2601-at2po] Entropy-guided tree expansion + turn-level IS + branching penalty
-- [2510-aepo] Adaptive sampling budget + gradient preservation
+- [2601-at2po](2601-at2po.md) Entropy-guided tree expansion + turn-level IS + branching penalty
+- [2510-aepo](2510-aepo.md) Adaptive sampling budget + gradient preservation
 
 ## Related Wiki
-- [[Tree-Based-Rollout]]
-- [[Credit-Assignment-in-Agentic-RL]]
+- [Tree-Based-Rollout](../Wiki/Tree-Based-Rollout.md)
+- [Credit-Assignment-in-Agentic-RL](../Wiki/Credit-Assignment-in-Agentic-RL.md)

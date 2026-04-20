@@ -11,15 +11,15 @@
 
 Trajectory-level reward 的三个病：
 
-1. **Advantage collapse** [2510-igpo]：所有 rollout 得同分 → 梯度为零
-2. **Credit entanglement** [2510-salt]：有益和有害 action 在同一 return 下纠缠
-3. **误伤有效 action** [2507-arpo]：Tool call 2 失败拖累 tool call 1 的合理 query
+1. **Advantage collapse** [2510-igpo](../Raw/2510-igpo.md)：所有 rollout 得同分 → 梯度为零
+2. **Credit entanglement** [2510-salt](../Raw/2510-salt.md)：有益和有害 action 在同一 return 下纠缠
+3. **误伤有效 action** [2507-arpo](../Raw/2507-arpo.md)：Tool call 2 失败拖累 tool call 1 的合理 query
 
 ## 主流设计
 
 ### 1. Information Gain（两种变种）
 
-**1a. Turn-to-turn temporal-difference** [2510-igpo]
+**1a. Turn-to-turn temporal-difference** [2510-igpo](../Raw/2510-igpo.md)
 
 $$r_{i,t} = \pi_\theta(a \mid q, o_{i,\leq t}) - \pi_\theta(a \mid q, o_{i,\leq t-1})$$
 
@@ -28,7 +28,7 @@ $$r_{i,t} = \pi_\theta(a \mid q, o_{i,\leq t}) - \pi_\theta(a \mid q, o_{i,\leq 
 - 无需外部 RM、无需 MC 采样
 - ⚠️ 混合 reasoning + querying + retrieval 三种贡献
 
-**1b. Counterfactual baseline** [2604-ig-search]
+**1b. Counterfactual baseline** [2604-ig-search](../Raw/2604-ig-search.md)
 
 $$IG_t = \log \pi(a^* \mid \mathcal{C}_t^{\text{real}}) - \frac{1}{N}\sum_j \log \pi(a^* \mid \mathcal{C}_t^{\text{rand},j})$$
 
@@ -37,13 +37,13 @@ $$IG_t = \log \pi(a^* \mid \mathcal{C}_t^{\text{real}}) - \frac{1}{N}\sum_j \log
 - 除以 `|Q_t|` 防刷长 query 骗高 IG
 - ✨ **隔离纯粹的检索贡献**——明确批评 IGPO "conflates"
 
-### 2. Step-level Grouping [2505-gigpo]
+### 2. Step-level Grouping [2505-gigpo](../Raw/2505-gigpo.md)
 
 - 不同 trajectory 在相同状态 $\tilde{s}$ 下收集 (action, return) 对
 - 在同状态 group 内对 return 做标准化 → step advantage
 - 依赖**状态可识别**（文字环境、网页、文件系统）
 
-### 3. Tree Value Propagation [2601-at2po] [2509-treegrpo]
+### 3. Tree Value Propagation [2601-at2po](../Raw/2601-at2po.md) [2509-treegrpo](../Raw/2509-treegrpo.md)
 
 - 构造显式树，leaf 的 outcome reward 沿树回传
 - AT²PO 的聚合：
@@ -52,13 +52,13 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 
 - 按熵加权而非均值，保留探索信号
 
-### 4. Trajectory Graph [2510-salt]
+### 4. Trajectory Graph [2510-salt](../Raw/2510-salt.md)
 
 - 比 tree 更一般：不同轨迹的中间状态可**合并**成 DAG
 - 在 graph 上量化 step quality
 - Plug-and-play，不改 rollout
 
-### 5. Bipartite Matching [2601-matchtir]
+### 5. Bipartite Matching [2601-matchtir](../Raw/2601-matchtir.md)
 
 - Predicted turn ↔ golden trace step 做最优匹配
 - KM（硬匹配）或 OT（软匹配）派生 turn reward
@@ -66,26 +66,26 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 
 ## Key Claims
 
-- [2510-igpo] **3B 小模型** 用 turn-level dense reward 提升 +15.3（vs 7B 的 +6.8）——小模型更依赖 turn-level 信号
-- [2601-at2po] Turn-level IS 是 token-level (GRPO) 和 sequence-level (GSPO) 之间的正确粒度
-- [2602-rlanything] 当 RM 足够好时，**只用 step reward（不用 outcome）效果更好**——turn-level 信号足以定义任务
-- [2604-ig-search] **Counterfactual IG** 区分"检索贡献" vs IGPO 的"turn-level 综合提升"——两种 IG 正交可合并
-- [2604-ig-search] **Per-token selective modulation** 是防 reward hacking 的巧思——只调 query tokens 避免污染 reasoning
-- [2603-mr-search] **Turn-level RLOO advantage** 是 critic-free 的工程实用选择——G-1 leave-one-out 归一化 + γ=1 discount；γ=0 ablation 掉 2.2 点实证 turn-level credit 必要
-- [2603-mr-search] 小模型获益显著大（3B +19.3% vs 7B +9.2%）——再次印证 **小模型 scaffolding 假说**（详见 [[Credit-Assignment-in-Agentic-RL]] Contradictions #8）
+- [2510-igpo](../Raw/2510-igpo.md) **3B 小模型** 用 turn-level dense reward 提升 +15.3（vs 7B 的 +6.8）——小模型更依赖 turn-level 信号
+- [2601-at2po](../Raw/2601-at2po.md) Turn-level IS 是 token-level (GRPO) 和 sequence-level (GSPO) 之间的正确粒度
+- [2602-rlanything](../Raw/2602-rlanything.md) 当 RM 足够好时，**只用 step reward（不用 outcome）效果更好**——turn-level 信号足以定义任务
+- [2604-ig-search](../Raw/2604-ig-search.md) **Counterfactual IG** 区分"检索贡献" vs IGPO 的"turn-level 综合提升"——两种 IG 正交可合并
+- [2604-ig-search](../Raw/2604-ig-search.md) **Per-token selective modulation** 是防 reward hacking 的巧思——只调 query tokens 避免污染 reasoning
+- [2603-mr-search](../Raw/2603-mr-search.md) **Turn-level RLOO advantage** 是 critic-free 的工程实用选择——G-1 leave-one-out 归一化 + γ=1 discount；γ=0 ablation 掉 2.2 点实证 turn-level credit 必要
+- [2603-mr-search](../Raw/2603-mr-search.md) 小模型获益显著大（3B +19.3% vs 7B +9.2%）——再次印证 **小模型 scaffolding 假说**（详见 [Credit-Assignment-in-Agentic-RL](Credit-Assignment-in-Agentic-RL.md) Contradictions #8）
 
 ## Contradictions / Open Questions
 
 ### 1. "自评"的合法性
 
-- [2510-igpo] 用 policy 自己算 $P(a \mid \text{context})$ 作 reward
+- [2510-igpo](../Raw/2510-igpo.md) 用 policy 自己算 $P(a \mid \text{context})$ 作 reward
 - 担忧：policy 跑偏时 IG 信号自欺欺人
-- 反论：[2602-rlanything] 的 RM 与 policy 联合优化证明"自监督闭环"可行
+- 反论：[2602-rlanything](../Raw/2602-rlanything.md) 的 RM 与 policy 联合优化证明"自监督闭环"可行
 - 开放问题：边界在哪？什么时候会坍缩到退化解？
 
 ### 2. Turn 粒度是否永远合理
 
-- [2601-at2po] 证明 turn > token + turn > sequence（在 QA 场景）
+- [2601-at2po](../Raw/2601-at2po.md) 证明 turn > token + turn > sequence（在 QA 场景）
 - 但 turn 自身定义依赖任务：QA 的 turn = "一次搜索+观察"，coding 的 turn = ?
 - [2601-at2po retrofit 观察] **在非 QA 任务上"turn" 的自然边界模糊**——GUI / embodied / long-form 写作没有天然 turn 划分，需要人工定义，削弱了方法的通用性
 - 开放问题：有没有比 turn 更合理的粒度？如"语义子段"？
@@ -102,20 +102,20 @@ $$V_n = \sum_c w_c V_c, \quad w_c = \frac{H(c)}{\sum H(c')}$$
 
 ### 4. Long-horizon 的 γ
 
-- [2510-igpo] 默认 γ=1
-- [2505-gigpo] 使用 γ<1
+- [2510-igpo](../Raw/2510-igpo.md) 默认 γ=1
+- [2505-gigpo](../Raw/2505-gigpo.md) 使用 γ<1
 - 长轨迹（60 步）下 γ=1 让早期 step 信号被过度放大
 - 开放问题：γ 的任务自适应策略
 
 ### 5. IG 在长答案下的数值稳定性（retrofit 新增）
 
-- [2510-igpo] 的 IG reward 依赖 $\pi_\theta(a \mid \text{context})$ —— GT 答案长度越长，概率越小（token 级乘积），IG 差分可能被浮点噪声淹没
+- [2510-igpo](../Raw/2510-igpo.md) 的 IG reward 依赖 $\pi_\theta(a \mid \text{context})$ —— GT 答案长度越长，概率越小（token 级乘积），IG 差分可能被浮点噪声淹没
 - QA 场景答案多为 short span，暂未暴露；但开放生成 / 长回答场景风险明显
 - **开放问题**：对长答案是否应使用 log-prob 差而非 prob 差？或按长度归一化？
 
 ### 6. Temporal-difference IG vs Counterfactual IG（2026-04 新增）
 
-[2510-igpo] 的 IG 是 `P(a|turn_t) - P(a|turn_{t-1})`（时间差）；[2604-ig-search] 的 IG 是 `P(a|real docs) - P(a|random docs)`（真假差）。**测量的东西不一样**：
+[2510-igpo](../Raw/2510-igpo.md) 的 IG 是 `P(a|turn_t) - P(a|turn_{t-1})`（时间差）；[2604-ig-search](../Raw/2604-ig-search.md) 的 IG 是 `P(a|real docs) - P(a|random docs)`（真假差）。**测量的东西不一样**：
 - IGPO：新 turn（含新 reasoning + 新 query + 新 retrieval）的**综合贡献**
 - IG-Search：**纯粹的检索质量**（控制 reasoning 和 query 长度）
 
@@ -144,8 +144,8 @@ IG-Search 作者批评 IGPO "conflates reasoning, querying, and retrieval"——
 
 ## Related
 
-- [[Credit-Assignment-in-Agentic-RL]]
-- [[Entropy-Guided-Exploration]]
-- [[Search-Augmented-RL]] — 搜索 RL 生态，多种 turn-level / step-level 实现
-- [[Tree-Based-Rollout]]（待建）
-- [[Advantage-Collapse]]（待建）
+- [Credit-Assignment-in-Agentic-RL](Credit-Assignment-in-Agentic-RL.md)
+- [Entropy-Guided-Exploration](Entropy-Guided-Exploration.md)
+- [Search-Augmented-RL](Search-Augmented-RL.md) — 搜索 RL 生态，多种 turn-level / step-level 实现
+- [Tree-Based-Rollout](Tree-Based-Rollout.md)（待建）
+- [Advantage-Collapse](Advantage-Collapse.md)（待建）

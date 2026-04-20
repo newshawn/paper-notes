@@ -78,16 +78,18 @@ README.md
 <一句话定义>
 
 ## Key Claims
-- [<paper-id>] 主要主张
-- [<paper-id>] 另一主张
+- [<paper-id>](../Raw/<paper-id>.md) 主要主张
+- [<paper-id>](../Raw/<paper-id>.md) 另一主张
 
 ## Contradictions / Open Questions
 <论文间冲突和未解问题>
 
 ## Related
-- [[Concept-A]]
-- [[Concept-B]]
+- [Concept-A](Concept-A.md)
+- [Concept-B](Concept-B.md)
 ```
+
+> **链接格式**（2026-04-20 起）：**Wiki → Raw** 用 `[<paper-id>](../Raw/<paper-id>.md)`；**Wiki → Wiki** 用 `[Concept](Concept.md)`；**Raw → Wiki** 用 `[Concept](../Wiki/Concept.md)`。弃用之前的 `[paper-id]` 纯方括号和 `[[Concept]]` wiki-link 格式——它们在 GitHub 上不渲染。
 
 **Coverage 标签含义**：
 - `high`：≥3 篇论文覆盖，主流方法明确，结论稳定
@@ -140,7 +142,7 @@ Limitation + 值得深入的方向
 如有后续论文改进本工作 [<new-paper-id>]
 
 ## Related Wiki
-- [[Concept-A]]
+- [Concept-A](../Wiki/Concept-A.md)
 ```
 
 **5 个理解型元素的设计意图**：
@@ -212,7 +214,7 @@ Limitation + 值得深入的方向
 2. `compile` 时，grep 所有标签概念，更新相关 Wiki 页
 3. 当新论文与既有 Wiki 结论冲突，**不直接覆盖**——在 `## Contradictions / Open Questions` 里追加，引用两篇 Raw
 4. 新概念首次出现 ≥2 次（在不同 Raw 里）才建 Wiki 页，避免噪声
-5. Wiki 页引用 Raw 时用 `[<paper-id>]` 格式，方便溯源
+5. Wiki 页引用 Raw 时用 `[<paper-id>](../Raw/<paper-id>.md)` markdown 链接格式（2026-04-20 起）；Wiki 之间用 `[Concept](Concept.md)`；Raw → Wiki 用 `[Concept](../Wiki/Concept.md)`——GitHub 上可点，Obsidian 也支持。**不要**用纯方括号 `[paper-id]` 或 `[[Concept]]` wiki-link 格式
 6. 相同方法的改进论文，在前作 Raw 笔记末尾 append `## Superseded by: [<new-paper-id>]`
 7. 每次 compile 后更新 `index.md` 的 coverage 标签和 last-updated
 8. 每次 ingest / compile 在 `log.md` 追加一行，格式见 log.md 头部说明

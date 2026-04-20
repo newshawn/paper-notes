@@ -157,5 +157,5 @@ Multi-hop 特别强：
   - 非 search 场景迁移：code agent 的 refine，GUI agent 的 refine
 
 ## Related Wiki
-- [[Credit-Assignment-in-Agentic-RL]]
-- [[Turn-Level-Reward]]
+- [Credit-Assignment-in-Agentic-RL](../Wiki/Credit-Assignment-in-Agentic-RL.md)
+- [Turn-Level-Reward](../Wiki/Turn-Level-Reward.md)

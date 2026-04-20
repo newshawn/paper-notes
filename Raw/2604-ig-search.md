@@ -50,13 +50,13 @@ $$\tilde{A}_{i,p} = \hat{A}_i + \alpha \cdot \frac{\tilde{IG}_t}{|\mathcal{Q}_t|
 
 ### 🧬 Delta from IGPO / MR-Search / GiGPO
 
-- **vs IGPO [2510-igpo]**：
+- **vs IGPO [2510-igpo](2510-igpo.md)**：
   - IGPO 是 **turn-level IG**：$\pi(a|context_t) - \pi(a|context_{t-1})$（连续 turn 的 prob 差）
   - IG-Search 是 **step-level IG with counterfactual**：每个 search step 跟"随机文档对照组"比
   - **作者批评 IGPO** "conflates reasoning, querying, and retrieval"——IGPO 混了三种贡献源；IG-Search 用 random docs **分离出检索贡献**
   - Appendix J 承诺 cross-protocol 对比（未在提供内容中显示）
 - **vs MR-Search（2025 最强 trajectory baseline）**：保留 trajectory reward，新增 step-level IG 信号
-- **vs GiGPO [2505-gigpo]**：GiGPO 用 state recurrence 聚类，要求相同状态；IG-Search 不要求状态等价，**用文档 counterfactual 替代**——multi-hop 场景 IG-Search 赢 6/7（GiGPO 只在 Bamboogle single-hop 上胜 0.641 vs 0.424）
+- **vs GiGPO [2505-gigpo](2505-gigpo.md)**：GiGPO 用 state recurrence 聚类，要求相同状态；IG-Search 不要求状态等价，**用文档 counterfactual 替代**——multi-hop 场景 IG-Search 赢 6/7（GiGPO 只在 Bamboogle single-hop 上胜 0.641 vs 0.424）
 
 ### 流程示例
 
@@ -129,7 +129,7 @@ Qwen2.5-7B (Table 3)：IG-Search-Instruct **0.479** (+1.9 vs MR-Search 0.460)
 
 结合本 wiki 的 Agentic RL Credit Assignment 方向：
 
-1. **Counterfactual baseline 是 IG 的好思路**：对比 [2510-igpo] 的 turn-level IG（连续 turn 的 prob 差）——**两种 IG 测的是不同的事**：
+1. **Counterfactual baseline 是 IG 的好思路**：对比 [2510-igpo](2510-igpo.md) 的 turn-level IG（连续 turn 的 prob 差）——**两种 IG 测的是不同的事**：
    - IGPO：新 context 带来多少"整体理解提升"（混了推理 + 检索）
    - IG-Search：检索本身贡献多少（纯粹信息增益）
    - **二者正交，可合并**——turn-level IG + step-level counterfactual IG 双层设计，**目前无人做**
@@ -155,5 +155,5 @@ Qwen2.5-7B (Table 3)：IG-Search-Instruct **0.479** (+1.9 vs MR-Search 0.460)
   - 非 search 场景的 counterfactual baseline 设计（如 tool-use 一般场景：counterfactual tool outputs？）
 
 ## Related Wiki
-- [[Credit-Assignment-in-Agentic-RL]]
-- [[Turn-Level-Reward]]
+- [Credit-Assignment-in-Agentic-RL](../Wiki/Credit-Assignment-in-Agentic-RL.md)
+- [Turn-Level-Reward](../Wiki/Turn-Level-Reward.md)

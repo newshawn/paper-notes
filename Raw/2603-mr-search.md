@@ -114,7 +114,7 @@ Q (Musique): "X 公司 CEO 的母校和 Y 公司 CEO 的母校在同一个州吗
 
 **意外发现**：
 - γ=0 vs γ=1: **-2.2 points** —— turn-level credit assignment 的必要性实证
-- 小模型获益 > 大模型（+19.3 vs +9.2）——与 [2510-igpo] 的 3B +15.3 观察一致：小模型更依赖显式 scaffolding
+- 小模型获益 > 大模型（+19.3 vs +9.2）——与 [2510-igpo](2510-igpo.md) 的 3B +15.3 观察一致：小模型更依赖显式 scaffolding
 - step-level variant 48.6（比默认 46.0 还高）——细粒度可能更优
 
 ## Takeaway
@@ -146,5 +146,5 @@ Q (Musique): "X 公司 CEO 的母校和 Y 公司 CEO 的母校在同一个州吗
   - 小模型专属 CA 技术栈系统研究（结合 IGPO/MR-Search/EAPO）
 
 ## Related Wiki
-- [[Credit-Assignment-in-Agentic-RL]]
-- [[Turn-Level-Reward]]
+- [Credit-Assignment-in-Agentic-RL](../Wiki/Credit-Assignment-in-Agentic-RL.md)
+- [Turn-Level-Reward](../Wiki/Turn-Level-Reward.md)
