@@ -287,16 +287,67 @@ cd ~/Documents/PaperNotes    # 必须在 wiki root（或子目录）里才能用
 
 二者接口不同但**底层是同一个 SKILL.md**——生成的 Raw / Wiki 内容完全一致。
 
+## Plugin 安装（方式 B 需要；方式 A 免装）
+
+本 repo 既是 wiki 内容也是 plugin 发布源——`.claude-plugin/` + `plugin/` 目录是给 Claude Code 装 plugin 用的，对读 wiki 的人可以忽略。
+
+### 快速安装（任何设备：Mac / Linux / Windows WSL）
+
+```bash
+# 1. Clone wiki（包含 plugin 源）
+git clone https://github.com/newshawn/paper-notes ~/Documents/PaperNotes
+cd ~/Documents/PaperNotes
+```
+
+然后在 Claude Code 里跑两条命令：
+
+```
+/plugin marketplace add newshawn/paper-notes
+/plugin install paper-notes@paper-notes
+```
+
+重启 Claude Code，`/paper-notes:` 开头的 4 个命令就可用。
+
+### 或者手改 `~/.claude/settings.json`
+
+```json
+"enabledPlugins": {
+  "paper-notes@paper-notes": true
+},
+"extraKnownMarketplaces": {
+  "paper-notes": {
+    "source": {
+      "source": "github",
+      "repo": "newshawn/paper-notes",
+      "sparsePaths": [".claude-plugin", "plugin"]
+    }
+  }
+}
+```
+
+`sparsePaths` 让 Claude Code **只拉 plugin 相关目录**，不 clone 整个 wiki 内容（节省磁盘）。
+
+### 验证
+
+重启 Claude Code → `/plugin list` 应看到 `paper-notes v0.1.x`；`/paper-notes:` 开头能 autocomplete 到 4 个命令。
+
+### 详细 plugin 文档
+
+见 [`plugin/README.md`](plugin/README.md) —— 含 CHANGELOG、Roadmap、全流程 pipeline 图。
+
 ## 目录结构
 
 ```
-Raw/           每篇论文的原始 takeaway（append-only，10 篇已有 + 新 ingest）
-Raw/pdfs/      对应 PDF 原文
-Wiki/          跨论文整合的概念页（AI 维护，会被改写）
-attachments/   图片、图表
-schema.md      知识库宪法：研究方向 + 组织规则
-index.md       目录：所有 Wiki 概念页 + Raw 时间线
-log.md         时间线：每次 ingest / compile / lint 的记录（append-only）
+Raw/                每篇论文的原始 takeaway（append-only，10 篇已有 + 新 ingest）
+Raw/pdfs/           对应 PDF 原文
+Wiki/               跨论文整合的概念页（AI 维护，会被改写）
+attachments/        图片、图表
+schema.md           知识库宪法：研究方向 + 组织规则
+index.md            目录：所有 Wiki 概念页 + Raw 时间线
+log.md              时间线：每次 ingest / compile / lint 的记录（append-only）
+.claude-plugin/     Claude Code marketplace 元数据（装 plugin 时用）
+plugin/             Plugin 源：commands / skills / hooks / scripts
+README.md           本文件
 ```
 
 ## Raw 笔记格式

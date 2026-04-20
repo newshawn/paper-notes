@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "paper-notes",
+  "description": "Marketplace bundled in the paper-notes repo — distributes the paper-notes plugin (LLM Wiki for academic paper notes).",
+  "owner": {
+    "name": "newshawn"
+  },
+  "plugins": [
+    {
+      "name": "paper-notes",
+      "description": "LLM Wiki for academic paper notes (Karpathy pattern). Two-stage ingest/compile workflow.",
+      "author": {
+        "name": "newshawn"
+      },
+      "source": "./plugin",
+      "category": "productivity",
+      "homepage": "https://github.com/newshawn/paper-notes"
+    }
+  ]
+}
