@@ -3,32 +3,33 @@
 > 本文件定义 PaperNotes 知识库的覆盖范围、结构约定和维护规则。
 > 所有 Wiki 整合决策以本文件为准。
 
+> **📝 模板说明**
+> 这是一份空 schema 模板，给想用 paper-notes 模式做自己领域的人使用。
+> 用法：`cp docs/schema-template.md schema.md`，然后填写标了 `[🔴 你的领域定制]` 的 section。`[🟢 通用 · 照搬]` 的 section 建议保持原样。
+> 填完后删除本说明段落。
+
 ## 研究方向 `[🔴 你的领域定制]`
 
-### 主方向：Agentic RL 中的 Credit Assignment
+### 主方向：<填你的领域，例如 "LLM Safety 中的 Jailbreak Defense" / "CV 中的 Video Generation 一致性" / "肠道菌群与免疫调节">
 
-训练 LLM Agent 时，如何把 trajectory-level 的稀疏奖励拆成 turn/step-level 的密集监督信号。
+<用一段话说明：这个领域在解决什么问题？为什么重要？你个人关注的核心问题是什么？>
 
-**核心信念**：传统 PRM 在 CoT 上难做（自然语言推理边界模糊、需人工标注、主观性强）；但 Agent 每一步是**可执行的 action**（工具调用、代码、请求），有明确语义边界和环境反馈——让"给每步打分"变 tractable。
+**核心信念**：<这个领域里你认为"应该"怎么做、或现状哪里不对？一句话立场。>
 
 ### 关注的子问题
 
-1. **Reward Model 路线**：用生成式 LLM 作为 step-wise reward model，与 policy 联合优化（典型：RLAnything）
-2. **无 Reward Model 路线**：
-   - 用环境 return 回传做 step advantage（GiGPO、TreeGRPO、AT2PO）
-   - 用 entropy 作为探索/置信度信号（ARPO、AEPO、EMPG）
-   - 用 information gain 作为 turn-level reward（IGPO）
-   - 用 bipartite matching 对齐 predicted vs golden trace（MatchTIR）
-3. **探索策略**：entropy-guided tree expansion、branching penalty、adaptive sampling budget
-4. **优化粒度**：token-level vs turn-level vs sequence-level importance sampling / clipping
+1. **<子问题 1>**：<描述>
+2. **<子问题 2>**：<描述>
+3. **<子问题 3>**：<描述>
 
 ### 关键问题清单
 
-- 无 ground truth / golden trace 时，step reward 从哪来？（self-consistency？model-as-judge？）
-- Entropy 作为信号的边界：什么时候 entropy 高代表"需要探索"，什么时候代表"噪声"？
-- Turn-level IS ratio 如何设计才能同时避免 token-level 高方差和 sequence-level 粒度过粗？
-- 长轨迹下 γ 衰减策略（IGPO 默认 γ=1 是否需要改）
-- 从 QA / search 场景迁移到 coding、GUI 操作的可迁移性
+- <开放问题 1>
+- <开放问题 2>
+- <开放问题 3>
+- ...
+
+<建议：写 3-8 个你会反复回到的具体问题。Ingest 论文时用这些问题过滤"这篇是否对我有用"。>
 
 ## 目录结构 `[🟢 通用 · 照搬]`
 
@@ -62,7 +63,7 @@ README.md
 
 ### 概念页粒度
 
-- 一个"可讨论的学术概念"一页（如 `Credit-Assignment-in-Agentic-RL.md`、`Entropy-Guided-Exploration.md`）
+- 一个"可讨论的学术概念"一页（命名示例：`Main-Concept.md`、`Sub-Mechanism.md`）
 - 不要为单篇论文建概念页（论文笔记属于 Raw/）
 - 页名用 Title-Case，空格用连字符
 
@@ -101,11 +102,11 @@ README.md
 - MM: 月份
 - shortname: 方法名或短标题
 
-示例：`Raw/2602-rlanything.md`、`Raw/2510-igpo.md`、`Raw/2601-at2po.md`
+示例：`Raw/2510-yourmethod.md`
 
 ### Raw 文件结构
 
-> **注**：2026-04-18 起新 ingest 用此**5-section + 理解型元素**格式。早期 10 篇（2505 - 2602）结构兼容，后续可按需补充 Delta / 因果链等元素。
+5-section + 5 个"理解型元素"（设计意图：不是 section 多，而是 section 内部元素让读者能重建 mental model）：
 
 ```markdown
 # <Paper Title>
@@ -114,7 +115,7 @@ README.md
 - **Authors**:
 - **Venue / Year**:
 - **Link**: arxiv / code
-- **Tags**: #credit-assignment #entropy #...
+- **Tags**: #tag1 #tag2 #tag3
 
 ## TL;DR
 三条 bullet（结论 / 方法 / 为什么有效）+ 💡 一句话精华（140 字内）
@@ -144,11 +145,11 @@ Limitation + 值得深入的方向
 ```
 
 **5 个理解型元素的设计意图**：
-- 🧬 **Delta from 前作**：agentic RL credit assignment 领域全是小改动堆积，看清"vs 前作改了什么"才抓到演进链
-- 🧩 **因果链**：把"为什么有效"拆到机制层，而不是泛泛而谈
-- ⚠️ **What would break this**：边界条件，防止误用
+- 🧬 **Delta from 前作**：很多领域都是小改动堆积，看清"vs 前作改了什么"才抓到演进链
+- 🧩 **因果链**：把"为什么有效"拆到机制层，不泛泛而谈
+- ⚠️ **What-breaks**：边界条件，防止误用
 - 💡 **一句话精华**：能压缩就说明真懂
-- 🧠 **理解核验**：3 个自检问题——未来验证理解深度的锚
+- 🧠 **理解核验**：未来自测理解深度的锚点
 
 ## 受控标签（Approved Tags） `[🔴 你的领域定制]`
 
@@ -156,45 +157,24 @@ Limitation + 值得深入的方向
 >
 > **目的**：防止 tag 漂移（`#entropy` / `#entropy-based` / `#entropy-guided` 三选一混用 → compile 时分裂成三个 Wiki 概念 → 知识库退化）。
 
+<按你的领域按类别组织 tag。每个 tag 一行短定义。建议 20-40 个，分 5-8 类。以下是**模板示例**，请替换。>
+
 ### 研究方向
-- `#credit-assignment` — trajectory reward → step/turn-level advantage 拆解
-- `#agentic-rl` — LLM Agent 的强化学习训练
+- `#<tag-1>` — <简短定义>
+- `#<tag-2>` — <简短定义>
 
-### 信号机制（step reward 从哪来）
-- `#reward-model` — 外部 reward model（含 generative RM）
-- `#no-reward-model` — 完全不依赖 RM
-- `#information-gain` — IG 作 turn reward（IGPO 类）
-- `#bipartite-matching` — predicted ↔ golden trace 匹配（MatchTIR 类）
-- `#entropy` — token / step entropy 作信号（ARPO/AEPO/EMPG/AT²PO）
+### <分类 2：例如 "方法流派" / "信号机制" / ...>
+- `#<tag>` — ...
+- `#<tag>` — ...
 
-### Advantage 粒度
-- `#step-wise-reward` — 每步单独打分
-- `#turn-level-reward` — 每 turn 一个奖励
-- `#turn-level-is` — turn-level importance sampling
+### <分类 3>
+- `#<tag>` — ...
 
-### 采样结构
-- `#tree-rollout` — 显式树状采样（TreeGRPO/AT²PO）
-- `#branching` — 动态分支采样（ARPO）
-- `#branching-penalty` — 分支惩罚避免过度集中（AEPO）
-- `#same-state-grouping` — 相同状态聚类（GiGPO）
-- `#trajectory-graph` — 轨迹 DAG（SALT）
+### <分类 4>
+- `#<tag>` — ...
 
-### 梯度 / 优化
-- `#gradient-modulation` — entropy 调节梯度幅度（EMPG）
-- `#future-clarity` — 下一步 entropy 低给 bonus（EMPG）
-
-### 场景 / 应用
-- `#tool-use` — 工具调用
-- `#tool-integrated-reasoning` — TIR 框架
-- `#gui-agent` — 图形界面 agent
-- `#coding-agent` — 代码 agent
-- `#multi-turn-agent` — 多轮交互
-- `#long-horizon-agent` — 长程任务
-
-### 数据 / 假设
-- `#ground-truth-trace` — 依赖金标准轨迹
-- `#self-adaptive-env` — 环境自适应调整
-- `#plug-and-play` — 即插即用（不改 rollout）
+### <分类 5>
+- `#<tag>` — ...
 
 ### 新增 tag 的流程
 
