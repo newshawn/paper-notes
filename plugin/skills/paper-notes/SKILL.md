@@ -9,6 +9,16 @@ allowed-tools: Bash, Read, Edit, Write, Glob, Grep, WebFetch
 
 LLM Wiki for academic paper notes. Four subcommands: `ingest`, `compile`, `query`, `lint`.
 
+## Relationship with wiki's CLAUDE.md
+
+本文件是**执行细则**（how to do — Setup + 6 Steps + 11 quality rules）。
+
+Wiki root 的 `CLAUDE.md` 提供 **宪法级红线**（what NOT to do — 5 红线 + hard nos）。两者分工：
+- 本 SKILL.md：本 skill 调用范围内，执行层面权威
+- CLAUDE.md：常驻 context，红线在任何情况下都不能破
+
+**遇到本文件与 CLAUDE.md 的红线不一致**：停下来报告用户，这是 repo 维护漂移的信号。
+
 ## Core principle: schema.md is the constitution
 
 Every subcommand **MUST** first read the active wiki's `schema.md`. All formatting, tagging, file-naming, and integration decisions follow it. Never hardcode rules that belong in schema.md.

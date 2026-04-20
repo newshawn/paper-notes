@@ -48,6 +48,20 @@ Skill 详细工作流见 [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/pa
 - ❌ 在 Wiki 概念页里提到单篇论文却不用 `[paper-id]` 格式（破坏可追溯性）
 - ❌ Commit 敏感信息（secrets / API keys / 私人邮箱若未脱敏）
 
+## 与 plugin SKILL.md 的关系（优先级说明）
+
+本文件提供 **宪法级红线**（high-level principles）。当用户触发 `/paper-notes:*` 命令时，plugin 的 [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/paper-notes/SKILL.md) **在执行细节上权威**——遵循它的 Setup + Step 1-6 工作流。
+
+**精度分工**：
+- **CLAUDE.md**（本文件）：*what NOT to do* —— 五条红线 + 绝对不做清单
+- **SKILL.md**：*how to do* —— 精确步骤 + 11 条 quality rules
+
+**遇到不一致时**：
+- 执行层面（格式 / 步骤 / tool 调用）→ 以 SKILL.md 为准（在 skill 调用范围内）
+- 红线层面（两阶段 / append-only / tag 受控 / 冲突累积 / Git）→ **任何情况下都不能破**
+
+如果发现 SKILL.md 与本文件的红线冲突，**停下来报告给用户**——这是 repo 维护漂移的信号，不应由 Claude 自行决定。
+
 ## 上下文
 
 - 用户 GitHub: `newshawn`
