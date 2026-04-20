@@ -168,6 +168,7 @@ Limitation + 值得深入的方向
 - `#entropy` — token / step entropy 作信号（ARPO/AEPO/EMPG/AT²PO）
 
 ### Advantage 粒度
+- `#token-level-reward` — token 粒度的 advantage / 梯度调节（比 step 更细，如 EAPO 按 entropy 调每个 token 的 |Ã|）
 - `#step-wise-reward` — 每步单独打分
 - `#turn-level-reward` — 每 turn 一个奖励
 - `#turn-level-is` — turn-level importance sampling

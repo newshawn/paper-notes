@@ -4,6 +4,23 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-04-20] ingest | 2604-ig-search IG-Search: Step-Level IG for Search-Augmented Reasoning
+
+- **Raw**: Raw/2604-ig-search.md
+- **PDF**: Raw/pdfs/2604-ig-search.pdf (5.1 MB)
+- **Tags**: #credit-assignment #information-gain #step-wise-reward #tool-use #multi-turn-agent #no-reward-model
+- **Wiki touched**: none (two-stage — compile pending)
+- **Notable**: 明确批评 IGPO "conflates reasoning/querying/retrieval"——与 2510-igpo 形成直接对立/互补关系，compile 时值得专门处理
+
+## [2026-04-20] ingest | 2604-eapo Rethinking Token-Level Credit Assignment in RLVR
+
+- **Raw**: Raw/2604-eapo.md
+- **PDF**: Raw/pdfs/2604-eapo.pdf (2.5 MB)
+- **Tags**: #credit-assignment #entropy #gradient-modulation #token-level-reward #no-reward-model
+- **Wiki touched**: none (two-stage — compile pending)
+- **Schema 更新**: 新增 tag `#token-level-reward`（登记到 schema.md 的 Advantage 粒度 section）
+- **Notable**: 引入新粒度维度（token-level），与现有 turn-level / step-wise 并列；Four Quadrant 分析法通用，compile 时应进 Wiki
+
 ## [2026-04-18] compile | post-retrofit refresh (10 raws → 3 wiki pages)
 
 - **Trigger**: retrofit 给 10 篇 Raw 加了 5 个理解型元素后的增量 compile
