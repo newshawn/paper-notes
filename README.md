@@ -215,7 +215,7 @@ Claude 做什么：
 
 ### 🖥️ 方式 B：终端 slash 命令（推荐批量 / 稳态 / 自动化）
 
-前提：已装 [`paper-notes` Claude Code plugin](../../.claude/plugins/paper-notes/plugin/README.md)。
+前提：已装 [`paper-notes` Claude Code plugin](plugin/README.md)。
 
 ```bash
 cd ~/Documents/PaperNotes    # 必须在 wiki root（或子目录）里才能用
@@ -278,7 +278,7 @@ cd ~/Documents/PaperNotes    # 必须在 wiki root（或子目录）里才能用
 ### Plugin 未装？
 
 **方式 A 完全不受影响**——直接在聊天里让 Claude 按 `schema.md` 规则工作即可。
-**方式 B 要先装 plugin**（见 [plugin README](../../.claude/plugins/paper-notes/plugin/README.md)）。
+**方式 B 要先装 plugin**（见 [plugin README](plugin/README.md)）。
 
 ### 建议的混合比例
 
@@ -335,122 +335,10 @@ cd ~/Documents/PaperNotes
 
 见 [`plugin/README.md`](plugin/README.md) —— 含 CHANGELOG、Roadmap、全流程 pipeline 图。
 
-## 架构：Plugin / Skill / CLAUDE.md 三者的分工
+## 延伸阅读（架构 / Fork 指南）
 
-本项目同时用了 Claude Code 的三种定制机制。理解它们的分工，就能明白每个文件在做什么、为什么这样切。
-
-### 概念对比
-
-| 维度 | Plugin | Skill | CLAUDE.md |
-|---|---|---|---|
-| **单位** | 一个包（多文件） | 一个文件 / 目录 | 单个 markdown |
-| **激活时机** | 显式 install + enable | 被调用时触发 | `cd` 进目录自动 |
-| **Context 成本** | 触发前为 0 | 触发前为 0 | **常驻 session**（几百 token） |
-| **作用域** | 全局（启用后处处生效） | 用户级或 plugin 内 | **目录级** |
-| **分发方式** | marketplace（github/npm/本地） | 复制 或 plugin 带 | 进 git repo |
-| **更新方式** | `/plugin update` | 手动替换 | `git pull` |
-
-### 一句话记忆
-
-- **Plugin** = 外挂工具箱（装了才有，类似 vim 插件）
-- **Skill** = Claude 的技能树（按需唤醒，类似 VS Code language server）
-- **CLAUDE.md** = 项目的员工手册（进办公室自动遵守，类似 linter config）
-
-**关键差别**：Plugin 和 Skill 是 **opt-in**（触发才运行）；CLAUDE.md 是 **always-on**（进目录就读）。
-
-### 本项目三者各司其职
-
-| 角色 | 文件 | 职责 | 激活 |
-|---|---|---|---|
-| **哨兵** | [`CLAUDE.md`](CLAUDE.md) | session 开场给 Claude 下 5 条红线 | 进目录自动 |
-| **工具箱** | [`plugin/`](plugin/) | 4 slash 命令 + SessionStart hook 联动 | install + enable |
-| **方法论**（plugin 内） | [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/paper-notes/SKILL.md) | 6 步工作流精确指令 + 11 条质量规则 | 用户打 `/paper-notes:*` |
-| **专项技能**（用户级） | `~/.claude/skills/paper-reading/SKILL.md` | 通用"怎么读论文"方法论，plugin 复用 | 用户说"帮我读这篇" |
-| **规则数据** | [`schema.md`](schema.md) | 领域词汇（受控标签）+ 整合规则 | 每次 skill 调用先读 |
-
-### 为什么不合并？
-
-每层都有独特的**激活时机**：
-
-- 没装 plugin？→ **CLAUDE.md 还在**，红线不丢
-- 没触发 skill？→ **CLAUDE.md 还在**，工作方式还是对的
-- 没在 repo 里（比如 Desktop 上闲聊）？→ **用户级 paper-reading skill 还在**，读论文依然靠谱
-
-合并就失去了各自激活时机的灵活性——等于用锤子敲螺丝。
-
-### 对想复用这套模式的人
-
-按"保底→锦上添花"的优先级：
-
-1. **最少**：保留 `CLAUDE.md`（进 git、零门槛，红线兜底）
-2. **推荐**：`CLAUDE.md` + `plugin/`（双保险，最流畅日常体验）
-3. **锦上添花**：再加用户级 `paper-reading` skill（跨项目可复用）
-
-对应我们 repo：三者都在，你 fork 后一并继承。
-
-## 想用这套模式做自己的领域？（Fork & Customize）
-
-本 repo 既是"我的 agentic RL 论文笔记"，**也是可复用的模板**。plugin 本身领域无关——只要替换 schema.md 里领域特有的两个 section，就能用到任何研究方向。
-
-### 🔴 要替换 vs 🟢 照搬
-
-[`schema.md`](schema.md) 的每个 section 都打了标签：
-
-- **`[🔴 你的领域定制]`**：`研究方向` + `受控标签（Approved Tags）` —— 换成你的领域
-- **`[🟢 通用 · 照搬]`**：目录结构 / 两阶段工作流 / Wiki 组织规则 / 整合规则 —— 不动
-
-**只有两个 section 要改**，剩下都是跨领域通用的结构。
-
-### 4 步 fork 流程
-
-```bash
-# 1. 在 GitHub 上 fork 本 repo 到你自己的账号，然后 clone
-git clone https://github.com/<你的 GitHub 用户名>/paper-notes ~/Documents/MyPaperNotes
-cd ~/Documents/MyPaperNotes
-
-# 2. 清理示例内容（或保留作参考）
-rm -rf Raw/*.md Raw/pdfs/*.pdf Wiki/*.md
-echo "# Log" > log.md
-echo "# Index" > index.md
-# 或：git rm 后 commit 一次，历史里永远保留我的 Agentic RL 例子作参考
-
-# 3. 用空模板重置 schema.md（推荐）
-cp docs/schema-template.md schema.md
-#    打开 schema.md 填你的领域信息（两个 [🔴] section）
-
-# 4. 更新 settings.json 的 marketplace source
-#    ~/.claude/settings.json 里把 newshawn/paper-notes 改成 <你的账号>/paper-notes
-```
-
-重启 Claude Code → 装上你自己 fork 的 plugin → 开始 ingest 你领域的论文。
-
-### 适合哪些领域
-
-理论上任何"读大量论文 + 需要跨论文综述"的场景：
-
-- LLM Safety / Alignment
-- Computer Vision / Multimodal
-- 生物信息 / 基因编辑
-- 认知科学 / 脑科学
-- 密码学 / 系统安全
-- 强化学习的其他子方向（RLHF、offline RL、world models...）
-
-### 不适合
-
-- 一次性看一两篇（用不上 Wiki 整合，直接 Obsidian 就行）
-- 大量非学术内容（菜谱、读书笔记）——schema 约束会变累赘
-- 不用 Claude Code 的场景（plugin 不生效；但 markdown wiki 结构本身仍有价值）
-
-### 学习用途
-
-如果你不打算用，只是想**理解这套方法**：
-
-1. 读 [`README.md`](README.md) 的 [🎯 新手入门](#-新手入门这套方法是怎么工作的)（为什么这么设计）
-2. 读 [`plugin/README.md`](plugin/README.md) 的 **Full pipeline ASCII 图**（整套链路可视化）
-3. 读 [`schema.md`](schema.md) 看具体规则长什么样
-4. 读 [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/paper-notes/SKILL.md) 看 skill 的 6 步工作流
-
-顺序：**宏观叙事 → 可视化 → 规则 → 执行**。
+- [`docs/architecture.md`](docs/architecture.md) — Plugin / Skill / CLAUDE.md 三层机制的分工，以及为什么这样切
+- [`docs/fork-guide.md`](docs/fork-guide.md) — 想用这套模式做自己的领域？4 步 fork 流程 + 适用 / 不适用场景
 
 ## 目录结构
 
