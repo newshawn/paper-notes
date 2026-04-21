@@ -115,7 +115,7 @@ Before committing, check for collision: `Glob Raw/<YYMM-shortname>.md`. If exist
 ## Related Wiki
 ```
 
-**设计原则**：section 结构与现有 10 篇 Raw 一致；**section 内部** 加入 5 个「理解型元素」——Delta / 因果链 / What-breaks / 一句话精华 / 理解核验。目标是**让未来的你（或合作者）能快速在脑子里重建这篇论文的 mental model**。
+**设计原则**：section 结构与现有 Raw 一致；**section 内部** 加入 5 个「理解型元素」——Delta / 因果链 / What-breaks / 一句话精华 / 理解核验。目标是**让未来的你（或合作者）能快速在脑子里重建这篇论文的 mental model**。
 
 **Invoke the `paper-reading` skill's methodology** if available at `~/.claude/skills/paper-reading/SKILL.md` — it has detailed fetch priorities and extraction focus areas.
 

@@ -26,7 +26,7 @@
 | 角色 | 文件 | 职责 | 激活 |
 |---|---|---|---|
 | **哨兵** | [`CLAUDE.md`](../CLAUDE.md) | session 开场给 Claude 下 5 条红线 | 进目录自动 |
-| **工具箱** | [`plugin/`](../plugin/) | 4 slash 命令 + SessionStart hook 联动 | install + enable |
+| **工具箱** | [`plugin/`](../plugin/) | skill 分发 + SessionStart hook（未 compile 提醒） | install + enable |
 | **方法论**（plugin 内） | [`plugin/skills/paper-notes/SKILL.md`](../plugin/skills/paper-notes/SKILL.md) | 6 步工作流精确指令 + 11 条质量规则 | 用户打 `/paper-notes:*` |
 | **专项技能**（用户级） | `~/.claude/skills/paper-reading/SKILL.md` | 通用"怎么读论文"方法论，plugin 复用 | 用户说"帮我读这篇" |
 | **规则数据** | [`schema.md`](../schema.md) | 领域词汇（受控标签）+ 整合规则 | 每次 skill 调用先读 |

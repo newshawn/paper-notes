@@ -10,7 +10,7 @@
 ## 工作红线（任何情况都要遵守）
 
 1. **两阶段**：`ingest` 只动 `Raw/` 和 `log.md`，**绝不改 `Wiki/`**；`compile` 只在用户显式触发时进行
-2. **Raw 只增不改**：已有 10 篇（`2505-*` 至 `2602-*`）保留现状，**不 retrofit**（除非用户明说）
+2. **Raw 只增不改**：所有已 ingest 的 Raw 保留现状，**不 retrofit**（除非用户明说）。早期 10 篇（`2505-*` 至 `2602-*`）是 5-section 简版；2603 之后用 5-section + 理解型元素格式。两种格式兼容共存
 3. **Tag 必须从 schema.md 的"受控标签"词汇中选**——发现新概念无对应 tag 时，先让用户确认 + 登记到 schema.md，再写入 Raw
 4. **Wiki 冲突累积不覆盖**：新论文与旧 claim 冲突 → 写入该概念页的 `## Contradictions / Open Questions` 段落，引用双方 `[paper-id]`；**不要改动原 claim**
 5. **Git**：commit 完**直接 push**（用户偏好已确认，见 `~/.claude/projects/.../memory/git_auto_push.md`）；不 force push、不跳 hooks

@@ -72,7 +72,7 @@ docs/             架构 / why / fork 指南
 
 ## 格式约定
 
-**Raw 笔记** `Raw/YYMM-shortname.md`：5 个 section，其中 3 个嵌入"理解型元素"
+**Raw 笔记** `Raw/YYMM-shortname.md`：**5 个 section + 5 个理解型元素**（元素嵌在其中 3 个 section 内，另外 2 个 section 只有常规内容）
 
 | Section | 常规内容 | 理解型元素 |
 |---|---|---|
@@ -106,9 +106,9 @@ docs/             架构 / why / fork 指南
 
 ## 当前状态
 
-- ✅ 10 篇 Raw（2505-gigpo → 2602-rlanything）
-- ✅ 3 个 Wiki 概念页：[Credit-Assignment-in-Agentic-RL](Wiki/Credit-Assignment-in-Agentic-RL.md) / [Entropy-Guided-Exploration](Wiki/Entropy-Guided-Exploration.md) / [Turn-Level-Reward](Wiki/Turn-Level-Reward.md)
-- ⏳ Raw/pdfs/ 为空（早期 10 篇从现成笔记转的）
+- ✅ 14 篇 Raw（2505-gigpo → 2604-ig-search）
+- ✅ 4 个 Wiki 概念页：[Credit-Assignment-in-Agentic-RL](Wiki/Credit-Assignment-in-Agentic-RL.md) / [Entropy-Guided-Exploration](Wiki/Entropy-Guided-Exploration.md) / [Search-Augmented-RL](Wiki/Search-Augmented-RL.md) / [Turn-Level-Reward](Wiki/Turn-Level-Reward.md)
+- ⏳ Raw/pdfs/ 只有 4 个 PDF（2505-autorefine + 2603/2604 批；早期 10 篇是从现成笔记转的，没下 PDF）
 
 ## 延伸阅读
 
