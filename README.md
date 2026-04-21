@@ -9,12 +9,20 @@
 ## 两阶段工作流
 
 ```
-arxiv 链接 ──▶ INGEST ──▶ Raw/<id>.md ──(审阅)──▶ COMPILE ──▶ Wiki/<Concept>.md
-              抓论文+写笔记                         跨论文整合、
-                                                     冲突入 Contradictions
+arxiv URL / PDF
+      │
+      │  ① INGEST — 抓论文 → 按模板写结构化笔记
+      ▼
+Raw/<paper-id>.md        ← 单篇笔记（append-only，你审阅）
+      │
+      │  ② COMPILE — 跨论文整合到概念页：
+      │     · 新主张       → 追加进 Wiki 的 Key Claims 段
+      │     · 与旧主张冲突 → 写进 Contradictions 段（双方并存，不覆盖）
+      ▼
+Wiki/<Concept>.md        ← 跨论文的概念地图
 ```
 
-**Ingest 只动 Raw，Compile 才动 Wiki**——审阅窗口在你手上。
+**Ingest 只动 Raw，Compile 才动 Wiki**——审阅窗口在你手上。关键机制：**论文间的冲突不会覆盖旧结论**，而是写进 Wiki 概念页的 `Contradictions` 段落保留双方（你写论文 discussion 时这是金矿）。
 
 ## 怎么用
 
