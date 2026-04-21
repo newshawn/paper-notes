@@ -61,7 +61,7 @@ if [ "$need_compile" -eq 1 ]; then
 {
   "hookSpecificOutput": {
     "hookEventName": "SessionStart",
-    "additionalContext": "📚 paper-notes wiki detected at $root — there are $n uncompiled Raw ingest(s) since the last compile. Consider running \`/paper-notes:paper-notes compile\` when ready."
+    "additionalContext": "📚 paper-notes wiki detected at $root — there are $n uncompiled Raw ingest(s) since the last compile. Tell Claude \"compile\" when ready to integrate into Wiki."
   }
 }
 EOF

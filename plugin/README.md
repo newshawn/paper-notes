@@ -6,6 +6,10 @@ LLM Wiki for academic paper notes, following [Karpathy's LLM Wiki pattern](https
 
 > **Convention**: every feature change → 一行在此登记。方便回溯 workflow 迭代。
 
+### 0.1.3 — 2026-04-21
+- **移除 4 个 slash commands** (`/paper-notes:{ingest,compile,query,lint}`)。实际使用中 ~95% 流量走聊天（自然语言 → skill），slash 带来的"100% 确定性触发"价值低于维持双入口的维护成本。Skill 继续通过 chat intent 触发（见下方 "Skill 子流程" 表）。
+- `commands/` 目录整个删除；`hooks/wiki-status.sh` 的提示语从 "跑 /paper-notes:compile" 改为 "跟 Claude 说 compile"。
+
 ### 0.1.2 — 2026-04-18
 - **Tag vocabulary lock**：schema.md 新增 `受控标签 (Approved Tags)` section，预定义 ~25 个 tag 按 7 类组织。Ingest 时 tag **必须**从中选；新 tag 需先登记到 schema.md 再使用。解决 `#entropy` / `#entropy-based` / `#entropy-guided` 混用导致 Wiki 分裂的问题。
 - **Dedup check (ingest Step 0)**：ingest 第一步先 grep Raw/ 检查 arxiv id + 标题相似度，命中则提示 refresh / abort / show，避免重复 ingest 污染。
@@ -68,15 +72,11 @@ LLM Wiki for academic paper notes, following [Karpathy's LLM Wiki pattern](https
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  用户：/paper-notes:ingest https://arxiv.org/abs/XXXX        │
+│  用户（聊天）："帮我 ingest https://arxiv.org/abs/XXXX"      │
 └─────────────────────────────────────────────────────────────┘
                        ↓
         ┌──────────────────────────────┐
-        │ commands/ingest.md           │  thin dispatcher
-        │ "follow skill's ingest"      │
-        └──────────────────────────────┘
-                       ↓
-        ┌──────────────────────────────┐
+        │ Claude 识别意图 → 调用 skill │
         │ skills/paper-notes/SKILL.md  │  fat skill
         │ 6 Steps (Setup + Ingest x 6) │
         └──────────────────────────────┘
@@ -114,14 +114,14 @@ LLM Wiki for academic paper notes, following [Karpathy's LLM Wiki pattern](https
                        ↓
         ┌──────────────────────────────┐
         │  Step 5: report to user      │
-        │  → "审阅 Raw，跑 /compile"    │
+        │  → "审阅 Raw，满意就说 compile"│
         │  ⚠️ Wiki/ 未触碰              │
         └──────────────────────────────┘
 
      ⏸️ 用户审阅 Raw，决定是否 compile ⏸️
 
 ┌─────────────────────────────────────────────────────────────┐
-│  用户：/paper-notes:compile                                  │
+│  用户（聊天）："compile"                                     │
 └─────────────────────────────────────────────────────────────┘
                        ↓
         ┌──────────────────────────────┐
@@ -160,15 +160,14 @@ Plugin 已通过 `~/.claude/settings.json` 的 `extraKnownMarketplaces` + `direc
 ├── .claude-plugin/marketplace.json       ← 本地 marketplace
 └── plugin/                               ← plugin root
     ├── .claude-plugin/plugin.json
-    ├── commands/{ingest,compile,query,lint}.md
     ├── skills/paper-notes/
-    │   ├── SKILL.md                      主逻辑
+    │   ├── SKILL.md                      主逻辑（chat 触发）
     │   └── references/
     │       ├── raw-template.md            Raw 文件模板
     │       ├── wiki-template.md           Wiki 概念页模板
     │       └── log-format.md              log.md 追加格式
     ├── hooks/hooks.json                  SessionStart hook
-    └── scripts/wiki-status.sh            hook 脚本
+    └── scripts/wiki-status.sh            hook 脚本（检测未 compile Raw）
 ```
 
 settings.json 关键段：
@@ -187,40 +186,50 @@ settings.json 关键段：
 }
 ```
 
-重启 Claude Code 后 `/paper-notes:` 开头的 4 个命令可用。
+重启 Claude Code 后 skill 自动装载，SessionStart hook 也会生效。
 
 ---
 
-## Slash commands
+## Skill 子流程（聊天触发）
 
-### `/paper-notes:ingest <arxiv-url | pdf-path>`
+自 0.1.3 起不用 slash 命令，直接在聊天里说意图即可。
+
+### `ingest` — 吸入新论文
 
 抓取论文 → 生成 Raw 笔记 → 下载 PDF → 追加 log。**不动 Wiki**（两阶段）。
 
 ```
-/paper-notes:ingest https://arxiv.org/abs/2510.20022
+"帮我 ingest https://arxiv.org/abs/2510.20022"
+"读一下 ~/Downloads/paper.pdf 归档进 wiki"
 ```
 
-### `/paper-notes:compile [<since-date>]`
+### `compile` — 整合进 Wiki
 
-整合未 compile 的 Raw → 更新 Wiki 概念页 → 更新 `index.md`。用户手动触发。
+整合未 compile 的 Raw → 更新 Wiki 概念页 → 更新 `index.md`。
 
 ```
-/paper-notes:compile
-/paper-notes:compile 2026-04-01
+"compile"
+"把 Raw 整合到 Wiki"
+"compile since 2026-04-01"
 ```
 
-### `/paper-notes:query <question>`
+### `query` — 跨论文检索
 
 Wiki 全文检索 + 合成回答，带 `[paper-id]` 引用。
 
 ```
-/paper-notes:query "entropy 作为 branching trigger 有哪些方法？"
+"entropy 作为 branching trigger 有哪些方法？"
+"turn-level reward 这个概念的演进是什么"
 ```
 
-### `/paper-notes:lint`
+### `lint` — 健康检查
 
-健康检查：broken cross-refs / orphan Wiki / stale pages / schema 违规。**只报告，不 auto-fix**。
+broken cross-refs / orphan Wiki / stale pages / schema 违规。**只报告，不 auto-fix**。
+
+```
+"检查一下 wiki 健康"
+"lint 一下"
+```
 
 ---
 
@@ -269,7 +278,7 @@ Wiki 全文检索 + 合成回答，带 `[paper-id]` 引用。
 
 ## Companion skill: paper-reading
 
-若 `~/.claude/skills/paper-reading/SKILL.md` 存在，`/ingest` 会 **调用其方法论**——抓取优先级（HTML > abs > PDF）、关键提取焦点（训练配置 / benchmark 三问 / Limitation 段）。
+若 `~/.claude/skills/paper-reading/SKILL.md` 存在，`ingest` 子流程会 **调用其方法论**——抓取优先级（HTML > abs > PDF）、关键提取焦点（训练配置 / benchmark 三问 / Limitation 段）。
 
 不依赖它——缺失时 SKILL.md 的 quality rules 已够用。
 

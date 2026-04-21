@@ -19,10 +19,10 @@
 
 ### 装了 paper-notes plugin（本 repo 自带，见 `plugin/`）
 
-- 用户扔 arxiv 链接 / PDF 路径 / 说 "ingest" → 调用 `paper-notes:ingest` skill
-- 用户审阅 Raw 后说 "compile" → 调用 `paper-notes:compile` skill
-- 用户问研究问题 → 调用 `paper-notes:query` skill
-- 用户说"检查健康" → 调用 `paper-notes:lint` skill
+- 用户扔 arxiv 链接 / PDF 路径 / 说 "ingest" → 调用 `paper-notes` skill 的 `ingest` 子流程
+- 用户审阅 Raw 后说 "compile" → 调用 skill 的 `compile` 子流程
+- 用户问研究问题 → 调用 skill 的 `query` 子流程
+- 用户说"检查健康" → 调用 skill 的 `lint` 子流程
 
 Skill 详细工作流见 [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/paper-notes/SKILL.md)。
 
@@ -63,7 +63,7 @@ Skill 详细工作流见 [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/pa
 
 ## 与 plugin SKILL.md 的关系（优先级说明）
 
-本文件提供 **宪法级红线**（high-level principles）。当用户触发 `/paper-notes:*` 命令时，plugin 的 [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/paper-notes/SKILL.md) **在执行细节上权威**——遵循它的 Setup + Step 1-6 工作流。
+本文件提供 **宪法级红线**（high-level principles）。当 skill 被触发（用户聊天里说 ingest / compile / query / lint 任一意图）时，plugin 的 [`plugin/skills/paper-notes/SKILL.md`](plugin/skills/paper-notes/SKILL.md) **在执行细节上权威**——遵循它的 Setup + Step 1-6 工作流。
 
 **精度分工**：
 - **CLAUDE.md**（本文件）：*what NOT to do* —— 五条红线 + 绝对不做清单

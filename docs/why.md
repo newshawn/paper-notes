@@ -51,9 +51,10 @@
 
 **Scenario**：今天你刷 arxiv 看到一篇叫 "XYZ" 的新论文，做 entropy-based branching 的改进。
 
-**第一步**（30 秒操作）：
+**第一步**（30 秒操作）：在 Claude Code 里说
+
 ```
-/paper-notes:ingest https://arxiv.org/abs/XXXX
+"ingest 这篇：https://arxiv.org/abs/XXXX"
 ```
 
 2-5 分钟后，你拿到：
@@ -61,9 +62,10 @@
 - 🧬 **Delta from ARPO** 告诉你："XYZ 和 ARPO 唯一的差别是把固定 τ 阈值换成自适应"
 - 🧠 **理解核验** 给你 3 个问题供未来自测
 
-**第二步**（2 分钟审阅）：扫一眼觉得分析准确，运行：
+**第二步**（2 分钟审阅）：扫一眼觉得分析准确，说：
+
 ```
-/paper-notes:compile
+"compile"
 ```
 
 1-2 分钟后，Claude 完成：
@@ -71,8 +73,9 @@
 - `Wiki/Credit-Assignment-in-Agentic-RL.md` 的路线对比表加 XYZ 到 entropy 路线
 
 **三个月后**，你要写一篇综述的 related work：
+
 ```
-/paper-notes:query "entropy-based branching 的演进"
+"entropy-based branching 的演进是什么"
 ```
 
 Claude 几秒内答：

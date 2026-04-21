@@ -1,7 +1,7 @@
 ---
 name: paper-notes
-description: LLM Wiki for academic paper notes (Karpathy pattern). Handles arxiv/PDF ingestion, cross-paper concept compilation, wiki-based query, and schema lint. Activates when user runs the /paper-notes command or manages a paper-notes-style directory (with schema.md + Raw/ + Wiki/). Schema-driven — reads the active wiki's schema.md for domain-specific rules.
-argument-hint: "ingest <url|pdf-path> | compile [<since>] | query <question> | lint"
+description: LLM Wiki for academic paper notes (Karpathy pattern). Handles arxiv/PDF ingestion, cross-paper concept compilation, wiki-based query, and schema lint. Activates when user expresses intent via chat (e.g. "ingest this paper", "compile to wiki", "query XYZ", "lint wiki") while inside a paper-notes-style directory (with schema.md + Raw/ + Wiki/). Schema-driven — reads the active wiki's schema.md for domain-specific rules.
+argument-hint: "(invoked via chat, not slash) — intents: ingest | compile | query | lint"
 allowed-tools: Bash, Read, Edit, Write, Glob, Grep, WebFetch
 ---
 
@@ -35,13 +35,16 @@ Every subcommand **MUST** first read the active wiki's `schema.md`. All formatti
 
 ## Subcommand routing
 
-The invoking slash command specifies which subcommand to run. Four possible commands:
-- `/paper-notes:ingest <url|path>` → run `ingest` subcommand below
-- `/paper-notes:compile [<since>]` → run `compile` subcommand below
-- `/paper-notes:query <question>` → run `query` subcommand below
-- `/paper-notes:lint` → run `lint` subcommand below
+This skill is invoked via chat (natural language). Route to the subcommand based on user intent:
 
-In each case, `$ARGUMENTS` contains only that subcommand's arguments (the source URL, since-date, question, or empty).
+| User intent (chat) | Subcommand |
+|---|---|
+| 扔 arxiv URL / PDF 路径 / 说 "ingest this" | `ingest` |
+| 说 "compile" / "整合到 Wiki" / "合并 Raw" | `compile` |
+| 提研究问题 / 跨论文查询 | `query` |
+| 说 "检查 wiki 健康" / "lint" / "找 broken refs" | `lint` |
+
+Extract arguments from the user message (URL, since-date, question, or none).
 
 ---
 
@@ -177,7 +180,7 @@ Then **ask the user** with three options:
 
 **If user says `y`**: immediately invoke the **compile subcommand** (below) on just this paper-id. This is a shortcut for confident users who trust the Raw output.
 
-**If user says `n` / `later`**: finish. Wiki unchanged. User triggers `/paper-notes:compile` manually later.
+**If user says `n` / `later`**: finish. Wiki unchanged. User says "compile" later to trigger integration.
 
 ---
 

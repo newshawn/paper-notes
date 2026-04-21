@@ -18,8 +18,6 @@ arxiv 链接 ──▶ INGEST ──▶ Raw/<id>.md ──(审阅)──▶ COMP
 
 ## 怎么用
 
-### 💬 方式 A：聊天（日常，免装 plugin）
-
 直接把 arxiv 链接 / PDF 路径发给 Claude，自然语言描述意图：
 
 ```
@@ -29,22 +27,21 @@ arxiv 链接 ──▶ INGEST ──▶ Raw/<id>.md ──(审阅)──▶ COMP
 "把 ~/Downloads/paper.pdf 归档进 wiki"
 ```
 
-Claude 识别意图 → 调 `paper-notes` skill → 完成后问你要不要 compile。**零学习成本**，支持复杂多步请求。
+Claude 识别意图 → 调 `paper-notes` skill → 完成后问你要不要 compile。其他常见指令：
 
-### 🖥️ 方式 B：终端 slash（批量 / 自动化，需装 plugin）
+- `"compile"` / `"整合到 Wiki"` — 把未 compile 的 Raw 合并进 Wiki 概念页
+- `"entropy-based branching 有哪些方法"` — 跨论文检索 + 合成答案
+- `"检查一下 wiki 健康"` — 扫 broken refs / stale / schema 违规
 
-```
-/paper-notes:ingest <arxiv-url | pdf-path>   # 抓论文 + 写 Raw + 下 PDF
-/paper-notes:compile                          # Raw 整合进 Wiki 概念页
-/paper-notes:query "<问题>"                   # 跨论文检索 + 合成答案
-/paper-notes:lint                             # 健康检查（broken-refs / stale / schema 违规）
-```
+底层是同一套 [SKILL.md](plugin/skills/paper-notes/SKILL.md)，不管用什么措辞触发。
 
-各命令内部步骤见 [plugin/skills/paper-notes/SKILL.md](plugin/skills/paper-notes/SKILL.md)。
+## Plugin 安装（可选，提供 SessionStart 状态提示）
 
-**混用比例建议**：80% 聊天（日常）+ 20% slash（批量 / 严格场景）。二者底层共用同一套 SKILL.md，生成内容完全一致。
+不装 plugin 也能用——只要 `cd` 进 wiki root，CLAUDE.md + schema.md 就会让 Claude 按规则工作。
 
-## Plugin 安装（方式 B 需要）
+装 plugin 的额外价值：
+- **SessionStart hook**：每次进 session 自动提示 "你有 N 篇未 compile 的 Raw"
+- **Skill 自动装载**：不用手动复制 skill 目录到 `~/.claude/skills/`
 
 ```bash
 git clone https://github.com/newshawn/paper-notes ~/Documents/PaperNotes
@@ -58,7 +55,7 @@ cd ~/Documents/PaperNotes
 /plugin install paper-notes@paper-notes
 ```
 
-重启 Claude Code → `/paper-notes:` 4 个命令可用。（手配 `~/.claude/settings.json` 见 [plugin/README.md](plugin/README.md)）
+重启 Claude Code 即可。（手配 `~/.claude/settings.json` 见 [plugin/README.md](plugin/README.md)）
 
 ## 目录结构
 
@@ -69,7 +66,7 @@ Wiki/             跨论文整合的概念页（AI 维护）
 schema.md         领域词汇 + 整合规则（宪法）
 index.md          所有 Wiki / Raw 索引
 log.md            ingest / compile / lint 时间线（append-only, newest-first）
-plugin/           Claude Code plugin 源（commands / skills / hooks）
+plugin/           Claude Code plugin 源（skill + SessionStart hook）
 docs/             架构 / why / fork 指南
 ```
 
