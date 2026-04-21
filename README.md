@@ -75,15 +75,17 @@ docs/             架构 / why / fork 指南
 
 ## 格式约定
 
-**Raw 笔记** `Raw/YYMM-shortname.md`：5-section + 5 个理解型元素
+**Raw 笔记** `Raw/YYMM-shortname.md`：5 个 section，其中 3 个嵌入"理解型元素"
 
-| Section | 关键元素 |
-|---|---|
-| TL;DR | 💡 一句话精华（140 字内） |
-| Method | 🧬 Delta vs 前作 / 🧩 因果链 / ⚠️ What-breaks |
-| Key Results | Benchmark + 训练配置 |
-| Takeaway | 🧠 理解核验 3 问 |
-| Open Questions | Limitation + 研究机会 |
+| Section | 常规内容 | 理解型元素 |
+|---|---|---|
+| TL;DR | 3 bullets 摘要 | 💡 一句话精华（全文压到 140 字） |
+| Method | 核心思路 / 对比表 / 流程 | 🧬 Delta vs 前作 · 🧩 因果链 · ⚠️ What-breaks |
+| Key Results | Benchmark + 训练配置 | — |
+| Takeaway | 可操作启示 | 🧠 理解核验（3 个自测问题） |
+| Open Questions | Limitation + 研究机会 | — |
+
+**5 个理解型元素是核心**——它们强制你思考"vs 前作改了什么 / 机制链是什么 / 什么时候失效 / 你真懂没"。详细 rationale 见 [docs/why.md](docs/why.md)。
 
 早期 10 篇（2505–2602）的简版 5-section 格式兼容保留。
 
