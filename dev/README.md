@@ -37,6 +37,72 @@ node scripts/build-dev-renderer.mjs
 6. 反复迭代，直到 HTML 没问题。
 7. 复制最终 Markdown 给 agent 执行。
 
+## 不会写 prompt 怎么办
+
+先不要写完整 prompt。新手只要填 3 行：
+
+```text
+我想做的事：
+我现在不确定的点：
+我希望 HTML 帮我看清：
+```
+
+例如：
+
+```text
+我想做的事：优化 ingest 模块，让 Raw 生成前后更稳定。
+我现在不确定的点：不知道应该在哪里加校验，也怕误改 Wiki。
+我希望 HTML 帮我看清：当前流程、要新增的模块、数据流、具体错误例子、验收方式。
+```
+
+然后把它包进这个固定模板发给 agent：
+
+```text
+请进入 plan 模式，不要直接改代码。
+
+我会用 dev/ 渲染你生成的 plan artifact。请先读取：
+- AGENTS.md
+- schema.md
+- log.md 顶部
+- dev/plan-artifact-pipeline.md
+- dev/project-map.md
+
+我的需求：
+<把上面 3 行粘到这里>
+
+如果我没有写清楚相关文件，请你根据 dev/project-map.md 自己定位，并在 plan-review.md 里列出你实际读取或建议读取的文件。
+
+请输出两份同步内容：
+1. plan-review.html：给人看的 HTML 评审稿。
+2. plan-review.md：给 agent 执行的 Markdown 计划。
+
+HTML 请优先讲清：
+- 当前系统如何工作。
+- 这次需求会影响哪些模块。
+- 数据流或控制流如何变化。
+- 具体例子。
+- 风险边界。
+- 验收方式。
+
+不要执行代码修改。等我 review HTML 通过后，再决定是否执行 Markdown 计划。
+```
+
+写需求时，只要尽量回答这 5 个问题即可：
+
+- 想改什么：功能、流程、文档、UI、算法或数据结构。
+- 为什么改：现在哪里不稳定、不好读、不好维护或容易出错。
+- 怕什么：哪些目录不能碰、哪些行为不能破坏。
+- 想看到什么例子：输入、输出、错误 case、UI 状态或测试故事。
+- 怎么算通过：命令检查、人工 review、截图、样例输出或 lint。
+
+如果这些也说不清，就直接写：
+
+```text
+我只知道大概想优化 <模块名>，但不确定怎么拆需求。
+请先根据 dev/project-map.md 生成一个提问清单，问我 3-5 个必须回答的问题；
+等我回答后，再生成 plan-review.html 和 plan-review.md。
+```
+
 ## 最小 demo：优化 ingest 模块
 
 这个 demo 的目标不是马上执行代码，而是先跑通“生成可审阅 plan artifact”的流程。

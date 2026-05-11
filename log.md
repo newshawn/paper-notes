@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | add beginner prompt guidance
+
+- **动机**：用户指出新手不一定会写完整 plan prompt，需要明确指引。
+- **更新**：在 `dev/README.md` 新增“不会写 prompt 怎么办”，提供 3 行填空模板、固定 agent 指令模板、5 个需求检查问题和“先让 agent 提问”的兜底用法。
+- **边界**：仍保持先生成 HTML+Markdown plan artifact，再由人类 review，确认后才执行。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | add runnable dev workflow demo
 
 - **动机**：用户希望 GitHub 上 `dev/README.md` 包含一个能让用户跑起来的 demo，执行代码与否可以后置。
