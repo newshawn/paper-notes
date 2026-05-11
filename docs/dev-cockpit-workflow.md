@@ -27,6 +27,13 @@ node scripts/build-dev-cockpit.mjs
 7. 如果 HTML 里的代码库模块、需求模块、参考示例、plan demo、执行步骤不合理，就继续让大模型改 HTML+MD。
 8. review 通过后，复制已审 markdown 或执行 prompt 给 LLM 执行。
 
+页面内置了一个最小 demo：“优化 ingest 模块”。它展示了一个合格 plan artifact 应该长什么样：
+
+- 说明现有 ingest 流程如何实现。
+- 指出当前流程的脆弱点。
+- 展示优化后的模块划分。
+- 给出具体实现例子和验收方式。
+
 ## 维护规则
 
 改工作台结构或交互时，编辑 `scripts/build-dev-cockpit.mjs` 并重新生成 `dev-cockpit.html`。真正的 plan demo 应该由大模型根据当前需求和代码库上下文生成；本页面只提供输入组织、预览和导出执行包。

@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | add ingest optimization plan demo
+
+- **动机**：用户希望看到一个最小化 plan demo：以“优化当前 ingest 模块”为例，HTML 应展示现有 ingest 如何实现、优化模块如何设计，并附带具体实现例子。
+- **更新**：`dev-cockpit.html` 新增“载入 ingest 优化示例”按钮，一键填入需求、`plan-review.html` 和 `plan-review.md`。
+- **Demo 内容**：包含当前 ingest 流程（输入 → 读规则 → 查重 → 写 Raw → 存 PDF → 记 log）、痛点、Preflight / Template Guard / Tag Guard / Review Report 优化模块、建议改动文件和验收方式。
+- **文档**：更新 `docs/dev-cockpit-workflow.md` 说明内置 demo 的作用。
+- **Wiki touched**: none (developer workflow only)
+
 ## [2026-05-11] refactor | turn dev cockpit into plan artifact review shell
 
 - **动机**：用户指出上一版仍是“美丽的废物”：demo 只是 prompt 生成器自身的 demo，而不是具体 plan 的 demo；最终 pipeline 应是 prompt → 大模型生成 HTML+Markdown plan artifact → 人类 review HTML → 再交给 LLM 执行。

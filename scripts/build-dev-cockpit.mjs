@@ -969,6 +969,7 @@ function buildHtml(data) {
         </div>
         <div class="prompt">
           <div class="actions">
+            <button id="loadIngestDemo">载入 ingest 优化示例</button>
             <button class="primary" id="copyGenerationPrompt">复制 artifact 生成指令</button>
             <button class="primary" id="copyPrompt">复制 prompt</button>
             <button id="copyPlan">复制已审 markdown</button>
@@ -1321,6 +1322,127 @@ function buildHtml(data) {
       ].join("\\n");
     }
 
+    function ingestDemoHtml() {
+      return [
+        "<!doctype html>",
+        "<html lang=\\"zh-CN\\">",
+        "<meta charset=\\"utf-8\\">",
+        "<title>Plan Review · 优化 ingest 模块</title>",
+        "<style>",
+        "body{font:15px/1.6 system-ui;margin:0;background:#f7f8f5;color:#202421}",
+        "main{max-width:1120px;margin:auto;padding:24px}",
+        "h1,h2,h3{margin:0 0 8px}p{margin:0;color:#626a64}",
+        "section,.card{border:1px solid #dbe2d7;border-radius:10px;background:#fffefb;padding:14px;margin:12px 0}",
+        ".grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}",
+        ".flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}",
+        ".step{border:1px solid #dbe2d7;border-radius:8px;background:#fbfdf9;padding:10px;min-height:96px}",
+        ".step b{display:block;color:#0f766e;margin-bottom:4px}",
+        "table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid #dbe2d7;padding:8px;text-align:left;vertical-align:top}",
+        "code{background:#eef3ea;border-radius:5px;padding:2px 5px}",
+        "@media(max-width:840px){.grid,.flow{grid-template-columns:1fr}}",
+        "</style>",
+        "<main>",
+        "<h1>Plan Review：优化当前 ingest 模块</h1>",
+        "<p>目标：把现在依赖人工遵守规则的 ingest 流程，升级成“LLM 生成 Raw 前后都有结构化校验和可审阅报告”的稳定工作流。</p>",
+        "<section><h2>1. 当前 ingest 是怎么实现的</h2><div class=\\"flow\\">",
+        "<div class=\\"step\\"><b>输入</b>用户给 arxiv / PDF / 笔记。</div>",
+        "<div class=\\"step\\"><b>读规则</b>先读 <code>schema.md</code>、<code>log.md</code>、existing Raw。</div>",
+        "<div class=\\"step\\"><b>查重</b>在 <code>Raw/</code> 查 arxiv id / 同题论文。</div>",
+        "<div class=\\"step\\"><b>写 Raw</b>按 5-section + 理解型元素生成 <code>Raw/&lt;id&gt;.md</code>。</div>",
+        "<div class=\\"step\\"><b>存 PDF</b>必要时保存到 <code>Raw/pdfs/&lt;id&gt;.pdf</code>。</div>",
+        "<div class=\\"step\\"><b>记 log</b>在 <code>log.md</code> 顶部追加 ingest 记录，不改 Wiki。</div>",
+        "</div></section>",
+        "<section><h2>2. 现在的问题</h2><div class=\\"grid\\">",
+        "<div class=\\"card\\"><h3>规则靠记忆</h3><p>必须 section、受控 tags、Related Wiki、log 格式都靠 LLM 自觉，容易漏。</p></div>",
+        "<div class=\\"card\\"><h3>失败太晚发现</h3><p>Raw 写完以后才发现 tag 越界、ID 重复、缺理解型元素，会增加返工。</p></div>",
+        "<div class=\\"card\\"><h3>没有审阅摘要</h3><p>用户看 Raw 前，不知道这次 ingest 是否完整、哪些地方需要重点审。</p></div>",
+        "<div class=\\"card\\"><h3>lint 不可复用</h3><p>检查逻辑散落在自然语言规则里，不能被 HTML / CLI / LLM prompt 共同使用。</p></div>",
+        "</div></section>",
+        "<section><h2>3. 优化后的 ingest 模块</h2><table>",
+        "<thead><tr><th>模块</th><th>职责</th><th>具体例子</th></tr></thead><tbody>",
+        "<tr><td>Preflight</td><td>写 Raw 前检查 ID、重复论文、受控 tags 候选。</td><td><code>paper-id=2605-foo</code> 已存在时直接阻断。</td></tr>",
+        "<tr><td>Template Guard</td><td>检查 TL;DR / Method / Key Results / Takeaway / Open Questions 是否齐全。</td><td>缺 <code>What would break this</code> 时标红提醒。</td></tr>",
+        "<tr><td>Tag Guard</td><td>从 <code>schema.md</code> 解析 approved tags，禁止自造 tag。</td><td><code>#entropy-guided</code> 建议映射到 <code>#entropy</code>。</td></tr>",
+        "<tr><td>Review Report</td><td>生成 ingest review 摘要，方便用户先看风险再看 Raw。</td><td>“需人工确认：Benchmark 数字来自摘要，未核 PDF 表格”。</td></tr>",
+        "</tbody></table></section>",
+        "<section><h2>4. 建议改动文件</h2><ul>",
+        "<li><code>scripts/ingest-lint.mjs</code>：新增可复用 lint 脚本。</li>",
+        "<li><code>scripts/build-dev-cockpit.mjs</code>：在 plan artifact 生成指令里提示 ingest lint 输出。</li>",
+        "<li><code>docs/dev-cockpit-workflow.md</code>：补充 ingest review demo 用法。</li>",
+        "<li><code>log.md</code>：记录 workflow refactor，不触碰 <code>Wiki/</code>。</li>",
+        "</ul></section>",
+        "<section><h2>5. 验收方式</h2><ul>",
+        "<li>构造一个缺 <code>Tags</code> 的 Raw，lint 能报错。</li>",
+        "<li>构造一个越界 tag，lint 能指出并建议最接近 approved tag。</li>",
+        "<li>对现有 Raw 跑 lint，只报告历史兼容问题，不自动 retrofit。</li>",
+        "<li>确认 ingest 仍只动 <code>Raw/</code> 和 <code>log.md</code>，不改 <code>Wiki/</code>。</li>",
+        "</ul></section>",
+        "</main>",
+        "</html>",
+      ].join("\\n");
+    }
+
+    function ingestDemoMarkdown() {
+      return [
+        "# Plan Review：优化当前 ingest 模块",
+        "",
+        "## 目标",
+        "把现在依赖人工遵守规则的 ingest 流程，升级成“LLM 生成 Raw 前后都有结构化校验和可审阅报告”的稳定工作流。",
+        "",
+        "## 当前 ingest 流程",
+        "- 输入：用户给 arxiv / PDF / 笔记。",
+        "- 读规则：先读 schema.md、log.md、existing Raw。",
+        "- 查重：在 Raw/ 查 arxiv id / 同题论文。",
+        "- 写 Raw：按 5-section + 理解型元素生成 Raw/<id>.md。",
+        "- 存 PDF：必要时保存到 Raw/pdfs/<id>.pdf。",
+        "- 记 log：在 log.md 顶部追加 ingest 记录，不改 Wiki。",
+        "",
+        "## 问题",
+        "- 规则靠 LLM 记忆，容易漏 section、tag、Related Wiki 或 log 格式。",
+        "- 失败太晚发现，Raw 写完后才发现 ID 重复或 tag 越界。",
+        "- 没有审阅摘要，用户不知道该重点检查哪里。",
+        "- lint 逻辑不可复用，HTML / CLI / prompt 无法共享。",
+        "",
+        "## 优化模块",
+        "- Preflight：写 Raw 前检查 ID、重复论文、受控 tags 候选。",
+        "- Template Guard：检查 TL;DR / Method / Key Results / Takeaway / Open Questions 是否齐全。",
+        "- Tag Guard：从 schema.md 解析 approved tags，禁止自造 tag。",
+        "- Review Report：生成 ingest review 摘要，列出需要人工确认的数字、PDF、benchmark 和 tag。",
+        "",
+        "## 建议改动文件",
+        "- scripts/ingest-lint.mjs：新增可复用 lint 脚本。",
+        "- scripts/build-dev-cockpit.mjs：在 plan artifact 生成指令里提示 ingest lint 输出。",
+        "- docs/dev-cockpit-workflow.md：补充 ingest review demo 用法。",
+        "- log.md：记录 workflow refactor，不触碰 Wiki/。",
+        "",
+        "## 具体实现例子",
+        "~~~text",
+        "Raw/2605-demo.md",
+        "- 缺 Tags → 报错：Missing required metadata: Tags",
+        "- 含 #entropy-guided → 报错：Tag not approved; consider #entropy",
+        "- 缺 What would break this → 警告：Method section lacks break-condition check",
+        "~~~",
+        "",
+        "## 验收",
+        "- 构造一个缺 Tags 的 Raw，lint 能报错。",
+        "- 构造一个越界 tag，lint 能指出并建议最接近 approved tag。",
+        "- 对现有 Raw 跑 lint，只报告历史兼容问题，不自动 retrofit。",
+        "- 确认 ingest 仍只动 Raw/ 和 log.md，不改 Wiki/。",
+      ].join("\\n");
+    }
+
+    function loadIngestDemo() {
+      activeTask = "plan";
+      activeApproach = "modular";
+      $("#modeInput").value = "feature";
+      $("#requirementInput").value = "优化当前 ingest 模块：在生成 Raw 前后加入结构化校验和可审阅报告，确保 ID、受控 Tags、5-section、理解型元素、Related Wiki 和 log 记录都稳定；保持 ingest 只动 Raw/ 和 log.md，不触碰 Wiki/。";
+      $("#focusInput").value = "ingest Raw schema tags log lint";
+      $("#htmlArtifactInput").value = ingestDemoHtml();
+      $("#markdownArtifactInput").value = ingestDemoMarkdown();
+      render();
+      $("#artifact").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
     function generationPrompt() {
       const model = artifactModel();
       return [
@@ -1492,8 +1614,10 @@ function buildHtml(data) {
     $("#copyPlan").addEventListener("click", async () => {
       const ok = await copyText($("#markdownArtifactInput").value.trim() || scaffoldMarkdown());
       $("#copyPlan").textContent = ok ? "已复制" : "复制失败";
-      setTimeout(() => $("#copyPlan").textContent = "复制计划 markdown", 900);
+      setTimeout(() => $("#copyPlan").textContent = "复制已审 markdown", 900);
     });
+
+    $("#loadIngestDemo").addEventListener("click", loadIngestDemo);
 
     $("#reset").addEventListener("click", () => {
       $("#requirementInput").value = "";
