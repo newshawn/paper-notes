@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | turn dev cockpit into plan artifact review shell
+
+- **动机**：用户指出上一版仍是“美丽的废物”：demo 只是 prompt 生成器自身的 demo，而不是具体 plan 的 demo；最终 pipeline 应是 prompt → 大模型生成 HTML+Markdown plan artifact → 人类 review HTML → 再交给 LLM 执行。
+- **更新**：`dev-cockpit.html` 改为组织需求 / 代码库上下文，并生成 artifact 生成指令；大模型产出的 `plan-review.html` 和 `plan-review.md` 可粘贴回页面预览。
+- **评审素材**：替换自我指涉 demo 为“当前代码库模块 / 需求模块 / 参考示例 / 评审重点”，用于提示大模型生成真正与本次需求相关的 plan demo。
+- **导出**：新增“复制 artifact 生成指令”；执行 prompt 使用已审 markdown 和 HTML 预览内容。
+- **Wiki touched**: none (developer workflow only)
+
 ## [2026-05-11] refactor | make dev cockpit generate review artifact
 
 - **动机**：用户指出当前 `dev-cockpit.html` 仍偏“表单拼 prompt”，最终目标应是“根据需求和上下文 prompt 生成一个 HTML artifact，先让人 review 需求实现是否合理，再交给 LLM 执行”。

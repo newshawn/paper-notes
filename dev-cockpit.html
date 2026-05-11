@@ -529,6 +529,33 @@
       background: #fbfdf9;
     }
 
+    .review-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1.15fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .artifact-input {
+      min-height: 240px;
+      resize: vertical;
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .artifact-frame {
+      width: 100%;
+      min-height: 560px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+    }
+
     .artifact-card ul {
       margin: 8px 0 0;
       padding-left: 18px;
@@ -576,6 +603,7 @@
       aside { position: relative; height: auto; }
       .hero, .workspace { grid-template-columns: 1fr; }
       .choice-grid, .approach-grid, .plan-grid, .mini-guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .review-grid { grid-template-columns: 1fr; }
       .artifact-grid { grid-template-columns: 1fr; }
     }
 
@@ -598,8 +626,8 @@
         <a href="#choose">选择任务</a>
         <a href="#work">填写需求</a>
         <a href="#approaches">比较方案</a>
-        <a href="#demos">查看 Demo</a>
-        <a href="#artifact">评审稿</a>
+        <a href="#materials">评审素材</a>
+        <a href="#artifact">预览评审稿</a>
         <a href="#export">导出执行</a>
       </nav>
       <div class="quick-links">
@@ -614,11 +642,11 @@
       <section class="hero" id="top">
         <div class="panel">
           <h2>今天想让 LLM 帮你做什么？</h2>
-          <p>先粘贴需求和上下文，让页面生成一份“需求评审稿”。你看这份 HTML 是否合理，确认后再复制给 LLM 执行。</p>
+          <p>先把需求和上下文整理成 artifact 生成指令，让大模型输出 HTML + markdown。你在这里预览和修改，确认合理后再交给执行模型。</p>
         </div>
         <div class="panel">
           <h3>推荐流程</h3>
-          <p>需求 / 上下文 → 生成评审稿 → 人类 review → 复制 HTML 或 markdown → LLM 执行。Plan 是主线，demo 和风险只是帮助 review。</p>
+          <p>需求 / 上下文 → 复制生成指令 → 大模型产出 HTML+MD → 在本页 review → 交给执行模型。</p>
         </div>
       </section>
 
@@ -631,8 +659,8 @@
         <div class="mini-guide">
           <div class="mini-step"><b>01</b><span>选任务</span></div>
           <div class="mini-step"><b>02</b><span>粘贴上下文</span></div>
-          <div class="mini-step"><b>03</b><span>生成评审稿</span></div>
-          <div class="mini-step"><b>04</b><span>人工 review</span></div>
+          <div class="mini-step"><b>03</b><span>大模型生成 HTML+MD</span></div>
+          <div class="mini-step"><b>04</b><span>本页 review</span></div>
           <div class="mini-step"><b>05</b><span>复制执行稿</span></div>
         </div>
       </section>
@@ -640,13 +668,13 @@
       <section id="work">
         <div class="section-head">
           <h2>需求简报</h2>
-          <p>把你准备丢给 LLM 的需求和上下文先放在这里。页面会把它转成更适合人类 review 的 HTML artifact。</p>
+          <p>把你准备给大模型的需求和上下文放在这里。页面会生成一段“请产出 HTML+Markdown 计划评审稿”的指令。</p>
         </div>
         <div class="workspace">
           <div class="stack">
             <div class="panel">
               <h3 id="taskTitle">需求 / 上下文 Prompt</h3>
-              <textarea class="textarea" id="requirementInput" placeholder="粘贴需求、背景、上下文、约束、你希望 LLM 怎么改。页面会先生成评审稿，而不是直接让 LLM 执行。"></textarea>
+              <textarea class="textarea" id="requirementInput" placeholder="粘贴需求、背景、上下文、约束、你希望 LLM 规划什么。下一步会复制“生成 HTML+Markdown 评审稿”的指令给大模型。"></textarea>
             </div>
             <div class="panel">
               <h3>相关关键词</h3>
@@ -708,34 +736,34 @@
         <div class="plan-grid" id="planGrid"></div>
       </section>
 
-      <section id="demos">
+      <section id="materials">
         <div class="section-head">
-          <h2>Demo 草图</h2>
-          <p>每个要点下面都应该有一个能看的 demo：算法例子、UI 状态、数据流或测试样例。</p>
+          <h2>评审素材</h2>
+          <p>这些不是最终 demo，而是给大模型生成 plan artifact 的素材：当前代码库模块、需求模块和参考示例。</p>
         </div>
         <div class="demo-grid">
           <article class="demo">
-            <h3>A · 数据 / 控制流</h3>
+            <h3>A · 当前代码库模块</h3>
             <div class="demo-body">
-              <div class="flow" id="flowDemo"></div>
+              <div class="flow" id="codebaseModules"></div>
             </div>
           </article>
           <article class="demo">
-            <h3>B · 风险矩阵</h3>
+            <h3>B · 需求模块</h3>
             <div class="demo-body">
-              <div class="matrix" id="riskDemo"></div>
+              <div class="matrix" id="requirementModules"></div>
             </div>
           </article>
           <article class="demo">
-            <h3>C · 算法例子</h3>
+            <h3>C · 参考示例</h3>
             <div class="demo-body">
-              <p id="algorithmDemo"></p>
+              <div class="matrix" id="referenceExamples"></div>
             </div>
           </article>
           <article class="demo">
-            <h3>D · 验收故事</h3>
+            <h3>D · 评审重点</h3>
             <div class="demo-body">
-              <p id="testDemo"></p>
+              <div class="matrix" id="reviewFocus"></div>
             </div>
           </article>
         </div>
@@ -760,22 +788,37 @@
 
       <section id="artifact">
         <div class="section-head">
-          <h2>需求评审稿</h2>
-          <p>这是这个页面的核心产物：先看这份 HTML artifact 是否合理，再决定是否交给 LLM 执行。</p>
+          <h2>预览大模型生成的评审稿</h2>
+          <p>把大模型生成的 HTML 和 markdown 粘贴回来。先看 HTML 是否可读、计划是否合理，再决定是否交给执行模型。</p>
         </div>
-        <article class="artifact-preview" id="artifactPreview"></article>
+        <div class="review-grid">
+          <div class="stack">
+            <div class="panel">
+              <h3>粘贴 HTML artifact</h3>
+              <textarea class="artifact-input" id="htmlArtifactInput" placeholder="把大模型生成的 plan-review.html 内容粘贴到这里。"></textarea>
+            </div>
+            <div class="panel">
+              <h3>粘贴 Markdown 计划</h3>
+              <textarea class="artifact-input" id="markdownArtifactInput" placeholder="把大模型生成的 plan-review.md 内容粘贴到这里。"></textarea>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>HTML 预览</h3>
+            <iframe class="artifact-frame" id="htmlArtifactPreview" title="HTML artifact preview" sandbox=""></iframe>
+          </div>
+        </div>
       </section>
 
       <section id="export">
         <div class="section-head">
           <h2>导出执行稿</h2>
-          <p>review 通过后，再复制 HTML artifact、markdown 计划或执行 prompt 给 LLM。</p>
+          <p>review 通过后，再复制 markdown 计划或执行 prompt 给 LLM。若 HTML 仍不合理，回到大模型继续改 HTML+MD。</p>
         </div>
         <div class="prompt">
           <div class="actions">
-            <button class="primary" id="copyArtifact">复制评审 HTML</button>
+            <button class="primary" id="copyGenerationPrompt">复制 artifact 生成指令</button>
             <button class="primary" id="copyPrompt">复制 prompt</button>
-            <button id="copyPlan">复制计划 markdown</button>
+            <button id="copyPlan">复制已审 markdown</button>
             <button id="reset">重置</button>
           </div>
           <pre id="promptOutput"></pre>
@@ -784,7 +827,7 @@
     </main>
   </div>
 
-  <script id="repo-data" type="application/json">{"generatedAt":"2026-05-11T07:49:31.692Z","files":[".gitignore","AGENTS.md","CLAUDE.md","README.md","Raw/.gitkeep","Raw/2505-autorefine.md","Raw/2505-gigpo.md","Raw/2507-arpo.md","Raw/2509-empg.md","Raw/2509-treegrpo.md","Raw/2510-aepo.md","Raw/2510-igpo.md","Raw/2510-salt.md","Raw/2601-at2po.md","Raw/2601-matchtir.md","Raw/2602-rlanything.md","Raw/2603-mr-search.md","Raw/2604-eapo.md","Raw/2604-ig-search.md","Wiki/.gitkeep","Wiki/Credit-Assignment-in-Agentic-RL.md","Wiki/Entropy-Guided-Exploration.md","Wiki/Search-Augmented-RL.md","Wiki/Turn-Level-Reward.md","attachments/.gitkeep","dev-cockpit.html","docs/architecture.md","docs/dev-cockpit-workflow.md","docs/fork-guide.md","docs/html-review-workflow.md","docs/schema-template.md","docs/why.md","index.md","log.md","review.html","schema.md","scripts/build-dev-cockpit.mjs","scripts/build-review.mjs"],"groups":[{"name":"其他","count":2},{"name":"核心文件","count":6},{"name":"Raw 笔记","count":15},{"name":"Wiki 概念","count":5},{"name":"HTML 页面","count":2},{"name":"文档","count":6},{"name":"脚本","count":2}],"wikiPages":[{"file":"Wiki/Credit-Assignment-in-Agentic-RL.md","title":"Credit Assignment in Agentic RL","coverage":"high","updated":"2026-04-20","definition":"在多轮 LLM Agent 的 RL 训练中，把 trajectory 末端的稀疏 outcome reward 拆解/补充为每一步 action 的贡献度的技术。核心目标：解决 \"整条轨迹共享一个 reward\" 导致的 advantage 方差大、gradient 信号弱、训练不稳定的问题。","claims":17,"questions":37},{"file":"Wiki/Entropy-Guided-Exploration.md","title":"Entropy-Guided Exploration","coverage":"high","updated":"2026-04-20","definition":"用 policy 的 token / step entropy 作为信号，决定何时探索（采样更多分支）、如何更新（梯度缩放）、以及哪些状态值得深入。核心假设：高 entropy 位置 = 信息量大 / 结果对最终 reward 敏感 / 值得多采样对比。","claims":0,"questions":0},{"file":"Wiki/Search-Augmented-RL.md","title":"Search-Augmented RL","coverage":"high","updated":"2026-04-20","definition":"为 LLM agent 学习 多轮 search + reasoning 的强化学习范式。与普通 agent RL 的核心差别： - 外部检索作为主要信息来源（retrieved docs 作 context） - 多 search turns (通常 max 3-5 次 search/query) - 文档噪声是核心挑战——policy 要从 top-k 嘈杂 docs 里推理 - Credit 跨 search steps 难分配：哪次 query 精准、哪次 redundant？","claims":13,"questions":6},{"file":"Wiki/Turn-Level-Reward.md","title":"Turn-Level Reward","coverage":"high","updated":"2026-04-20","definition":"在 multi-turn agent RL 中，对每一 turn（一次 think + action + observation 的完整单元）计算独立的奖励/优势信号，而非只在 trajectory 末端给一个 outcome reward。目标：让模型学到\"这一 turn 这样做比那样做更好\"，而非\"整条轨迹整体好/坏\"。","claims":7,"questions":24}],"rawNotes":[{"file":"Raw/2604-ig-search.md","id":"2604-ig-search","title":"IG-Search: Step-Level Information Gain Rewards for Search-Augmented Reasoning","tags":["#credit-assignment","#information-gain","#step-wise-reward","#tool-use","#multi-turn-agent","#no-reward-model"],"tldr":"1. 核心结论：提出 IG-Search，用 counterfactual random docs 构建 IG baseline 作 step-level reward；Qwen2.5-3B 在 7 个 QA benchmark 上 avg EM 0.430（vs MR-Search 0.414, +1.6），multi-hop 特别强（HotpotQA +1.7） 2. 方法机制：每个 search step 的 reward = log P(a|real docs) - avgj log P(a|random docsj)；counterfactual 文档来自同一 batch 的其他题（保留长度 / 格式一致性，只剥离 topical relevance） 3. 为什么有效：trajectory-level reward 分不清\"好 query vs 冗余 query\"；每 step 跟 counterfactual 比，隔离纯粹的\"检索贡献\"，不被 reasoning / query 长度混淆 4. 💡 一句话精华：每个 search step 的 reward = 真检索 vs 随机文档的 log-prob 差——counterfactual baseline 隔离\"这次检索真的帮到答案了吗\"，不被 query 长度或 reasoning 混淆。"},{"file":"Raw/2604-eapo.md","id":"2604-eapo","title":"Rethinking Token-Level Credit Assignment in RLVR: A Polarity-Entropy Analysis","tags":["#credit-assignment","#entropy","#gradient-modulation","#token-level-reward","#no-reward-model"],"tldr":"1. 核心结论：提出 EAPO (Entropy-Aware Policy Optimization)——在 RLVR 设定下按 token entropy 调节 advantage；Qwen2.5-Math-7B 上 AIME24 Avg@32 39.8%（DAPO 35.7%，EntroAdv 36.8%），聚合 48.6% 为最强基线 2. 方法机制：Four Quadrant Decomposition（polarity × entropy 2×2）诊断 token 学习信号 → 按 entropy 显式 re-weight advantage：Â^CA{i,t} = Â{i,t} + α·sign(Â{i,t})·detach(Â^H{i,t}) 3. 为什么有效：softmax policy gradient 数学上 ∇Lt ∝ (1-π)，高熵 token 天然承载更多 reward 信息流；但 RLVR 均分 advantage 抵消这个偏好 → EAPO 显式恢复 4. 💡 一句话精华：Token 级 credit 不该均分——高熵 token（PHR 象限）才是 reasoning improvement 的主引擎，EAPO 用 entropy 显式把 advantage 推向它们。"},{"file":"Raw/2603-mr-search.md","id":"2603-mr-search","title":"MR-Search: Meta-Reinforcement Learning with Self-Reflection for Agentic Search","tags":["#credit-assignment","#no-reward-model","#turn-level-reward","#multi-turn-agent","#tool-use"],"tldr":"1. 核心结论：提出 MR-Search——in-context meta-RL 训练 search agent，通过 self-reflection 跨 episode 积累。Qwen2.5-7B 8-benchmark 平均 +9.2% relative（42.1 → 46.0），3B +19.3%（34.7 → 41.4） 2. 方法机制：每个 episode 结束后生成 explicit reflection 作为 prefix context，下个 episode 条件依赖所有前序轨迹 + reflections；turn-level RLOO advantage（leave-one-out）做 critic-free credit 3. 为什么有效：标准 RL 每个 episode 独立，无跨 attempt 记忆；MR-Search 把\"跨 attempts exploration\"学到 meta-policy 里，test-time 自动 refine 4. 💡 一句话精华：在独立 episode RL 外套一层 meta-episode（N=3 次 attempt 串联，reflection 做桥梁），用 turn-level RLOO advantage 做 credit——把\"探索策略\"本身作为 meta-policy 学习对象。"},{"file":"Raw/2602-rlanything.md","id":"2602-rlanything","title":"RLAnything","tags":["#credit-assignment","#reward-model","#self-adaptive-env","#gui-agent","#coding-agent"],"tldr":"用生成式 LLM 作 step-wise reward model，与 policy 联合优化 + 环境自适应调整。关键发现：只用 step reward（不用 outcome reward）训练效果反而更好——相当于一种无监督范式。"},{"file":"Raw/2601-matchtir.md","id":"2601-matchtir","title":"MatchTIR: Fine-Grained Supervision for Tool-Integrated Reasoning via Bipartite Matching","tags":["#credit-assignment","#bipartite-matching","#tool-integrated-reasoning","#ground-truth-trace"],"tldr":"把 multi-turn TIR 的 credit assignment 显式建模为二部图最优匹配：预测 turn ↔ golden trace step。用 KM 算法（硬匹配） 或 Optimal Transport（软匹配） 派生 dense turn-level reward，再与 trajectory-level 信号做双层 advantage。依赖 ground-truth trace，在 FTRL / BFCL / ToolHop 上全面优于 trajectory-level baseline。"},{"file":"Raw/2601-at2po.md","id":"2601-at2po","title":"AT²PO: Agentic Turn-level Tree Policy Optimization","tags":["#turn-level-is","#tree-rollout","#entropy","#branching-penalty","#credit-assignment"],"tldr":"三件套框架，将 agentic RL 的 rollout、reward、training 三个阶段都对齐到 turn 粒度： 1. Entropy-Guided Tree Expansion（替代 TreeGRPO 的随机挑选 + AEPO 的 branching penalty） 2. Turn-wise Credit Assignment（树结构 Monte Carlo 回传 per-turn value） 3. ATPO（turn-level IS ratio + asymmetric clipping，介于 GRPO token-level 和 GSPO sequence-level 之间）"},{"file":"Raw/2510-salt.md","id":"2510-salt","title":"SALT: Step-level Advantage Assignment for Long-horizon Agents via Trajectory Graph","tags":["#credit-assignment","#trajectory-graph","#long-horizon","#plug-and-play"],"tldr":"把同 prompt 下的多条轨迹构造成一个 graph（不仅仅是树），在 graph 上量化每个 step 的质量并分配 advantage。Plug-and-play 兼容 GRPO 等 group-based RL，不改 rollout、不加计算开销。在 WebShop / ALFWorld / AppWorld 上一致提升。"},{"file":"Raw/2510-igpo.md","id":"2510-igpo","title":"IGPO: Information Gain Policy Optimization","tags":["#credit-assignment","#information-gain","#turn-level-reward","#multi-turn-agent","#no-reward-model"],"tldr":"每个 turn 结束后，用 policy 自己计算 \"生成 ground-truth answer 的概率增量\" 作为 turn-level reward，替代 GRPO 的 rollout-level advantage。无需外部 PRM、无需 MC 采样、always non-zero。7 个 QA benchmark 平均 F1 58.7，比 GRPO +6.8 分；3B 模型提升 +15.3 分（小模型更依赖 dense reward）。"},{"file":"Raw/2510-aepo.md","id":"2510-aepo","title":"AEPO: Agentic Entropy-Balanced Policy Optimization","tags":["#entropy","#branching-penalty","#gradient-preservation","#agentic-rl"],"tldr":"对 ARPO 的批判性继承：过度依赖 entropy 信号导致训练崩溃（单一链条过度分支 + 高熵 token 梯度被无差别裁剪）。AEPO 用两件套修正： 1. Entropy Pre-Monitoring：自适应分配全局 vs 分支采样预算 + 连续高熵施加 branching penalty 2. Entropy-Balanced Policy Optimization：保留高熵 token 的梯度 + 熵感知 advantage 估计"},{"file":"Raw/2509-treegrpo.md","id":"2509-treegrpo","title":"TreeGRPO: Tree Search for LLM Agent Reinforcement Learning","tags":["#tree-rollout","#credit-assignment","#no-reward-model"],"tldr":"把 rollout 显式建成树：每个 prompt 一棵树，根节点是 prompt，先采 M 条完整轨迹，再随机挑 N 个非叶节点展开，重复 L 次。Advantage 做 inter-tree + intra-tree 双层聚合——前缀 token 的 advantage 被多个后续回答累加。注意：已被 AEPO 和 AT²PO 打败。"},{"file":"Raw/2509-empg.md","id":"2509-empg","title":"EMPG: Entropy-Modulated Policy Gradients","tags":["#entropy","#gradient-modulation","#future-clarity","#long-horizon-agent"],"tldr":"核心发现（Proposition 1）：softmax policy gradient 的 norm 与 entropy 单调耦合：$\\mathbb{E}[\\|\\nabla \\log \\pi\\|^2] = 1 - \\exp(-H2(\\pi))$。后果：confident correct step 梯度小（学不够快）、uncertain step 梯度大（训练不稳定）。EMPG 用 step 级 entropy 重新标定梯度幅度，并加一个 \"future clarity bonus\" 引导 agent 走向更可预测的状态。"},{"file":"Raw/2507-arpo.md","id":"2507-arpo","title":"ARPO: Agentic Reinforced Policy Optimization","tags":["#credit-assignment","#entropy","#branching","#tool-use","#no-reward-model"],"tldr":"观察：tool call 返回结果后，模型的前 10-50 个 token entropy 明显升高——说明这是关键但模糊的决策点。做法：高 entropy 时触发 partial rollout branching，从当前节点再采样 Z 条新路径，共享前缀 token 共享 advantage、分叉后 token 获得差异化 advantage。Tool-call 总数约为 GRPO 的一半，精度更高。"},{"file":"Raw/2505-gigpo.md","id":"2505-gigpo","title":"GiGPO: Group-in-Group Policy Optimization","tags":["#credit-assignment","#step-wise-reward","#same-state-grouping","#no-reward-model"],"tldr":"在 GRPO 基础上叠加 step-wise reward。核心 trick：不同轨迹如果经过同一个环境状态 $\\tilde{s}$，就把这些 (action, return) 对聚成一个 step-level group——在同状态下看谁的 action 带来更高最终 reward。只用 outcome return 回传，无需 reward model。"},{"file":"Raw/2505-autorefine.md","id":"2505-autorefine","title":"AutoRefine: Search and Refine During Think","tags":["#credit-assignment","#no-reward-model","#tool-use","#multi-turn-agent"],"tldr":"1. 核心结论：搜索流程加 explicit <refine 块蒸馏相关信息 + dual reward（F1 + 二值检索覆盖）—— Qwen2.5-3B 7-benchmark 平均 40.5%（vs Search-R1-Base 31.2%, +9.3 绝对）；multi-hop 尤其强 2. 方法机制：<think → <search → <documents → <refine → <think... 循环；refine 从原始 600 tokens docs 蒸馏到 100-200 tokens 关键 facts（4x 压缩） 3. 为什么有效：现有 search-RL 要求 policy 一次性做 4 件事（plan + 读噪声 docs + reason + answer）——refine step 把\"信息蒸馏\"单列成显式 action，分摊负荷 4. 💡 一句话精华：在 search-RL 里加 <refine 显式蒸馏步骤（4x 压缩文档）+ 复合 reward（答案对  0.1 if 检索含答案  0）—— multi-hop 最受益（+9.1~11.9 绝对）。"}],"recentLog":[{"date":"2026-05-11","action":"refactor","target":"make dev cockpit generate review artifact"},{"date":"2026-05-11","action":"refactor","target":"localize dev cockpit and make plan default"},{"date":"2026-05-11","action":"refactor","target":"simplify dev cockpit into workflow chooser"},{"date":"2026-05-11","action":"refactor","target":"split review and dev cockpit html workflows"},{"date":"2026-05-11","action":"refactor","target":"turn review.html into LLM interaction workspace"},{"date":"2026-05-11","action":"refactor","target":"document default auto commit and push"}]}</script>
+  <script id="repo-data" type="application/json">{"generatedAt":"2026-05-11T08:00:06.860Z","files":[".gitignore","AGENTS.md","CLAUDE.md","README.md","Raw/.gitkeep","Raw/2505-autorefine.md","Raw/2505-gigpo.md","Raw/2507-arpo.md","Raw/2509-empg.md","Raw/2509-treegrpo.md","Raw/2510-aepo.md","Raw/2510-igpo.md","Raw/2510-salt.md","Raw/2601-at2po.md","Raw/2601-matchtir.md","Raw/2602-rlanything.md","Raw/2603-mr-search.md","Raw/2604-eapo.md","Raw/2604-ig-search.md","Wiki/.gitkeep","Wiki/Credit-Assignment-in-Agentic-RL.md","Wiki/Entropy-Guided-Exploration.md","Wiki/Search-Augmented-RL.md","Wiki/Turn-Level-Reward.md","attachments/.gitkeep","dev-cockpit.html","docs/architecture.md","docs/dev-cockpit-workflow.md","docs/fork-guide.md","docs/html-review-workflow.md","docs/schema-template.md","docs/why.md","index.md","log.md","review.html","schema.md","scripts/build-dev-cockpit.mjs","scripts/build-review.mjs"],"groups":[{"name":"其他","count":2},{"name":"核心文件","count":6},{"name":"Raw 笔记","count":15},{"name":"Wiki 概念","count":5},{"name":"HTML 页面","count":2},{"name":"文档","count":6},{"name":"脚本","count":2}],"wikiPages":[{"file":"Wiki/Credit-Assignment-in-Agentic-RL.md","title":"Credit Assignment in Agentic RL","coverage":"high","updated":"2026-04-20","definition":"在多轮 LLM Agent 的 RL 训练中，把 trajectory 末端的稀疏 outcome reward 拆解/补充为每一步 action 的贡献度的技术。核心目标：解决 \"整条轨迹共享一个 reward\" 导致的 advantage 方差大、gradient 信号弱、训练不稳定的问题。","claims":17,"questions":37},{"file":"Wiki/Entropy-Guided-Exploration.md","title":"Entropy-Guided Exploration","coverage":"high","updated":"2026-04-20","definition":"用 policy 的 token / step entropy 作为信号，决定何时探索（采样更多分支）、如何更新（梯度缩放）、以及哪些状态值得深入。核心假设：高 entropy 位置 = 信息量大 / 结果对最终 reward 敏感 / 值得多采样对比。","claims":0,"questions":0},{"file":"Wiki/Search-Augmented-RL.md","title":"Search-Augmented RL","coverage":"high","updated":"2026-04-20","definition":"为 LLM agent 学习 多轮 search + reasoning 的强化学习范式。与普通 agent RL 的核心差别： - 外部检索作为主要信息来源（retrieved docs 作 context） - 多 search turns (通常 max 3-5 次 search/query) - 文档噪声是核心挑战——policy 要从 top-k 嘈杂 docs 里推理 - Credit 跨 search steps 难分配：哪次 query 精准、哪次 redundant？","claims":13,"questions":6},{"file":"Wiki/Turn-Level-Reward.md","title":"Turn-Level Reward","coverage":"high","updated":"2026-04-20","definition":"在 multi-turn agent RL 中，对每一 turn（一次 think + action + observation 的完整单元）计算独立的奖励/优势信号，而非只在 trajectory 末端给一个 outcome reward。目标：让模型学到\"这一 turn 这样做比那样做更好\"，而非\"整条轨迹整体好/坏\"。","claims":7,"questions":24}],"rawNotes":[{"file":"Raw/2604-ig-search.md","id":"2604-ig-search","title":"IG-Search: Step-Level Information Gain Rewards for Search-Augmented Reasoning","tags":["#credit-assignment","#information-gain","#step-wise-reward","#tool-use","#multi-turn-agent","#no-reward-model"],"tldr":"1. 核心结论：提出 IG-Search，用 counterfactual random docs 构建 IG baseline 作 step-level reward；Qwen2.5-3B 在 7 个 QA benchmark 上 avg EM 0.430（vs MR-Search 0.414, +1.6），multi-hop 特别强（HotpotQA +1.7） 2. 方法机制：每个 search step 的 reward = log P(a|real docs) - avgj log P(a|random docsj)；counterfactual 文档来自同一 batch 的其他题（保留长度 / 格式一致性，只剥离 topical relevance） 3. 为什么有效：trajectory-level reward 分不清\"好 query vs 冗余 query\"；每 step 跟 counterfactual 比，隔离纯粹的\"检索贡献\"，不被 reasoning / query 长度混淆 4. 💡 一句话精华：每个 search step 的 reward = 真检索 vs 随机文档的 log-prob 差——counterfactual baseline 隔离\"这次检索真的帮到答案了吗\"，不被 query 长度或 reasoning 混淆。"},{"file":"Raw/2604-eapo.md","id":"2604-eapo","title":"Rethinking Token-Level Credit Assignment in RLVR: A Polarity-Entropy Analysis","tags":["#credit-assignment","#entropy","#gradient-modulation","#token-level-reward","#no-reward-model"],"tldr":"1. 核心结论：提出 EAPO (Entropy-Aware Policy Optimization)——在 RLVR 设定下按 token entropy 调节 advantage；Qwen2.5-Math-7B 上 AIME24 Avg@32 39.8%（DAPO 35.7%，EntroAdv 36.8%），聚合 48.6% 为最强基线 2. 方法机制：Four Quadrant Decomposition（polarity × entropy 2×2）诊断 token 学习信号 → 按 entropy 显式 re-weight advantage：Â^CA{i,t} = Â{i,t} + α·sign(Â{i,t})·detach(Â^H{i,t}) 3. 为什么有效：softmax policy gradient 数学上 ∇Lt ∝ (1-π)，高熵 token 天然承载更多 reward 信息流；但 RLVR 均分 advantage 抵消这个偏好 → EAPO 显式恢复 4. 💡 一句话精华：Token 级 credit 不该均分——高熵 token（PHR 象限）才是 reasoning improvement 的主引擎，EAPO 用 entropy 显式把 advantage 推向它们。"},{"file":"Raw/2603-mr-search.md","id":"2603-mr-search","title":"MR-Search: Meta-Reinforcement Learning with Self-Reflection for Agentic Search","tags":["#credit-assignment","#no-reward-model","#turn-level-reward","#multi-turn-agent","#tool-use"],"tldr":"1. 核心结论：提出 MR-Search——in-context meta-RL 训练 search agent，通过 self-reflection 跨 episode 积累。Qwen2.5-7B 8-benchmark 平均 +9.2% relative（42.1 → 46.0），3B +19.3%（34.7 → 41.4） 2. 方法机制：每个 episode 结束后生成 explicit reflection 作为 prefix context，下个 episode 条件依赖所有前序轨迹 + reflections；turn-level RLOO advantage（leave-one-out）做 critic-free credit 3. 为什么有效：标准 RL 每个 episode 独立，无跨 attempt 记忆；MR-Search 把\"跨 attempts exploration\"学到 meta-policy 里，test-time 自动 refine 4. 💡 一句话精华：在独立 episode RL 外套一层 meta-episode（N=3 次 attempt 串联，reflection 做桥梁），用 turn-level RLOO advantage 做 credit——把\"探索策略\"本身作为 meta-policy 学习对象。"},{"file":"Raw/2602-rlanything.md","id":"2602-rlanything","title":"RLAnything","tags":["#credit-assignment","#reward-model","#self-adaptive-env","#gui-agent","#coding-agent"],"tldr":"用生成式 LLM 作 step-wise reward model，与 policy 联合优化 + 环境自适应调整。关键发现：只用 step reward（不用 outcome reward）训练效果反而更好——相当于一种无监督范式。"},{"file":"Raw/2601-matchtir.md","id":"2601-matchtir","title":"MatchTIR: Fine-Grained Supervision for Tool-Integrated Reasoning via Bipartite Matching","tags":["#credit-assignment","#bipartite-matching","#tool-integrated-reasoning","#ground-truth-trace"],"tldr":"把 multi-turn TIR 的 credit assignment 显式建模为二部图最优匹配：预测 turn ↔ golden trace step。用 KM 算法（硬匹配） 或 Optimal Transport（软匹配） 派生 dense turn-level reward，再与 trajectory-level 信号做双层 advantage。依赖 ground-truth trace，在 FTRL / BFCL / ToolHop 上全面优于 trajectory-level baseline。"},{"file":"Raw/2601-at2po.md","id":"2601-at2po","title":"AT²PO: Agentic Turn-level Tree Policy Optimization","tags":["#turn-level-is","#tree-rollout","#entropy","#branching-penalty","#credit-assignment"],"tldr":"三件套框架，将 agentic RL 的 rollout、reward、training 三个阶段都对齐到 turn 粒度： 1. Entropy-Guided Tree Expansion（替代 TreeGRPO 的随机挑选 + AEPO 的 branching penalty） 2. Turn-wise Credit Assignment（树结构 Monte Carlo 回传 per-turn value） 3. ATPO（turn-level IS ratio + asymmetric clipping，介于 GRPO token-level 和 GSPO sequence-level 之间）"},{"file":"Raw/2510-salt.md","id":"2510-salt","title":"SALT: Step-level Advantage Assignment for Long-horizon Agents via Trajectory Graph","tags":["#credit-assignment","#trajectory-graph","#long-horizon","#plug-and-play"],"tldr":"把同 prompt 下的多条轨迹构造成一个 graph（不仅仅是树），在 graph 上量化每个 step 的质量并分配 advantage。Plug-and-play 兼容 GRPO 等 group-based RL，不改 rollout、不加计算开销。在 WebShop / ALFWorld / AppWorld 上一致提升。"},{"file":"Raw/2510-igpo.md","id":"2510-igpo","title":"IGPO: Information Gain Policy Optimization","tags":["#credit-assignment","#information-gain","#turn-level-reward","#multi-turn-agent","#no-reward-model"],"tldr":"每个 turn 结束后，用 policy 自己计算 \"生成 ground-truth answer 的概率增量\" 作为 turn-level reward，替代 GRPO 的 rollout-level advantage。无需外部 PRM、无需 MC 采样、always non-zero。7 个 QA benchmark 平均 F1 58.7，比 GRPO +6.8 分；3B 模型提升 +15.3 分（小模型更依赖 dense reward）。"},{"file":"Raw/2510-aepo.md","id":"2510-aepo","title":"AEPO: Agentic Entropy-Balanced Policy Optimization","tags":["#entropy","#branching-penalty","#gradient-preservation","#agentic-rl"],"tldr":"对 ARPO 的批判性继承：过度依赖 entropy 信号导致训练崩溃（单一链条过度分支 + 高熵 token 梯度被无差别裁剪）。AEPO 用两件套修正： 1. Entropy Pre-Monitoring：自适应分配全局 vs 分支采样预算 + 连续高熵施加 branching penalty 2. Entropy-Balanced Policy Optimization：保留高熵 token 的梯度 + 熵感知 advantage 估计"},{"file":"Raw/2509-treegrpo.md","id":"2509-treegrpo","title":"TreeGRPO: Tree Search for LLM Agent Reinforcement Learning","tags":["#tree-rollout","#credit-assignment","#no-reward-model"],"tldr":"把 rollout 显式建成树：每个 prompt 一棵树，根节点是 prompt，先采 M 条完整轨迹，再随机挑 N 个非叶节点展开，重复 L 次。Advantage 做 inter-tree + intra-tree 双层聚合——前缀 token 的 advantage 被多个后续回答累加。注意：已被 AEPO 和 AT²PO 打败。"},{"file":"Raw/2509-empg.md","id":"2509-empg","title":"EMPG: Entropy-Modulated Policy Gradients","tags":["#entropy","#gradient-modulation","#future-clarity","#long-horizon-agent"],"tldr":"核心发现（Proposition 1）：softmax policy gradient 的 norm 与 entropy 单调耦合：$\\mathbb{E}[\\|\\nabla \\log \\pi\\|^2] = 1 - \\exp(-H2(\\pi))$。后果：confident correct step 梯度小（学不够快）、uncertain step 梯度大（训练不稳定）。EMPG 用 step 级 entropy 重新标定梯度幅度，并加一个 \"future clarity bonus\" 引导 agent 走向更可预测的状态。"},{"file":"Raw/2507-arpo.md","id":"2507-arpo","title":"ARPO: Agentic Reinforced Policy Optimization","tags":["#credit-assignment","#entropy","#branching","#tool-use","#no-reward-model"],"tldr":"观察：tool call 返回结果后，模型的前 10-50 个 token entropy 明显升高——说明这是关键但模糊的决策点。做法：高 entropy 时触发 partial rollout branching，从当前节点再采样 Z 条新路径，共享前缀 token 共享 advantage、分叉后 token 获得差异化 advantage。Tool-call 总数约为 GRPO 的一半，精度更高。"},{"file":"Raw/2505-gigpo.md","id":"2505-gigpo","title":"GiGPO: Group-in-Group Policy Optimization","tags":["#credit-assignment","#step-wise-reward","#same-state-grouping","#no-reward-model"],"tldr":"在 GRPO 基础上叠加 step-wise reward。核心 trick：不同轨迹如果经过同一个环境状态 $\\tilde{s}$，就把这些 (action, return) 对聚成一个 step-level group——在同状态下看谁的 action 带来更高最终 reward。只用 outcome return 回传，无需 reward model。"},{"file":"Raw/2505-autorefine.md","id":"2505-autorefine","title":"AutoRefine: Search and Refine During Think","tags":["#credit-assignment","#no-reward-model","#tool-use","#multi-turn-agent"],"tldr":"1. 核心结论：搜索流程加 explicit <refine 块蒸馏相关信息 + dual reward（F1 + 二值检索覆盖）—— Qwen2.5-3B 7-benchmark 平均 40.5%（vs Search-R1-Base 31.2%, +9.3 绝对）；multi-hop 尤其强 2. 方法机制：<think → <search → <documents → <refine → <think... 循环；refine 从原始 600 tokens docs 蒸馏到 100-200 tokens 关键 facts（4x 压缩） 3. 为什么有效：现有 search-RL 要求 policy 一次性做 4 件事（plan + 读噪声 docs + reason + answer）——refine step 把\"信息蒸馏\"单列成显式 action，分摊负荷 4. 💡 一句话精华：在 search-RL 里加 <refine 显式蒸馏步骤（4x 压缩文档）+ 复合 reward（答案对  0.1 if 检索含答案  0）—— multi-hop 最受益（+9.1~11.9 绝对）。"}],"recentLog":[{"date":"2026-05-11","action":"refactor","target":"turn dev cockpit into plan artifact review shell"},{"date":"2026-05-11","action":"refactor","target":"make dev cockpit generate review artifact"},{"date":"2026-05-11","action":"refactor","target":"localize dev cockpit and make plan default"},{"date":"2026-05-11","action":"refactor","target":"simplify dev cockpit into workflow chooser"},{"date":"2026-05-11","action":"refactor","target":"split review and dev cockpit html workflows"},{"date":"2026-05-11","action":"refactor","target":"turn review.html into LLM interaction workspace"}]}</script>
   <script>
     const data = JSON.parse(document.getElementById("repo-data").textContent);
     const $ = (selector) => document.querySelector(selector);
@@ -1016,24 +1059,33 @@
       )).join("");
     }
 
-    function renderDemos() {
+    function renderMaterials() {
       const requirement = $("#requirementInput").value.trim() || "当前需求";
-      $("#flowDemo").innerHTML = [
-        ["输入", "需求 + 关键词"],
-        ["上下文", "匹配文件 / Wiki / Raw"],
-        ["计划", "方案 + 阶段"],
-        ["导出", "LLM prompt / markdown"],
-      ].map(([label, text]) => '<div><b>' + label + '</b><span>' + text + '</span></div>').join("");
+      const groups = data.groups.slice(0, 4);
+      $("#codebaseModules").innerHTML = groups.map((item) =>
+        '<div><b>' + item.name + '</b><span>' + item.count + ' 个文件</span></div>'
+      ).join("");
 
-      $("#riskDemo").innerHTML = [
-        ["范围漂移", "需求太散时先锁定一句话目标。"],
-        ["上下文偏差", "相关文件由关键词排序，执行前仍要读源码。"],
-        ["Demo 过期", "demo 是计划辅助，不是生产逻辑。"],
-        ["过度设计", "日常先走稳健计划；需求不清楚才探索。"],
+      $("#requirementModules").innerHTML = [
+        ["需求", requirement.slice(0, 90) || "未填写"],
+        ["关键词", $("#focusInput").value.trim() || "未指定"],
+        ["工作流", currentTask().label],
+        ["方案", (approachTemplates.find((item) => item.id === activeApproach) || approachTemplates[0]).title],
       ].map(([label, text]) => '<div><strong>' + label + '</strong><span>' + text + '</span></div>').join("");
 
-      $("#algorithmDemo").textContent = "示例：把需求拆成关键词，给文件路径 / Wiki 标题 / Raw 标签打分；命中越多越靠前。当前需求：「" + requirement + "」。";
-      $("#testDemo").textContent = "验收故事：修改生成脚本后运行 node scripts/build-dev-cockpit.mjs；再解析嵌入 JS，检查导出 prompt、方案卡、demo 草图是否存在。";
+      $("#referenceExamples").innerHTML = [
+        ["代码库地图", "用模块卡片展示哪些目录/脚本会被改。"],
+        ["需求拆解", "把目标、非目标、约束、验收标准分开。"],
+        ["Plan demo", "为关键步骤配输入/输出或 UI 状态示例。"],
+        ["执行包", "最终 markdown 能直接交给 LLM 执行。"],
+      ].map(([label, text]) => '<div><b>' + label + '</b><span>' + text + '</span></div>').join("");
+
+      $("#reviewFocus").innerHTML = [
+        ["合理性", "计划是否真的对应当前需求？"],
+        ["上下文", "是否引用了正确的代码库模块？"],
+        ["可执行", "每一步是否能被 LLM 明确执行？"],
+        ["验收", "是否有清晰检查命令或验收故事？"],
+      ].map(([label, text]) => '<div><strong>' + label + '</strong><span>' + text + '</span></div>').join("");
     }
 
     function renderRecentLog() {
@@ -1067,25 +1119,26 @@
       };
     }
 
-    function artifactHtml() {
+    function scaffoldHtml() {
       const model = artifactModel();
       const paperItems = model.papers.length ? model.papers.map((item) => '<li>' + escapeClient(item.type + ' · ' + item.title + ' (' + item.file + ')') + '</li>').join("") : "<li>无直接匹配；执行前按需补读相关文件。</li>";
       return [
-        '<h1>需求评审稿：' + escapeClient(model.task.title) + '</h1>',
-        '<p>目标是先 review 需求和实现计划是否合理，再交给 LLM 执行。</p>',
+        '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>Plan Review</title><style>body{font:15px/1.6 system-ui;padding:24px;max-width:1100px;margin:auto;color:#202421}section{border:1px solid #dbe2d7;border-radius:10px;padding:14px;margin:12px 0;background:#fffefb}h1,h2{margin-top:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(max-width:760px){.grid{grid-template-columns:1fr}}</style><body>',
+        '<h1>Plan Review：' + escapeClient(model.task.title) + '</h1>',
+        '<p>这是占位预览。真正的 HTML+Markdown 应由大模型根据左侧生成指令产出，再粘贴回本页 review。</p>',
         '<div class="artifact-grid">',
-          '<section class="artifact-card"><h2>1. 需求和上下文</h2><p>' + escapeClient(model.requirement) + '</p><p><strong>关键词：</strong>' + escapeClient(model.focus) + '</p></section>',
-          '<section class="artifact-card"><h2>2. 推荐方案</h2><p><strong>' + escapeClient(model.approach.title) + '</strong></p><p>' + escapeClient(model.approach.summary) + '</p><ul><li>成本：' + escapeClient(model.approach.cost) + '</li><li>风险：' + escapeClient(model.approach.risk) + '</li><li>适合：' + escapeClient(model.approach.best) + '</li></ul></section>',
-          '<section class="artifact-card"><h2>3. 执行计划</h2><ul>' + model.slices.map((slice) => '<li><strong>' + escapeClient(slice[0] + ' · ' + slice[1]) + '</strong>：' + escapeClient(slice[2].join("；")) + '</li>').join("") + '</ul></section>',
-          '<section class="artifact-card"><h2>4. Review 检查</h2><ul><li>需求是否能用一句话验收？</li><li>改动文件是否集中？</li><li>是否有风险和 demo 支撑？</li><li>是否需要先读更多源码？</li></ul></section>',
-          '<section class="artifact-card"><h2>5. 相关文件</h2><ul>' + model.files.map((file) => '<li>' + escapeClient(file) + '</li>').join("") + '</ul></section>',
-          '<section class="artifact-card"><h2>6. 相关 Raw / Wiki</h2><ul>' + paperItems + '</ul></section>',
+          '<section><h2>1. 当前代码库模块</h2><ul>' + data.groups.map((item) => '<li>' + escapeClient(item.name + '：' + item.count + ' 个文件') + '</li>').join("") + '</ul></section>',
+          '<section><h2>2. 需求模块</h2><p>' + escapeClient(model.requirement) + '</p><p><strong>关键词：</strong>' + escapeClient(model.focus) + '</p></section>',
+          '<section><h2>3. 推荐方案</h2><p><strong>' + escapeClient(model.approach.title) + '</strong></p><p>' + escapeClient(model.approach.summary) + '</p></section>',
+          '<section><h2>4. 执行计划草图</h2><ul>' + model.slices.map((slice) => '<li><strong>' + escapeClient(slice[0] + ' · ' + slice[1]) + '</strong>：' + escapeClient(slice[2].join("；")) + '</li>').join("") + '</ul></section>',
+          '<section><h2>5. 相关文件</h2><ul>' + model.files.map((file) => '<li>' + escapeClient(file) + '</li>').join("") + '</ul></section>',
+          '<section><h2>6. 相关 Raw / Wiki</h2><ul>' + paperItems + '</ul></section>',
         '</div>',
-        '<section class="artifact-card"><h2>7. 交给 LLM 前的执行指令</h2><p>如果这份评审稿合理，请让 LLM 先读 AGENTS.md、schema.md、log.md 顶部和相关文件，再按上面的计划执行；完成后运行生成/检查命令，更新 log，并按仓库规则提交推送。</p></section>',
+        '<section><h2>7. Review 检查</h2><ul><li>是否展示了真实代码库模块？</li><li>是否有需求专属 demo，而不是页面自身 demo？</li><li>计划是否能直接执行？</li></ul></section></body></html>',
       ].join("");
     }
 
-    function artifactMarkdown() {
+    function scaffoldMarkdown() {
       const model = artifactModel();
       return [
         "# 需求评审稿：" + model.task.title,
@@ -1112,6 +1165,50 @@
         "",
         "## 6. 交给 LLM 前的执行指令",
         "如果这份评审稿合理，请让 LLM 先读 AGENTS.md、schema.md、log.md 顶部和相关文件，再按计划执行；完成后运行生成/检查命令，更新 log，并按仓库规则提交推送。",
+      ].join("\n");
+    }
+
+    function generationPrompt() {
+      const model = artifactModel();
+      return [
+        "你要根据下面的需求和仓库上下文，生成两个 artifact：",
+        "1. plan-review.html：给人类 review 的自包含 HTML 页面。",
+        "2. plan-review.md：同内容的 markdown 执行计划。",
+        "",
+        "重要目标：HTML 不是装饰，也不是 prompt 生成器 demo。HTML 必须用于 review 这次具体 plan 是否合理。",
+        "",
+        "HTML 必须包含这些模块：",
+        "- 当前代码库模块：用卡片/表格展示相关目录、脚本、页面、文档，以及它们在本次改动中的角色。",
+        "- 需求模块：目标、非目标、约束、用户故事、验收标准。",
+        "- 方案比较：至少 2 个方案，说明为什么推荐其中一个。",
+        "- Plan demo：针对本次需求的 demo，例如 UI 状态、数据流、算法输入输出、前后对比或测试故事；不要演示这个生成器本身。",
+        "- 执行计划：按阶段列出要改文件、改动内容、验证命令和风险。",
+        "- Review checklist：让人能判断是否可以交给 LLM 执行。",
+        "",
+        "Markdown 必须适合直接交给 LLM 执行，包含明确文件、步骤、验证和注意事项。",
+        "",
+        "用户需求 / 上下文：",
+        model.requirement,
+        "",
+        "关键词：",
+        model.focus,
+        "",
+        "页面初步匹配的相关文件：",
+        ...model.files.map((file) => "- " + file),
+        "",
+        "仓库模块统计：",
+        ...data.groups.map((item) => "- " + item.name + "：" + item.count + " 个文件"),
+        "",
+        "约束：",
+        ...model.constraints.map((item) => "- " + item),
+        "",
+        "请只输出两个 fenced code blocks：",
+        "~~~html",
+        "<!-- plan-review.html -->",
+        "~~~",
+        "~~~markdown",
+        "<!-- plan-review.md -->",
+        "~~~",
       ].join("\n");
     }
 
@@ -1142,6 +1239,8 @@
     function promptText() {
       const approach = approachTemplates.find((item) => item.id === activeApproach);
       const task = currentTask();
+      const reviewedMarkdown = $("#markdownArtifactInput").value.trim() || scaffoldMarkdown();
+      const reviewedHtml = $("#htmlArtifactInput").value.trim() || scaffoldHtml();
       return [
         "你正在 /Users/xuexiang/Documents/PaperNotes 仓库中工作。",
         "",
@@ -1161,8 +1260,11 @@
         "可能相关文件：",
         ...matchedFiles().map((file) => "- " + file),
         "",
-        "实现计划：",
-        artifactMarkdown(),
+        "已经 review 过的 markdown 计划：",
+        reviewedMarkdown,
+        "",
+        "对应 HTML 评审稿（供理解，不要手改生成物后忘记更新源文件）：",
+        reviewedHtml,
         "",
         "完成前请验证：",
         "- 生成脚本能重新运行。",
@@ -1176,7 +1278,10 @@
     }
 
     function renderArtifact() {
-      $("#artifactPreview").innerHTML = artifactHtml();
+      $("#htmlArtifactPreview").srcdoc = $("#htmlArtifactInput").value.trim() || scaffoldHtml();
+      if (!$("#markdownArtifactInput").value.trim()) {
+        $("#markdownArtifactInput").placeholder = scaffoldMarkdown();
+      }
     }
 
     async function copyText(text) {
@@ -1203,7 +1308,7 @@
       renderFileList("#matchedFiles", matchedFiles());
       renderApproaches();
       renderPlan();
-      renderDemos();
+      renderMaterials();
       renderRecentLog();
       renderPaperContext();
       renderArtifact();
@@ -1214,6 +1319,8 @@
       $("#requirementInput").addEventListener(eventName, render);
       $("#focusInput").addEventListener(eventName, render);
       $("#modeInput").addEventListener(eventName, render);
+      $("#htmlArtifactInput").addEventListener(eventName, render);
+      $("#markdownArtifactInput").addEventListener(eventName, render);
       $$("#constraintInputs input").forEach((input) => input.addEventListener(eventName, render));
     });
 
@@ -1223,14 +1330,14 @@
       setTimeout(() => $("#copyPrompt").textContent = "复制 prompt", 900);
     });
 
-    $("#copyArtifact").addEventListener("click", async () => {
-      const ok = await copyText('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>需求评审稿</title><body>' + artifactHtml() + '</body></html>');
-      $("#copyArtifact").textContent = ok ? "已复制" : "复制失败";
-      setTimeout(() => $("#copyArtifact").textContent = "复制评审 HTML", 900);
+    $("#copyGenerationPrompt").addEventListener("click", async () => {
+      const ok = await copyText(generationPrompt());
+      $("#copyGenerationPrompt").textContent = ok ? "已复制" : "复制失败";
+      setTimeout(() => $("#copyGenerationPrompt").textContent = "复制 artifact 生成指令", 900);
     });
 
     $("#copyPlan").addEventListener("click", async () => {
-      const ok = await copyText(artifactMarkdown());
+      const ok = await copyText($("#markdownArtifactInput").value.trim() || scaffoldMarkdown());
       $("#copyPlan").textContent = ok ? "已复制" : "复制失败";
       setTimeout(() => $("#copyPlan").textContent = "复制计划 markdown", 900);
     });
@@ -1238,6 +1345,8 @@
     $("#reset").addEventListener("click", () => {
       $("#requirementInput").value = "";
       $("#focusInput").value = "";
+      $("#htmlArtifactInput").value = "";
+      $("#markdownArtifactInput").value = "";
       $("#modeInput").value = "feature";
       activeTask = "plan";
       activeApproach = "modular";

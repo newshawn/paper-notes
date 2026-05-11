@@ -1,11 +1,11 @@
 # 开发工作台工作流
 
-`dev-cockpit.html` 是本仓库的需求评审层。它借鉴 html-effectiveness 的思路：把用户给 LLM 的需求 / 上下文 prompt 先转换成一份可读的 HTML 评审稿。人先 review 这份 artifact 是否合理，再把 HTML、markdown 或执行 prompt 交给 LLM。
+`dev-cockpit.html` 是本仓库的 plan artifact review shell。它不负责自己“想出”最终计划，而是帮助你把需求和代码库上下文整理成一段 artifact 生成指令，让大模型生成 `plan-review.html` 和 `plan-review.md`。你再把 HTML / markdown 粘贴回页面审阅，确认合理后交给执行模型。
 
 ## 真相源
 
 - 源码、Markdown 文档、`Raw/`、`Wiki/`、`schema.md` 和 `log.md` 仍然是真相源。
-- `dev-cockpit.html` 是生成物，只帮助生成和审阅需求实现稿，不应该手改。
+- `dev-cockpit.html` 是生成物，只帮助组织输入、预览大模型生成的 plan artifact，不应该手改。
 - 生成器是 `scripts/build-dev-cockpit.mjs`。
 
 ## 生成
@@ -20,13 +20,13 @@ node scripts/build-dev-cockpit.mjs
 
 1. 打开 `dev-cockpit.html`。
 2. 默认优先选“做计划”：日常开发最重要的是先得到清晰、可执行、可验证的 plan。
-3. 如果需求还模糊，选“探索”；如果需要示例支撑，选“做 Demo”；如果只是想先看仓库，选“先理解”。
-4. 写一句需求。
-5. 填相关关键词，例如文件路径、模块、概念或 tag。
-6. 先看“需求评审稿”：目标、上下文、推荐方案、执行计划、风险、相关文件是否合理。
-7. review 通过后，再复制评审 HTML、markdown 计划或 LLM prompt。
-8. 让 LLM 在仓库里执行；如果修改了生成器或上下文，再重新生成 `dev-cockpit.html`。
+3. 写需求和上下文，填相关关键词。
+4. 点击“复制 artifact 生成指令”，把它交给大模型。
+5. 要求大模型返回两个 code block：`plan-review.html` 和 `plan-review.md`。
+6. 把 HTML 和 markdown 粘贴回 `dev-cockpit.html` 预览。
+7. 如果 HTML 里的代码库模块、需求模块、参考示例、plan demo、执行步骤不合理，就继续让大模型改 HTML+MD。
+8. review 通过后，复制已审 markdown 或执行 prompt 给 LLM 执行。
 
 ## 维护规则
 
-改工作台结构或交互时，编辑 `scripts/build-dev-cockpit.mjs` 并重新生成 `dev-cockpit.html`。评审稿和 demo 只用于辅助判断；真正的生产行为应该留在源码里，而不是藏进生成 HTML。
+改工作台结构或交互时，编辑 `scripts/build-dev-cockpit.mjs` 并重新生成 `dev-cockpit.html`。真正的 plan demo 应该由大模型根据当前需求和代码库上下文生成；本页面只提供输入组织、预览和导出执行包。
