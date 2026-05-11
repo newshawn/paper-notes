@@ -312,6 +312,19 @@ function makeAgentBrief({ wikiPages, rawNotes, pendingConcepts }) {
   ].join("\n");
 }
 
+function makeRepositorySnapshot({ wikiPages, rawNotes, pendingConcepts, topTags }) {
+  const highCoverage = wikiPages.filter((page) => page.coverage === "high").length;
+  const claimCount = wikiPages.reduce((sum, page) => sum + page.claimCount, 0);
+  const questionCount = wikiPages.reduce((sum, page) => sum + page.questionCount, 0);
+  return [
+    `Raw notes: ${rawNotes.length}`,
+    `Wiki pages: ${wikiPages.length} (${highCoverage} high coverage)`,
+    `Claims / open questions: ${claimCount} / ${questionCount}`,
+    `Pending concepts: ${pendingConcepts.map((item) => item.concept).join(", ") || "none"}`,
+    `Top tags: ${topTags.map((item) => `${item.tag}(${item.count})`).join(", ") || "none"}`,
+  ].join("\n");
+}
+
 function buildHtml(data) {
   const payload = JSON.stringify(data).replaceAll("</script", "<\\/script");
   return `<!doctype html>
@@ -334,6 +347,7 @@ function buildHtml(data) {
       --amber: #b45309;
       --rose: #be123c;
       --green: #15803d;
+      --violet: #7c3aed;
       --shadow: 0 18px 45px rgba(32, 33, 36, 0.08);
     }
 
@@ -439,7 +453,7 @@ function buildHtml(data) {
       margin-bottom: 20px;
     }
 
-    .hero-copy, .brief-panel, .toolbar, .content-panel, .stat, .raw-row, .wiki-card, .tag-pill, .prompt-box {
+    .hero-copy, .brief-panel, .toolbar, .content-panel, .stat, .raw-row, .wiki-card, .tag-pill, .prompt-box, .field, .mode-card, .context-card {
       border: 1px solid var(--line);
       background: var(--panel);
       box-shadow: var(--shadow);
@@ -482,6 +496,12 @@ function buildHtml(data) {
       margin: 0;
       padding-left: 18px;
       color: var(--muted);
+    }
+
+    .brief-panel code {
+      padding: 1px 4px;
+      border-radius: 5px;
+      background: #e8e3d6;
     }
 
     .toolbar {
@@ -544,6 +564,159 @@ function buildHtml(data) {
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 18px;
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.88fr) minmax(0, 1.12fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .control-stack, .context-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field, .context-card {
+      display: grid;
+      gap: 9px;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: none;
+    }
+
+    .field label, .context-card h3 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .field small {
+      color: var(--muted);
+    }
+
+    .input, .textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .input {
+      min-height: 38px;
+      padding: 8px 10px;
+    }
+
+    .textarea {
+      min-height: 210px;
+      resize: vertical;
+      padding: 10px 11px;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .mode-card {
+      min-height: 66px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: left;
+      box-shadow: none;
+    }
+
+    .mode-card strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .mode-card small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .mode-card.active {
+      border-color: rgba(37, 99, 235, 0.42);
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    .option-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .check-pill {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f9f7ef;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .check-pill input {
+      margin: 0;
+    }
+
+    .context-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .context-list li {
+      display: grid;
+      gap: 3px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffefa;
+    }
+
+    .context-list b {
+      font-size: 13px;
+    }
+
+    .context-list span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .prompt-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .secondary-button {
+      min-height: 34px;
+      padding: 7px 11px;
+      border-radius: 6px;
+      border-color: var(--line);
+      background: var(--panel-strong);
+      color: var(--ink);
+    }
+
+    .prompt-output {
+      max-height: 520px;
+      overflow: auto;
+      border-radius: 10px;
     }
 
     .stat {
@@ -722,6 +895,7 @@ function buildHtml(data) {
       .app { grid-template-columns: 1fr; }
       aside { position: relative; height: auto; }
       .hero { grid-template-columns: 1fr; }
+      .workspace-grid { grid-template-columns: 1fr; }
       .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grid { grid-template-columns: 1fr; }
     }
@@ -730,6 +904,7 @@ function buildHtml(data) {
       main { padding: 16px; }
       .hero-copy h2 { font-size: 25px; }
       .stats { grid-template-columns: 1fr; }
+      .mode-grid { grid-template-columns: 1fr; }
       .raw-row { grid-template-columns: 1fr; }
       .copy-button { width: 100%; margin-left: 0; }
     }
@@ -755,32 +930,92 @@ function buildHtml(data) {
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <h2>把 LLM Wiki 从“agent 能读”升级成“人愿意 review”。</h2>
-          <p>这里聚合概念页、Raw 时间线、待建主题和 agent handoff prompt。以后要改 Wiki 的风格或功能，就先看这个 HTML，再让 agent 回到底层 Markdown/脚本动刀。</p>
+          <h2>把新需求先变成一段稳定的 LLM 工作上下文。</h2>
+          <p>这个页面不只展示 PaperNotes 的现状，也把“我要改什么”组织成可执行 prompt：仓库状态、相关 Raw/Wiki、工作红线和检查项会一起带给 LLM。</p>
         </div>
         <div class="brief-panel">
-          <h3>Review Contract</h3>
+          <h3>Working Contract</h3>
           <ul>
             <li>Source of truth: <code>Raw/</code>, <code>Wiki/</code>, <code>schema.md</code></li>
-            <li>Human layer: <code>review.html</code></li>
+            <li>Interaction layer: <code>review.html</code></li>
             <li>Generator: <code>scripts/build-review.mjs</code></li>
-            <li>Agent handoff: copy brief in the Prompt tab</li>
+            <li>LLM handoff: Workspace prompt</li>
           </ul>
         </div>
       </section>
 
       <div class="toolbar">
         <div class="tabs" aria-label="Views">
-          <button class="tab-button active" data-tab="overview">Overview</button>
+          <button class="tab-button active" data-tab="workspace">Workspace</button>
+          <button class="tab-button" data-tab="overview">Overview</button>
           <button class="tab-button" data-tab="wiki">Wiki</button>
           <button class="tab-button" data-tab="raw">Raw</button>
           <button class="tab-button" data-tab="prompt">Prompt</button>
         </div>
         <input class="search" id="search" type="search" placeholder="Filter concepts, papers, tags">
-        <button class="copy-button" id="copyBrief">Copy Agent Brief</button>
+        <button class="copy-button" id="copyBrief">Copy Current Prompt</button>
       </div>
 
-      <section id="overviewView">
+      <section id="workspaceView">
+        <div class="workspace-grid">
+          <div class="control-stack">
+            <div class="field">
+              <label>Task type</label>
+              <div class="mode-grid" id="modeGrid"></div>
+            </div>
+
+            <div class="field">
+              <label for="requirementInput">Requirement</label>
+              <textarea class="textarea" id="requirementInput" placeholder="写下你希望 LLM 处理的新需求、代码修改目标、研究问题或 HTML 交互改动。"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="scopeInput">Focus words</label>
+              <input class="input" id="scopeInput" type="search" placeholder="例如 entropy / compile / review.html / Small-Model-Scaffolding">
+              <small>留空时会从 requirement 和顶部 filter 里推断相关 Raw/Wiki。</small>
+            </div>
+
+            <div class="field">
+              <label>Prompt context</label>
+              <div class="option-row" id="contextOptions">
+                <label class="check-pill"><input type="checkbox" value="rules" checked>Rules</label>
+                <label class="check-pill"><input type="checkbox" value="state" checked>Repo state</label>
+                <label class="check-pill"><input type="checkbox" value="wiki" checked>Wiki hits</label>
+                <label class="check-pill"><input type="checkbox" value="raw" checked>Raw hits</label>
+                <label class="check-pill"><input type="checkbox" value="checks" checked>Checks</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="context-stack">
+            <div class="context-card">
+              <h3>Repository Snapshot</h3>
+              <div class="prompt-box" id="snapshotBox"></div>
+            </div>
+
+            <div class="context-card">
+              <h3>Matched Wiki</h3>
+              <ul class="context-list" id="matchedWiki"></ul>
+            </div>
+
+            <div class="context-card">
+              <h3>Matched Raw</h3>
+              <ul class="context-list" id="matchedRaw"></ul>
+            </div>
+
+            <div class="context-card">
+              <div class="prompt-actions">
+                <h3 style="margin-right: auto;">LLM Prompt</h3>
+                <button class="secondary-button" id="copyWorkspace">Copy Workspace Prompt</button>
+                <button class="secondary-button" id="resetWorkspace">Reset</button>
+              </div>
+              <div class="prompt-box prompt-output" id="workspacePrompt"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="overviewView" class="hidden">
         <div class="stats" id="stats"></div>
         <div class="grid">
           <div class="content-panel">
@@ -788,12 +1023,12 @@ function buildHtml(data) {
             <div class="tag-cloud" id="tagCloud"></div>
           </div>
           <div class="content-panel">
-            <h3>Style / Function Change Checklist</h3>
+            <h3>Interaction Checklist</h3>
             <ul>
-              <li>人是否能在一分钟内判断 Wiki 当前覆盖状态？</li>
-              <li>是否能从概念页跳到 Raw 证据，而不是只看结论？</li>
-              <li>是否能把 review 结果复制成 agent 可执行上下文？</li>
-              <li>HTML 是否只做展示和交互，不抢 Markdown 的真相源位置？</li>
+              <li>新需求是否先转成 LLM 可执行上下文？</li>
+              <li>是否能从需求词定位相关 Wiki / Raw 证据？</li>
+              <li>是否明确 ingest、compile、query、refactor 的边界？</li>
+              <li>HTML 是否只做交互层，不抢 Markdown 的真相源位置？</li>
             </ul>
           </div>
         </div>
@@ -817,8 +1052,18 @@ function buildHtml(data) {
   <script id="paper-data" type="application/json">${payload}</script>
   <script>
     const data = JSON.parse(document.getElementById("paper-data").textContent);
-    let activeTab = "overview";
+    const taskModes = [
+      { id: "refactor", label: "Code / HTML", hint: "改生成器、页面或文档", rule: "修改代码或文档时，优先改 scripts/build-review.mjs，再重新生成 review.html；不要把生成物当作唯一真相源。" },
+      { id: "query", label: "Research Query", hint: "查 Wiki、比较方法、找方向", rule: "优先读 Wiki，再按引用回 Raw 查证具体论文和数字；覆盖不足时明确说明缺口。" },
+      { id: "ingest", label: "Ingest", hint: "加入新论文 Raw", rule: "只动 Raw/ 和 log.md；使用 schema.md 受控 tags；不要修改 Wiki/。" },
+      { id: "compile", label: "Compile", hint: "整合 Raw 到 Wiki", rule: "只有用户明确要求 compile 时才更新 Wiki；冲突进入 Contradictions / Open Questions，不覆盖旧 claim。" },
+      { id: "lint", label: "Lint", hint: "健康检查与结构审阅", rule: "默认只报告问题；除非用户明确要求修复，先不要自动改文件。" },
+      { id: "write", label: "Writing", hint: "写 related work / 草稿", rule: "回答或写作必须保留可追溯引用，优先链接 Wiki，再回 Raw 核数字。" },
+    ];
+    const repositorySnapshot = ${JSON.stringify(makeRepositorySnapshot(data)).replaceAll("</script", "<\\/script")};
+    let activeTab = "workspace";
     let activeWiki = data.wikiPages[0]?.file;
+    let activeMode = "refactor";
 
     const $ = (selector) => document.querySelector(selector);
     const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -830,7 +1075,7 @@ function buildHtml(data) {
     function showTab(tab) {
       activeTab = tab;
       $$(".tab-button").forEach((button) => button.classList.toggle("active", button.dataset.tab === tab));
-      ["overview", "wiki", "raw", "prompt"].forEach((name) => {
+      ["workspace", "overview", "wiki", "raw", "prompt"].forEach((name) => {
         $("#" + name + "View").classList.toggle("hidden", name !== tab);
       });
       render();
@@ -851,6 +1096,150 @@ function buildHtml(data) {
         ["High Coverage", highCoverage],
         ["Claims / Questions", claimCount + " / " + questionCount],
       ].map(([label, value]) => '<div class="stat"><b>' + value + '</b><span>' + label + '</span></div>').join("");
+    }
+
+    function getWorkspaceNeedle() {
+      return [
+        $("#scopeInput")?.value,
+        $("#requirementInput")?.value,
+        $("#search")?.value,
+      ].filter(Boolean).join(" ").trim();
+    }
+
+    function scoreText(text, needle) {
+      if (!needle) return 0;
+      const terms = needle.toLowerCase().split(/\\s+/).filter((item) => item.length > 1);
+      const haystack = String(text || "").toLowerCase();
+      return terms.reduce((score, term) => score + (haystack.includes(term) ? 1 : 0), 0);
+    }
+
+    function getMatchedWiki() {
+      const needle = getWorkspaceNeedle();
+      const pages = data.wikiPages.map((page) => ({
+        page,
+        score: scoreText([page.title, page.definition, page.related.join(" "), page.markdown].join(" "), needle),
+      }));
+      const ranked = pages.filter((item) => item.score > 0).sort((a, b) => b.score - a.score).map((item) => item.page);
+      return (ranked.length ? ranked : data.wikiPages).slice(0, 5);
+    }
+
+    function getMatchedRaw() {
+      const needle = getWorkspaceNeedle();
+      const notes = data.rawNotes.map((note) => ({
+        note,
+        score: scoreText([note.id, note.title, note.tldr, note.tags.join(" "), note.relatedWiki.join(" ")].join(" "), needle),
+      }));
+      const ranked = notes.filter((item) => item.score > 0).sort((a, b) => b.score - a.score).map((item) => item.note);
+      return (ranked.length ? ranked : data.rawNotes).slice(0, 8);
+    }
+
+    function selectedContext() {
+      return $$('input[type="checkbox"][value]').filter((input) => input.checked).map((input) => input.value);
+    }
+
+    function renderModeGrid() {
+      $("#modeGrid").innerHTML = taskModes.map((mode) => (
+        '<button class="mode-card' + (mode.id === activeMode ? " active" : "") + '" data-mode="' + mode.id + '">' +
+          '<strong>' + mode.label + '</strong><small>' + mode.hint + '</small>' +
+        '</button>'
+      )).join("");
+      $$("[data-mode]").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeMode = button.dataset.mode;
+          render();
+        });
+      });
+    }
+
+    function renderContextList(selector, items, type) {
+      const empty = '<li><b>No direct match</b><span>Use broader focus words or rely on repository snapshot.</span></li>';
+      $(selector).innerHTML = items.map((item) => {
+        if (type === "wiki") {
+          return '<li><b>' + item.title + '</b><span>' + item.coverage + ' · ' + item.updated + ' · ' + item.claimCount + ' claims · ' + item.questionCount + ' questions</span></li>';
+        }
+        return '<li><b>' + item.id + ' · ' + item.title + '</b><span>' + item.tags.join(" ") + '</span></li>';
+      }).join("") || empty;
+    }
+
+    function buildWorkspacePrompt() {
+      const mode = taskModes.find((item) => item.id === activeMode) || taskModes[0];
+      const requirement = $("#requirementInput").value.trim() || "[在这里写清楚你希望 LLM 处理的需求]";
+      const focus = getWorkspaceNeedle() || "[未指定，先从仓库结构和任务描述判断]";
+      const context = selectedContext();
+      const wikiHits = getMatchedWiki();
+      const rawHits = getMatchedRaw();
+      const lines = [
+        "你正在 /Users/xuexiang/Documents/PaperNotes 仓库中工作。",
+        "",
+        "用户需求：",
+        requirement,
+        "",
+        "任务类型：",
+        mode.label + " — " + mode.rule,
+        "",
+        "关注词 / 可能相关范围：",
+        focus,
+      ];
+
+      if (context.includes("rules")) {
+        lines.push(
+          "",
+          "必须先读：",
+          "- AGENTS.md",
+          "- schema.md",
+          "- log.md 顶部",
+          "",
+          "关键红线：",
+          "- ingest 只动 Raw/ 和 log.md；compile 只在用户明确要求时动 Wiki/。",
+          "- Raw 只增不改；Tags 只能使用 schema.md 受控词汇。",
+          "- Wiki 新旧 claim 冲突时追加到 Contradictions / Open Questions，不覆盖旧 claim。",
+          "- 修改 HTML 功能时优先编辑 scripts/build-review.mjs，然后重新生成 review.html。",
+        );
+      }
+
+      if (context.includes("state")) {
+        lines.push("", "当前仓库快照：", repositorySnapshot);
+      }
+
+      if (context.includes("wiki")) {
+        lines.push(
+          "",
+          "可能相关 Wiki：",
+          ...wikiHits.map((page) => "- " + page.title + " (" + page.file + ") · " + page.coverage + ", " + page.claimCount + " claims, " + page.questionCount + " questions"),
+        );
+      }
+
+      if (context.includes("raw")) {
+        lines.push(
+          "",
+          "可能相关 Raw：",
+          ...rawHits.map((note) => "- " + note.id + " (" + note.file + ") · " + note.title + " · " + note.tags.join(" ")),
+        );
+      }
+
+      if (context.includes("checks")) {
+        lines.push(
+          "",
+          "完成前请检查：",
+          "- 是否遵守 schema.md 和两阶段 ingest/compile 边界。",
+          "- 是否保留可点击 markdown 链接和可追溯引用。",
+          "- 如果改了 HTML/生成器，是否重新运行 node scripts/build-review.mjs。",
+          "- 是否说明验证过的命令，以及任何未能验证的风险。",
+        );
+      }
+
+      lines.push("", "请先判断需要读取哪些文件，然后直接执行。");
+      return lines.join("\\n");
+    }
+
+    function renderWorkspace() {
+      renderModeGrid();
+      const wikiHits = getMatchedWiki();
+      const rawHits = getMatchedRaw();
+      $("#snapshotBox").textContent = repositorySnapshot;
+      renderContextList("#matchedWiki", wikiHits, "wiki");
+      renderContextList("#matchedRaw", rawHits, "raw");
+      $("#workspacePrompt").textContent = buildWorkspacePrompt();
     }
 
     function renderNav() {
@@ -921,6 +1310,7 @@ function buildHtml(data) {
 
     function render() {
       const query = $("#search").value.trim();
+      renderWorkspace();
       renderStats();
       renderNav();
       renderTagCloud(query);
@@ -931,6 +1321,9 @@ function buildHtml(data) {
     }
 
     $("#search").addEventListener("input", render);
+    $("#requirementInput").addEventListener("input", render);
+    $("#scopeInput").addEventListener("input", render);
+    $$("#contextOptions input").forEach((input) => input.addEventListener("change", render));
     $$(".tab-button").forEach((button) => button.addEventListener("click", () => showTab(button.dataset.tab)));
     async function copyText(value) {
       if (navigator.clipboard?.writeText) {
@@ -952,12 +1345,31 @@ function buildHtml(data) {
 
     $("#copyBrief").addEventListener("click", async () => {
       try {
-        const ok = await copyText(data.agentBrief);
+        const value = activeTab === "workspace" ? buildWorkspacePrompt() : data.agentBrief;
+        const ok = await copyText(value);
         $("#copyBrief").textContent = ok ? "Copied" : "Copy Failed";
       } catch {
         $("#copyBrief").textContent = "Copy Failed";
       }
-      setTimeout(() => $("#copyBrief").textContent = "Copy Agent Brief", 900);
+      setTimeout(() => $("#copyBrief").textContent = "Copy Current Prompt", 900);
+    });
+
+    $("#copyWorkspace").addEventListener("click", async () => {
+      try {
+        const ok = await copyText(buildWorkspacePrompt());
+        $("#copyWorkspace").textContent = ok ? "Copied" : "Copy Workspace Prompt";
+      } catch {
+        $("#copyWorkspace").textContent = "Copy Failed";
+      }
+      setTimeout(() => $("#copyWorkspace").textContent = "Copy Workspace Prompt", 900);
+    });
+
+    $("#resetWorkspace").addEventListener("click", () => {
+      $("#requirementInput").value = "";
+      $("#scopeInput").value = "";
+      activeMode = "refactor";
+      $$("#contextOptions input").forEach((input) => input.checked = true);
+      render();
     });
 
     render();

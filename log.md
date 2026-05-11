@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | turn review.html into LLM interaction workspace
+
+- **动机**：用户指出现有 HTML 更像仓库概览，而目标是“修改代码或提出新需求时，通过 HTML 与 LLM 交互，从而更稳地把握仓库状态和需求”。
+- **更新**：`review.html` 默认入口改为 Workspace，支持任务类型选择、需求输入、focus words、上下文开关、相关 Wiki/Raw 自动匹配，以及可复制的 LLM handoff prompt。
+- **生成器**：更新 `scripts/build-review.mjs`，保留 Overview / Wiki / Raw / Prompt 浏览能力，同时让 HTML 成为需求进入 LLM 前的交互层。
+- **文档**：更新 `README.md` 和 `docs/html-review-workflow.md` 说明新的 LLM Interaction Loop。
+- **Wiki touched**: none (HTML workflow only)
+
 ## [2026-05-11] refactor | document default auto commit and push
 
 - **动机**：用户确认希望未来完成 repo 文件改动后自动提交并推送，减少手动收尾。

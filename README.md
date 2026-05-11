@@ -9,6 +9,7 @@
 - 在线审阅入口：[PaperNotes Review Cockpit](https://newshawn.github.io/paper-notes/review.html)
 - 仓库内 HTML 文件：[review.html](review.html)
 - 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)
+- 默认入口是 `Workspace`：写下新需求或代码修改目标，页面会基于当前 Wiki/Raw 状态生成一段可复制给 LLM 的工作 prompt。
 
 ## How It Works
 

@@ -1,6 +1,6 @@
 # HTML Review Workflow
 
-`review.html` is the human-facing review layer for this Markdown wiki.
+`review.html` is the human-facing interaction layer for this Markdown wiki. Its primary job is to turn a new requirement into a stable LLM handoff prompt with repository state, likely relevant Raw/Wiki files, workflow rules, and completion checks.
 
 ## Source of Truth
 
@@ -17,13 +17,17 @@ node scripts/build-review.mjs
 
 The generator reads `Raw/`, `Wiki/`, and `index.md`, then writes `review.html`.
 
-## Human Review Loop
+## LLM Interaction Loop
 
 1. Open `review.html`.
-2. Check overall coverage, pending concepts, top tags, and concept pages.
-3. Use the Prompt tab to copy a compact agent brief.
-4. Ask the agent to modify Markdown content, wiki structure, or the HTML generator.
-5. Regenerate `review.html` and review the result again.
+2. Start in the Workspace tab.
+3. Choose the task type: Code / HTML, Research Query, Ingest, Compile, Lint, or Writing.
+4. Write the new requirement and optional focus words.
+5. Review matched Wiki and Raw context, then copy the generated Workspace prompt to the LLM.
+6. Let the LLM modify Markdown content, wiki structure, or the HTML generator according to `AGENTS.md` and `schema.md`.
+7. Regenerate `review.html` and review the next prompt/workflow state.
+
+The Overview, Wiki, Raw, and Prompt tabs remain useful for browsing and compact handoff, but Workspace is the default entry point when the goal is to change code, clarify a new requirement, or ask a research question.
 
 ## Agent Rule
 
