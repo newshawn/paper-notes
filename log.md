@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | simplify dev cockpit export and context wording
+
+- **动机**：用户指出导出执行稿区域冗余，并询问“仓库上下文”的实际作用和跨项目可复用性。
+- **更新**：`dev-cockpit.html` 删除常驻长 prompt 预览，导出区只保留复制按钮和简短说明，避免与已审 markdown 重复。
+- **命名**：将“交互原型”改为“可视化评审”，将“仓库上下文”相关文案收敛为“项目规则 / 项目上下文”。
+- **文档**：更新 `docs/dev-cockpit-workflow.md`，说明项目规则上下文的用途，以及 pipeline 可以迁移到其他项目但规则源需要替换。
+- **Wiki touched**: none (developer workflow UI/docs only)
+
 ## [2026-05-11] refactor | document plan artifact pipeline tutorial
 
 - **动机**：用户希望有一份教程，说明 prompt → HTML+Markdown plan → 人类 review → LLM 执行的开发 pipeline。

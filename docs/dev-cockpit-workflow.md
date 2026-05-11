@@ -1,6 +1,6 @@
 # 开发工作台教程
 
-`dev-cockpit.html` 是本仓库的 plan artifact review shell。它的目标不是替你直接写代码，而是把“需求 + 当前代码库上下文”变成一份可视化 plan artifact：先让大模型生成 `plan-review.html` 和 `plan-review.md`，你审阅 HTML 是否讲清楚现状、方案、例子和风险，确认后再把 markdown 交给执行模型。
+`dev-cockpit.html` 是本仓库的 plan artifact review shell。它的目标不是替你直接写代码，而是把“需求 + 项目规则”变成一份可视化 plan artifact：先让大模型生成 `plan-review.html` 和 `plan-review.md`，你审阅 HTML 是否讲清楚现状、方案、例子和风险，确认后再把 markdown 交给执行模型。
 
 一句话流程：
 
@@ -24,19 +24,32 @@ node scripts/build-dev-cockpit.mjs
 
 ## 什么时候用哪个入口
 
-不要因为“会用到 HTML”就永远选“交互原型”。这里的关键不是 HTML 本身，而是你想怎么 review 这次需求。
+不要因为“会用到 HTML”就永远选“可视化评审”。这里的关键不是 HTML 本身，而是你想怎么 review 这次需求。
 
 - **最小闭环**：需求还不稳定，只想先跑通一个小版本。
 - **稳健计划**：日常改代码、改算法、改流程时的默认选择，目标是得到可靠执行计划。
-- **交互原型**：你希望 plan 本身被 HTML 可视化，方便检查“现有系统是什么、要改什么、例子是否合理、风险在哪里”。
+- **可视化评审**：你希望 plan 本身被 HTML 可视化，方便检查“现有系统是什么、要改什么、例子是否合理、风险在哪里”。
 - **先理解**：先看清仓库结构或某个模块，再决定是否动手。
 
-如果你的目标是“让 LLM 先生成一个可读的 HTML plan，我 review 后再执行”，就选“交互原型”。
+如果你的目标是“让 LLM 先生成一个可读的 HTML plan，我 review 后再执行”，就选“可视化评审”。
+
+## 项目规则上下文有什么用
+
+这里的“项目规则上下文”不是让页面展示一大段仓库概览，而是把必要事实塞进复制给 LLM 的指令里，避免执行时跑偏。
+
+在这个仓库里，它主要包含：
+
+- `AGENTS.md` / `schema.md` / `log.md` 这些必须先读的规则。
+- 相关文件匹配结果，比如 `scripts/build-dev-cockpit.mjs`、`docs/dev-cockpit-workflow.md`。
+- 项目特有边界，比如 ingest 只动 `Raw/` 和 `log.md`，compile 才能改 `Wiki/`。
+- 生成物规则，比如改生成器后要重新生成 HTML。
+
+别的项目也能用，但要换成那个项目自己的规则源。例如普通前端项目可以换成 `README.md`、`package.json`、`src/`、测试命令、设计系统约束；算法项目可以换成核心模块、数据格式、实验脚本和评测命令。能迁移的是 pipeline，不是 PaperNotes 的 Raw/Wiki 规则本身。
 
 ## 完整 pipeline
 
 1. 打开 `dev-cockpit.html`。
-2. 选择任务入口。日常默认“稳健计划”；想看 HTML plan demo 时选“交互原型”。
+2. 选择任务入口。日常默认“稳健计划”；想看 HTML plan demo 时选“可视化评审”。
 3. 在需求框里写清楚你要改什么，以及为什么改。
 4. 在关键词里填相关模块名、文件名或概念，比如 `ingest Raw schema tags log lint`。
 5. 点击“复制 artifact 生成指令”，把指令交给大模型。
@@ -115,4 +128,4 @@ Raw/2605-demo.md
 
 ## 维护规则
 
-改工作台结构或交互时，编辑 `scripts/build-dev-cockpit.mjs` 并重新生成 `dev-cockpit.html`。真正的 plan demo 应该由大模型根据当前需求和代码库上下文生成；本页面只提供输入组织、预览和导出执行包。
+改工作台结构或交互时，编辑 `scripts/build-dev-cockpit.mjs` 并重新生成 `dev-cockpit.html`。真正的 plan demo 应该由大模型根据当前需求和项目规则生成；本页面只提供输入组织、预览和导出执行包。

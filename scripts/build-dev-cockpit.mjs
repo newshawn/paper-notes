@@ -140,15 +140,6 @@ async function parseRaw() {
   return notes;
 }
 
-function parseLogEntries(logMarkdown) {
-  const entries = [...logMarkdown.matchAll(/^##\s+\[([^\]]+)\]\s+([^|]+)\|\s+(.+)$/gm)];
-  return entries.slice(0, 6).map((item) => ({
-    date: item[1],
-    action: item[2].trim(),
-    target: item[3].trim(),
-  }));
-}
-
 function buildHtml(data) {
   const payload = JSON.stringify(data).replaceAll("</script", "<\\/script");
   return `<!doctype html>
@@ -781,7 +772,7 @@ function buildHtml(data) {
         <a href="#approaches">比较方案</a>
         <a href="#materials">评审素材</a>
         <a href="#artifact">预览评审稿</a>
-        <a href="#export">导出执行</a>
+        <a href="#export">复制执行</a>
       </nav>
       <div class="quick-links">
         <a href="review.html">打开 review.html</a>
@@ -795,23 +786,23 @@ function buildHtml(data) {
       <section class="hero" id="top">
         <div class="panel">
           <h2>今天想让 LLM 帮你做什么？</h2>
-          <p>先把需求和上下文整理成 artifact 生成指令，让大模型输出 HTML + markdown。你在这里预览和修改，确认合理后再交给执行模型。</p>
+          <p>先把需求和项目规则整理成生成指令，让大模型输出 HTML + markdown。你在这里 review，确认合理后再交给执行模型。</p>
         </div>
         <div class="panel">
           <h3>推荐流程</h3>
-          <p>需求 / 上下文 → 复制生成指令 → 大模型产出 HTML+MD → 在本页 review → 交给执行模型。</p>
+          <p>需求 → 生成 HTML+MD → 本页 review → 复制执行稿。</p>
         </div>
       </section>
 
       <section id="choose">
         <div class="section-head">
           <h2>先选择你要做什么</h2>
-          <p>先选任务入口，再填写需求。默认推荐“做计划”，因为稳定开发最需要的是清晰执行路径。</p>
+          <p>先选任务入口，再写需求。日常默认“做计划”；需要 HTML 可视化 plan 时选“可视化”。</p>
         </div>
         <div class="choice-grid" id="choiceGrid"></div>
         <div class="mini-guide">
           <div class="mini-step"><b>01</b><span>选任务</span></div>
-          <div class="mini-step"><b>02</b><span>粘贴上下文</span></div>
+          <div class="mini-step"><b>02</b><span>写需求</span></div>
           <div class="mini-step"><b>03</b><span>大模型生成 HTML+MD</span></div>
           <div class="mini-step"><b>04</b><span>本页 review</span></div>
           <div class="mini-step"><b>05</b><span>复制执行稿</span></div>
@@ -821,13 +812,13 @@ function buildHtml(data) {
       <section id="work">
         <div class="section-head">
           <h2>需求简报</h2>
-          <p>把你准备给大模型的需求和上下文放在这里。页面会生成一段“请产出 HTML+Markdown 计划评审稿”的指令。</p>
+          <p>写清这次想改什么、为什么改。页面会自动补项目规则、相关文件和 review 要点。</p>
         </div>
         <div class="workspace">
           <div class="stack">
             <div class="panel">
-              <h3 id="taskTitle">需求 / 上下文 Prompt</h3>
-              <textarea class="textarea" id="requirementInput" placeholder="粘贴需求、背景、上下文、约束、你希望 LLM 规划什么。下一步会复制“生成 HTML+Markdown 评审稿”的指令给大模型。"></textarea>
+              <h3 id="taskTitle">需求 Prompt</h3>
+              <textarea class="textarea" id="requirementInput" placeholder="写需求、背景、约束，以及你希望 LLM 规划什么。下一步会复制“生成 HTML+Markdown 评审稿”的指令给大模型。"></textarea>
             </div>
             <div class="panel">
               <h3>相关关键词</h3>
@@ -862,7 +853,7 @@ function buildHtml(data) {
               <p id="liveBrief"></p>
             </div>
             <div class="panel">
-              <h3>仓库快照</h3>
+              <h3>项目快照</h3>
               <div class="stats" id="stats"></div>
             </div>
             <div class="panel">
@@ -876,7 +867,7 @@ function buildHtml(data) {
       <section id="approaches">
         <div class="section-head">
           <h2>方案比较</h2>
-          <p>日常开发推荐“稳健计划”。需求不清楚时先选“最小闭环”，体验优先时选“交互原型”。</p>
+          <p>日常开发推荐“稳健计划”。需求不清楚时先选“最小闭环”；需要 HTML 帮你 review plan 时选“可视化评审”。</p>
         </div>
         <div class="approach-grid" id="approachGrid"></div>
       </section>
@@ -892,11 +883,11 @@ function buildHtml(data) {
       <section id="materials">
         <div class="section-head">
           <h2>评审素材</h2>
-          <p>这些不是最终 demo，而是给大模型生成 plan artifact 的素材：当前代码库模块、需求模块和参考示例。</p>
+          <p>这些只是生成 plan artifact 的素材：当前项目模块、需求模块和参考示例。</p>
         </div>
         <div class="demo-grid">
           <article class="demo">
-            <h3>A · 当前代码库模块</h3>
+            <h3>A · 当前项目模块</h3>
             <div class="demo-body">
               <div class="flow" id="codebaseModules"></div>
             </div>
@@ -919,23 +910,6 @@ function buildHtml(data) {
               <div class="matrix" id="reviewFocus"></div>
             </div>
           </article>
-        </div>
-      </section>
-
-      <section id="context">
-        <div class="section-head">
-          <h2>仓库上下文</h2>
-          <p>从仓库生成的轻量上下文，用来避免 LLM 一上来就失焦。</p>
-        </div>
-        <div class="workspace">
-          <div class="panel">
-            <h3>最近记录</h3>
-            <div class="file-list" id="recentLog"></div>
-          </div>
-          <div class="panel">
-            <h3>相关 Wiki / Raw</h3>
-            <div class="file-list" id="paperContext"></div>
-          </div>
         </div>
       </section>
 
@@ -964,8 +938,8 @@ function buildHtml(data) {
 
       <section id="export">
         <div class="section-head">
-          <h2>导出执行稿</h2>
-          <p>review 通过后，再复制 markdown 计划或执行 prompt 给 LLM。若 HTML 仍不合理，回到大模型继续改 HTML+MD。</p>
+          <h2>复制执行稿</h2>
+          <p>review 通过后直接复制；页面不再展开长 prompt，避免和已审 markdown 重复。</p>
         </div>
         <div class="prompt">
           <div class="actions">
@@ -975,7 +949,7 @@ function buildHtml(data) {
             <button id="copyPlan">复制已审 markdown</button>
             <button id="reset">重置</button>
           </div>
-          <pre id="promptOutput"></pre>
+          <p class="hint">“复制 prompt”会包含已审 markdown、必要项目规则和相关文件；“复制已审 markdown”只复制计划本身。</p>
         </div>
       </section>
     </main>
@@ -1016,9 +990,9 @@ function buildHtml(data) {
       },
       {
         id: "demo",
-        label: "做 Demo",
-        title: "给要点配 demo",
-        description: "我需要每个要点下面有可看的 demo：流程、风险、算法例子或测试故事。",
+        label: "可视化",
+        title: "生成可视化评审稿",
+        description: "我需要用 HTML 看 plan：现有系统、改动方案、具体例子、风险和验收。",
         mode: "algorithm",
         approach: "prototype",
         placeholder: "例如：设计一个算法 demo，展示如何根据关键词匹配相关文件和 Raw/Wiki。",
@@ -1027,7 +1001,7 @@ function buildHtml(data) {
         id: "inspect",
         label: "先理解",
         title: "改之前先看仓库",
-        description: "先看相关文件、最近 log 和上下文，再决定是否动手改代码。",
+        description: "先看相关文件和项目规则，再决定是否动手改代码。",
         mode: "research",
         approach: "thin",
         placeholder: "例如：我想理解 review.html 和 dev-cockpit.html 的分工，以及下一步该改哪里。",
@@ -1055,8 +1029,8 @@ function buildHtml(data) {
       },
       {
         id: "prototype",
-        title: "03 交互原型",
-        summary: "先把 demo 做出来，用交互验证 plan 是否好用，再回头固化脚本和文档。",
+        title: "03 可视化评审",
+        summary: "先把 plan 渲染成 HTML，检查现有系统、改动方案、具体例子和验收方式是否合理。",
         cost: "中",
         risk: "中",
         best: "体验优先",
@@ -1073,7 +1047,7 @@ function buildHtml(data) {
       ],
       modular: [
         ["阶段 1", "定义计划模型", ["把仓库事实和 UI 模板分开", "设计 prompt 导出格式", "明确维护边界"]],
-        ["阶段 2", "生成上下文", ["扫描文件", "提取 Wiki / Raw 摘要", "按关键词排序相关项"]],
+        ["阶段 2", "生成项目摘要", ["扫描文件", "提取 Wiki / Raw 摘要", "按关键词排序相关项"]],
         ["阶段 3", "渲染工作台", ["方案卡片", "执行计划", "Demo 草图", "导出面板"]],
         ["阶段 4", "保证可维护", ["补文档", "保留生成命令", "跑静态检查", "写 log 记录"]],
       ],
@@ -1228,7 +1202,7 @@ function buildHtml(data) {
       ].map(([label, text]) => '<div><strong>' + label + '</strong><span>' + text + '</span></div>').join("");
 
       $("#referenceExamples").innerHTML = [
-        ["代码库地图", "用模块卡片展示哪些目录/脚本会被改。"],
+        ["项目地图", "用模块卡片展示哪些目录/脚本会被改。"],
         ["需求拆解", "把目标、非目标、约束、验收标准分开。"],
         ["Plan demo", "为关键步骤配输入/输出或 UI 状态示例。"],
         ["执行包", "最终 markdown 能直接交给 LLM 执行。"],
@@ -1236,31 +1210,18 @@ function buildHtml(data) {
 
       $("#reviewFocus").innerHTML = [
         ["合理性", "计划是否真的对应当前需求？"],
-        ["上下文", "是否引用了正确的代码库模块？"],
+        ["项目事实", "是否引用了正确的模块、规则和文件？"],
         ["可执行", "每一步是否能被 LLM 明确执行？"],
         ["验收", "是否有清晰检查命令或验收故事？"],
       ].map(([label, text]) => '<div><strong>' + label + '</strong><span>' + text + '</span></div>').join("");
-    }
-
-    function renderRecentLog() {
-      $("#recentLog").innerHTML = data.recentLog.map((entry) => (
-        '<div class="file-row"><code>' + entry.date + ' · ' + entry.action + '</code><span>' + entry.target + '</span></div>'
-      )).join("");
-    }
-
-    function renderPaperContext() {
-      const items = matchedPapers();
-      $("#paperContext").innerHTML = items.length ? items.map((item) => (
-        '<a class="file-row" href="' + item.file + '"><code>' + item.type + ' · ' + item.title + '</code><span>' + item.meta + '</span></a>'
-      )).join("") : '<div class="file-row"><code>没有直接匹配的论文上下文</code><span>可以用关键词缩小范围。</span></div>';
     }
 
     function artifactModel() {
       const task = currentTask();
       const approach = approachTemplates.find((item) => item.id === activeApproach);
       const slices = planTemplates[activeApproach];
-      const requirement = $("#requirementInput").value.trim() || "还没有填写需求。请先粘贴需求和上下文。";
-      const focus = $("#focusInput").value.trim() || "未指定；先根据需求和仓库结构判断。";
+      const requirement = $("#requirementInput").value.trim() || "还没有填写需求。请先写清楚目标和约束。";
+      const focus = $("#focusInput").value.trim() || "未指定；先根据需求和项目结构判断。";
       return {
         task,
         approach,
@@ -1281,14 +1242,14 @@ function buildHtml(data) {
         '<h1>Plan Review：' + escapeClient(model.task.title) + '</h1>',
         '<p>这是占位预览。真正的 HTML+Markdown 应由大模型根据左侧生成指令产出，再粘贴回本页 review。</p>',
         '<div class="artifact-grid">',
-          '<section><h2>1. 当前代码库模块</h2><ul>' + data.groups.map((item) => '<li>' + escapeClient(item.name + '：' + item.count + ' 个文件') + '</li>').join("") + '</ul></section>',
+          '<section><h2>1. 当前项目模块</h2><ul>' + data.groups.map((item) => '<li>' + escapeClient(item.name + '：' + item.count + ' 个文件') + '</li>').join("") + '</ul></section>',
           '<section><h2>2. 需求模块</h2><p>' + escapeClient(model.requirement) + '</p><p><strong>关键词：</strong>' + escapeClient(model.focus) + '</p></section>',
           '<section><h2>3. 推荐方案</h2><p><strong>' + escapeClient(model.approach.title) + '</strong></p><p>' + escapeClient(model.approach.summary) + '</p></section>',
           '<section><h2>4. 执行计划草图</h2><ul>' + model.slices.map((slice) => '<li><strong>' + escapeClient(slice[0] + ' · ' + slice[1]) + '</strong>：' + escapeClient(slice[2].join("；")) + '</li>').join("") + '</ul></section>',
           '<section><h2>5. 相关文件</h2><ul>' + model.files.map((file) => '<li>' + escapeClient(file) + '</li>').join("") + '</ul></section>',
           '<section><h2>6. 相关 Raw / Wiki</h2><ul>' + paperItems + '</ul></section>',
         '</div>',
-        '<section><h2>7. Review 检查</h2><ul><li>是否展示了真实代码库模块？</li><li>是否有需求专属 demo，而不是页面自身 demo？</li><li>计划是否能直接执行？</li></ul></section></body></html>',
+        '<section><h2>7. Review 检查</h2><ul><li>是否展示了真实项目模块？</li><li>是否有需求专属 demo，而不是页面自身 demo？</li><li>计划是否能直接执行？</li></ul></section></body></html>',
       ].join("");
     }
 
@@ -1297,7 +1258,7 @@ function buildHtml(data) {
       return [
         "# 需求评审稿：" + model.task.title,
         "",
-        "## 1. 需求和上下文",
+        "## 1. 需求和项目规则",
         model.requirement,
         "",
         "关键词：" + model.focus,
@@ -1446,14 +1407,14 @@ function buildHtml(data) {
     function generationPrompt() {
       const model = artifactModel();
       return [
-        "你要根据下面的需求和仓库上下文，生成两个 artifact：",
+        "你要根据下面的需求和项目规则，生成两个 artifact：",
         "1. plan-review.html：给人类 review 的自包含 HTML 页面。",
         "2. plan-review.md：同内容的 markdown 执行计划。",
         "",
         "重要目标：HTML 不是装饰，也不是 prompt 生成器 demo。HTML 必须用于 review 这次具体 plan 是否合理。",
         "",
         "HTML 必须包含这些模块：",
-        "- 当前代码库模块：用卡片/表格展示相关目录、脚本、页面、文档，以及它们在本次改动中的角色。",
+        "- 当前项目模块：用卡片/表格展示相关目录、脚本、页面、文档，以及它们在本次改动中的角色。",
         "- 需求模块：目标、非目标、约束、用户故事、验收标准。",
         "- 方案比较：至少 2 个方案，说明为什么推荐其中一个。",
         "- Plan demo：针对本次需求的 demo，例如 UI 状态、数据流、算法输入输出、前后对比或测试故事；不要演示这个生成器本身。",
@@ -1462,7 +1423,7 @@ function buildHtml(data) {
         "",
         "Markdown 必须适合直接交给 LLM 执行，包含明确文件、步骤、验证和注意事项。",
         "",
-        "用户需求 / 上下文：",
+        "用户需求：",
         model.requirement,
         "",
         "关键词：",
@@ -1471,7 +1432,7 @@ function buildHtml(data) {
         "页面初步匹配的相关文件：",
         ...model.files.map((file) => "- " + file),
         "",
-        "仓库模块统计：",
+        "项目模块统计：",
         ...data.groups.map((item) => "- " + item.name + "：" + item.count + " 个文件"),
         "",
         "约束：",
@@ -1548,10 +1509,6 @@ function buildHtml(data) {
       ].join("\\n");
     }
 
-    function renderPrompt() {
-      $("#promptOutput").textContent = promptText();
-    }
-
     function renderArtifact() {
       $("#htmlArtifactPreview").srcdoc = $("#htmlArtifactInput").value.trim() || scaffoldHtml();
       if (!$("#markdownArtifactInput").value.trim()) {
@@ -1584,10 +1541,7 @@ function buildHtml(data) {
       renderApproaches();
       renderPlan();
       renderMaterials();
-      renderRecentLog();
-      renderPaperContext();
       renderArtifact();
-      renderPrompt();
     }
 
     ["input", "change"].forEach((eventName) => {
@@ -1639,10 +1593,9 @@ function buildHtml(data) {
 
 async function main() {
   const files = (await walk(root)).filter((file) => !file.startsWith("Raw/pdfs/") && !file.endsWith(".pdf"));
-  const [wikiPages, rawNotes, logMarkdown] = await Promise.all([
+  const [wikiPages, rawNotes] = await Promise.all([
     parseWiki(),
     parseRaw(),
-    safeRead("log.md"),
   ]);
 
   const data = {
@@ -1651,7 +1604,6 @@ async function main() {
     groups: makeFileFacts(files),
     wikiPages,
     rawNotes,
-    recentLog: parseLogEntries(logMarkdown),
   };
 
   await fs.writeFile(outputPath, buildHtml(data), "utf8");

@@ -10,7 +10,7 @@
 - 开发协作入口：[dev-cockpit.html](dev-cockpit.html)
 - 仓库内 HTML 文件：[review.html](review.html)
 - 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)、[docs/dev-cockpit-workflow.md](docs/dev-cockpit-workflow.md)
-- `review.html` 用来看仓库 / Wiki 状态；`dev-cockpit.html` 用来把需求和代码库上下文整理成 artifact 生成指令，让大模型产出 `plan-review.html` / `plan-review.md`，再在页面里预览和 review，确认合理后交给 LLM 执行。
+- `review.html` 用来看仓库 / Wiki 状态；`dev-cockpit.html` 用来把需求和项目规则整理成 artifact 生成指令，让大模型产出 `plan-review.html` / `plan-review.md`，再在页面里预览和 review，确认合理后交给 LLM 执行。
 - 开发前先看 [dev-cockpit 教程](docs/dev-cockpit-workflow.md)：它说明 prompt -> HTML+Markdown plan -> 人类 review -> LLM 执行的完整 pipeline，并包含“优化 ingest 模块”的最小 demo。
 
 ## How It Works
