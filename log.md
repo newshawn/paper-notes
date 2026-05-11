@@ -4,6 +4,12 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | align beginner prompt example with ingest demo
+
+- **动机**：用户希望“不会写 prompt 怎么办”的三行示例也使用优化 ingest 模块，和后续 PaperNotes demo 保持一致。
+- **更新**：将 `dev/README.md` 新手三行示例从登录错误提示改为 ingest 稳定性优化。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | strengthen plan artifact review schema
 
 - **动机**：用户希望通过 HTML 更详细地渲染当前工作区状态和 plan，使新手能判断计划是否可靠、哪里还能优化。
