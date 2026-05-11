@@ -4,6 +4,12 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | add dev visual entry to README
+
+- **动机**：用户希望 README 里明确提供 `dev/` 的可视化入口，方便直接打开 plan artifact renderer。
+- **更新**：在 `README.md` 的 Human Review 区域新增在线开发可视化入口 `https://newshawn.github.io/paper-notes/dev/`，并补充仓库内 `dev/index.html` 链接。
+- **Wiki touched**: none (README navigation only)
+
 ## [2026-05-11] refactor | add review verdict and change scope to plan artifacts
 
 - **动机**：用户希望 HTML 更像可审查的决策界面，并明确说明计划会涉及哪些代码 / 文件。

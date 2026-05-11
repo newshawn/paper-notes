@@ -7,8 +7,9 @@
 ## Human Review
 
 - 在线审阅入口：[PaperNotes Review Cockpit](https://newshawn.github.io/paper-notes/review.html)
-- 开发协作入口：[dev/](dev/)
-- 仓库内 HTML 文件：[review.html](review.html)
+- 在线开发可视化入口：[Plan Artifact Renderer](https://newshawn.github.io/paper-notes/dev/)
+- 仓库内 HTML 文件：[review.html](review.html)、[dev/index.html](dev/index.html)
+- 开发协作文件夹：[dev/](dev/)
 - 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)、[dev/README.md](dev/README.md)、[dev/plan-artifact-pipeline.md](dev/plan-artifact-pipeline.md)、[dev/project-map.md](dev/project-map.md)
 - `review.html` 用来看仓库 / Wiki 状态；`dev/` 专门放开发用的 renderer、plan 规则和项目地图。`dev/index.html` 只负责渲染 `plan-review.html` 和 `plan-review.md`。
 
