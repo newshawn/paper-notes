@@ -76,13 +76,13 @@ async function safeRead(relative) {
 }
 
 function classifyFile(file) {
-  if (file.startsWith("Raw/")) return "Raw";
-  if (file.startsWith("Wiki/")) return "Wiki";
-  if (file.startsWith("docs/")) return "Docs";
-  if (file.startsWith("scripts/")) return "Scripts";
-  if (file.endsWith(".html")) return "HTML";
-  if (["README.md", "AGENTS.md", "CLAUDE.md", "schema.md", "index.md", "log.md"].includes(file)) return "Core";
-  return "Other";
+  if (file.startsWith("Raw/")) return "Raw 笔记";
+  if (file.startsWith("Wiki/")) return "Wiki 概念";
+  if (file.startsWith("docs/")) return "文档";
+  if (file.startsWith("scripts/")) return "脚本";
+  if (file.endsWith(".html")) return "HTML 页面";
+  if (["README.md", "AGENTS.md", "CLAUDE.md", "schema.md", "index.md", "log.md"].includes(file)) return "核心文件";
+  return "其他";
 }
 
 function makeFileFacts(files) {
@@ -156,7 +156,7 @@ function buildHtml(data) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PaperNotes Dev Cockpit</title>
+  <title>PaperNotes 开发工作台</title>
   <style>
     :root {
       color-scheme: light;
@@ -687,18 +687,18 @@ function buildHtml(data) {
   <div class="shell">
     <aside>
       <div class="brand">
-        <h1>PaperNotes Dev Cockpit</h1>
+        <h1>PaperNotes 开发工作台</h1>
         <p>把“我要改什么”变成可比较、可演示、可交给 LLM 执行的计划。</p>
       </div>
       <nav class="nav" aria-label="Sections">
-        <a href="#choose">Choose</a>
-        <a href="#work">Work</a>
-        <a href="#approaches">Compare</a>
-        <a href="#demos">Demos</a>
-        <a href="#export">Export Prompt</a>
+        <a href="#choose">选择任务</a>
+        <a href="#work">填写需求</a>
+        <a href="#approaches">比较方案</a>
+        <a href="#demos">查看 Demo</a>
+        <a href="#export">导出 Prompt</a>
       </nav>
       <div class="quick-links">
-        <a href="review.html">Open review.html</a>
+        <a href="review.html">打开 review.html</a>
         <a href="README.md">README.md</a>
         <a href="schema.md">schema.md</a>
         <a href="AGENTS.md">AGENTS.md</a>
@@ -712,75 +712,75 @@ function buildHtml(data) {
           <p>先选一个工作模式，再写一句需求。页面会把方案、计划、demo 和执行 prompt 摆出来，避免一上来就掉进长 markdown。</p>
         </div>
         <div class="panel">
-          <h3>How to use</h3>
-          <p>选模式 → 写需求 → 看方案 → 看 demo → 复制 prompt。想看仓库全局状态时回到 <a href="review.html">review.html</a>。</p>
+          <h3>推荐流程</h3>
+          <p>日常开发优先选“做计划”：写一句需求 → 看计划和风险 → 复制 prompt。只有需求还不清楚时才先探索方案。</p>
         </div>
       </section>
 
       <section id="choose">
         <div class="section-head">
-          <h2>Choose A Workflow</h2>
-          <p>像 html-effectiveness 的 exploration 页一样，先把任务类型并排放出来，让你点一个方向。</p>
+          <h2>先选择你要做什么</h2>
+          <p>先选任务入口，再填写需求。默认推荐“做计划”，因为稳定开发最需要的是清晰执行路径。</p>
         </div>
         <div class="choice-grid" id="choiceGrid"></div>
         <div class="mini-guide">
-          <div class="mini-step"><b>01</b><span>Choose workflow</span></div>
-          <div class="mini-step"><b>02</b><span>Write requirement</span></div>
-          <div class="mini-step"><b>03</b><span>Pick approach</span></div>
-          <div class="mini-step"><b>04</b><span>Review demo</span></div>
-          <div class="mini-step"><b>05</b><span>Copy prompt</span></div>
+          <div class="mini-step"><b>01</b><span>选任务</span></div>
+          <div class="mini-step"><b>02</b><span>写需求</span></div>
+          <div class="mini-step"><b>03</b><span>看计划</span></div>
+          <div class="mini-step"><b>04</b><span>扫风险</span></div>
+          <div class="mini-step"><b>05</b><span>复制 prompt</span></div>
         </div>
       </section>
 
       <section id="work">
         <div class="section-head">
-          <h2>Work Brief</h2>
+          <h2>需求简报</h2>
           <p>只填两件事：你要做什么，以及相关关键词。其余内容由页面生成。</p>
         </div>
         <div class="workspace">
           <div class="stack">
             <div class="panel">
-              <h3 id="taskTitle">What are we doing?</h3>
+              <h3 id="taskTitle">要做什么？</h3>
               <textarea class="textarea" id="requirementInput" placeholder="先在上面选一个工作模式，或者直接写一句需求。"></textarea>
             </div>
             <div class="panel">
-              <h3>Focus</h3>
+              <h3>相关关键词</h3>
               <input class="input" id="focusInput" placeholder="文件、模块、概念或关键词，例如 scripts / review.html / compile / entropy">
             </div>
             <div class="panel hidden">
-              <h3>Mode</h3>
+              <h3>模式</h3>
               <select class="select" id="modeInput">
-                <option value="feature">Feature development</option>
-                <option value="algorithm">Algorithm design</option>
-                <option value="refactor">Refactor</option>
-                <option value="debug">Debug / repair</option>
-                <option value="research">Research workflow</option>
-                <option value="docs">Docs / knowledge workflow</option>
+                <option value="feature">功能开发</option>
+                <option value="algorithm">算法设计</option>
+                <option value="refactor">重构</option>
+                <option value="debug">调试 / 修复</option>
+                <option value="research">研究工作流</option>
+                <option value="docs">文档 / 知识库工作流</option>
               </select>
             </div>
             <div class="panel">
-              <h3>Planning constraints</h3>
+              <h3>计划约束</h3>
               <div class="chips" id="constraintInputs">
-                <label class="chip"><input type="checkbox" value="Keep changes small and reversible" checked>Small slices</label>
-                <label class="chip"><input type="checkbox" value="Prefer existing repo patterns" checked>Existing patterns</label>
-                <label class="chip"><input type="checkbox" value="Include runnable demos or examples" checked>Demos</label>
-                <label class="chip"><input type="checkbox" value="Call out risks before implementation" checked>Risks first</label>
-                <label class="chip"><input type="checkbox" value="Regenerate generated HTML after script changes" checked>Regenerate HTML</label>
+                <label class="chip"><input type="checkbox" value="保持改动小且可回退" checked>小步改</label>
+                <label class="chip"><input type="checkbox" value="优先沿用当前仓库模式" checked>沿用现有模式</label>
+                <label class="chip"><input type="checkbox" value="包含可运行 demo 或具体例子" checked>带 demo</label>
+                <label class="chip"><input type="checkbox" value="实现前先指出风险" checked>先看风险</label>
+                <label class="chip"><input type="checkbox" value="修改生成器后重新生成 HTML" checked>重新生成 HTML</label>
               </div>
             </div>
           </div>
 
           <div class="stack">
             <div class="panel">
-              <h3>Live brief</h3>
+              <h3>当前简报</h3>
               <p id="liveBrief"></p>
             </div>
             <div class="panel">
-              <h3>Repo snapshot</h3>
+              <h3>仓库快照</h3>
               <div class="stats" id="stats"></div>
             </div>
             <div class="panel">
-              <h3>Matched files</h3>
+              <h3>相关文件</h3>
               <div class="file-list" id="matchedFiles"></div>
             </div>
           </div>
@@ -789,15 +789,15 @@ function buildHtml(data) {
 
       <section id="approaches">
         <div class="section-head">
-          <h2>Approaches</h2>
-          <p>三条路线并排看。选中一条后，下面的计划和导出 prompt 会跟着变。</p>
+          <h2>方案比较</h2>
+          <p>日常开发推荐“稳健计划”。需求不清楚时先选“最小闭环”，体验优先时选“交互原型”。</p>
         </div>
         <div class="approach-grid" id="approachGrid"></div>
       </section>
 
       <section id="plan">
         <div class="section-head">
-          <h2>Implementation Plan</h2>
+          <h2>执行计划</h2>
           <p>把需求拆成可 review 的小片，每片都有产物和验证方式。</p>
         </div>
         <div class="plan-grid" id="planGrid"></div>
@@ -805,30 +805,30 @@ function buildHtml(data) {
 
       <section id="demos">
         <div class="section-head">
-          <h2>Demo Slots</h2>
+          <h2>Demo 草图</h2>
           <p>每个要点下面都应该有一个能看的 demo：算法例子、UI 状态、数据流或测试样例。</p>
         </div>
         <div class="demo-grid">
           <article class="demo">
-            <h3>A · Data / Control Flow</h3>
+            <h3>A · 数据 / 控制流</h3>
             <div class="demo-body">
               <div class="flow" id="flowDemo"></div>
             </div>
           </article>
           <article class="demo">
-            <h3>B · Risk Matrix</h3>
+            <h3>B · 风险矩阵</h3>
             <div class="demo-body">
               <div class="matrix" id="riskDemo"></div>
             </div>
           </article>
           <article class="demo">
-            <h3>C · Algorithm Example</h3>
+            <h3>C · 算法例子</h3>
             <div class="demo-body">
               <p id="algorithmDemo"></p>
             </div>
           </article>
           <article class="demo">
-            <h3>D · Test Story</h3>
+            <h3>D · 验收故事</h3>
             <div class="demo-body">
               <p id="testDemo"></p>
             </div>
@@ -838,16 +838,16 @@ function buildHtml(data) {
 
       <section id="context">
         <div class="section-head">
-          <h2>Repo Context</h2>
+          <h2>仓库上下文</h2>
           <p>从仓库生成的轻量上下文，用来避免 LLM 一上来就失焦。</p>
         </div>
         <div class="workspace">
           <div class="panel">
-            <h3>Recent log</h3>
+            <h3>最近记录</h3>
             <div class="file-list" id="recentLog"></div>
           </div>
           <div class="panel">
-            <h3>Relevant Wiki / Raw</h3>
+            <h3>相关 Wiki / Raw</h3>
             <div class="file-list" id="paperContext"></div>
           </div>
         </div>
@@ -855,14 +855,14 @@ function buildHtml(data) {
 
       <section id="export">
         <div class="section-head">
-          <h2>Export Prompt</h2>
+          <h2>导出 Prompt</h2>
           <p>把当前选择导出给 LLM。这里故意偏具体，让执行者知道先读什么、改什么、怎么验收。</p>
         </div>
         <div class="prompt">
           <div class="actions">
-            <button class="primary" id="copyPrompt">Copy prompt</button>
-            <button id="copyPlan">Copy plan markdown</button>
-            <button id="reset">Reset</button>
+            <button class="primary" id="copyPrompt">复制 prompt</button>
+            <button id="copyPlan">复制计划 markdown</button>
+            <button id="reset">重置</button>
           </div>
           <pre id="promptOutput"></pre>
         </div>
@@ -879,8 +879,8 @@ function buildHtml(data) {
     const taskTemplates = [
       {
         id: "explore",
-        label: "Explore",
-        title: "Compare implementation paths",
+        label: "探索",
+        title: "我还不确定怎么做",
         description: "我还不确定怎么做。先让页面生成几条路线，比较成本、风险和适用场景。",
         mode: "feature",
         approach: "thin",
@@ -888,26 +888,26 @@ function buildHtml(data) {
       },
       {
         id: "plan",
-        label: "Plan",
-        title: "Make an execution plan",
-        description: "目标比较明确。把它拆成 milestones、改动文件、验证命令和交付清单。",
+        label: "做计划",
+        title: "把需求拆成执行计划",
+        description: "目标比较明确。把它拆成阶段、改动文件、验证命令和交付清单。日常开发优先用这个。",
         mode: "feature",
         approach: "modular",
         placeholder: "例如：实现 Raw lint，检查 TL;DR、Tags、Related Wiki，并把结果写进 log。",
       },
       {
         id: "demo",
-        label: "Demo",
-        title: "Build demo-backed prompt",
+        label: "做 Demo",
+        title: "给要点配 demo",
         description: "我需要每个要点下面有可看的 demo：流程、风险、算法例子或测试故事。",
         mode: "algorithm",
         approach: "prototype",
-        placeholder: "例如：设计一个算法 demo，展示如何根据 focus words 匹配相关文件和 Raw/Wiki。",
+        placeholder: "例如：设计一个算法 demo，展示如何根据关键词匹配相关文件和 Raw/Wiki。",
       },
       {
         id: "inspect",
-        label: "Inspect",
-        title: "Understand repo before editing",
+        label: "先理解",
+        title: "改之前先看仓库",
         description: "先看相关文件、最近 log 和上下文，再决定是否动手改代码。",
         mode: "research",
         approach: "thin",
@@ -918,56 +918,56 @@ function buildHtml(data) {
     const approachTemplates = [
       {
         id: "thin",
-        title: "01 Thin vertical slice",
+        title: "01 最小闭环",
         summary: "先做最小可用路径：少量文件、完整闭环、快速验证。适合需求还在变、但你想尽快摸到真实体验。",
-        cost: "Low",
-        risk: "Low",
+        cost: "低",
+        risk: "低",
         best: "需求还不稳定",
-        files: "1-3 files",
+        files: "1-3 个文件",
       },
       {
         id: "modular",
-        title: "02 Modular foundation",
+        title: "02 稳健计划",
         summary: "先抽出数据模型和生成逻辑，再铺 UI。适合这个能力以后会反复复用，需要长期维护。",
-        cost: "Medium",
-        risk: "Medium",
+        cost: "中",
+        risk: "中",
         best: "会持续演进",
-        files: "3-6 files",
+        files: "3-6 个文件",
       },
       {
         id: "prototype",
-        title: "03 Interactive prototype",
+        title: "03 交互原型",
         summary: "先把 demo 做出来，用交互验证 plan 是否好用，再回头固化脚本和文档。",
-        cost: "Medium",
-        risk: "Medium",
+        cost: "中",
+        risk: "中",
         best: "体验优先",
-        files: "2-5 files",
+        files: "2-5 个文件",
       },
     ];
 
     const planTemplates = {
       thin: [
-        ["Slice 1", "Trace current repo", ["Read rules and current scripts", "Identify source of truth", "List likely touched files"]],
-        ["Slice 2", "Build one working path", ["Create or edit generator", "Render the first HTML workflow", "Add copy/export affordance"]],
-        ["Slice 3", "Verify and document", ["Regenerate HTML", "Run static checks", "Update README/log"]],
-        ["Slice 4", "Polish handoff", ["Tighten labels", "Add missing risk notes", "Commit and push"]],
+        ["阶段 1", "摸清当前结构", ["读取规则和相关脚本", "确认真相源", "列出可能改动文件"]],
+        ["阶段 2", "做一条最小闭环", ["创建或修改生成器", "生成第一个可用页面 / 功能", "加入复制或导出入口"]],
+        ["阶段 3", "验证并记录", ["重新生成 HTML", "运行静态检查", "更新 README / log"]],
+        ["阶段 4", "收尾交付", ["压缩文案", "补齐风险提示", "提交并推送"]],
       ],
       modular: [
-        ["Slice 1", "Define model", ["Separate repo facts from UI templates", "Design prompt export shape", "Name maintenance boundaries"]],
-        ["Slice 2", "Generate contexts", ["Scan files", "Extract Wiki/Raw summaries", "Rank matches from focus words"]],
-        ["Slice 3", "Render cockpit", ["Approach cards", "Plan timeline", "Demo slots", "Export panel"]],
-        ["Slice 4", "Guard maintenance", ["Docs", "Regeneration command", "Static checks", "Log entry"]],
+        ["阶段 1", "定义计划模型", ["把仓库事实和 UI 模板分开", "设计 prompt 导出格式", "明确维护边界"]],
+        ["阶段 2", "生成上下文", ["扫描文件", "提取 Wiki / Raw 摘要", "按关键词排序相关项"]],
+        ["阶段 3", "渲染工作台", ["方案卡片", "执行计划", "Demo 草图", "导出面板"]],
+        ["阶段 4", "保证可维护", ["补文档", "保留生成命令", "跑静态检查", "写 log 记录"]],
       ],
       prototype: [
-        ["Slice 1", "Sketch interaction", ["Write fake data flow", "Create live requirement input", "Make approach cards selectable"]],
-        ["Slice 2", "Add demos", ["Algorithm example", "Risk matrix", "Test story", "Data flow"]],
-        ["Slice 3", "Connect repo facts", ["Matched files", "Recent log", "Wiki/Raw hints"]],
-        ["Slice 4", "Harden export", ["Copy prompt", "Copy markdown plan", "Reset state", "Validate script parse"]],
+        ["阶段 1", "先画交互", ["写出数据流样例", "做实时需求输入", "让方案卡可选择"]],
+        ["阶段 2", "补 demo", ["算法例子", "风险矩阵", "验收故事", "数据流"]],
+        ["阶段 3", "接入仓库事实", ["相关文件", "最近 log", "Wiki / Raw 提示"]],
+        ["阶段 4", "打磨导出", ["复制 prompt", "复制 markdown 计划", "重置状态", "验证脚本可解析"]],
       ],
     };
 
-    let activeTask = "explore";
-    let activeApproach = "thin";
+    let activeTask = "plan";
+    let activeApproach = "modular";
 
     function textMatch(value, query) {
       return String(value || "").toLowerCase().includes(query.toLowerCase());
@@ -1016,10 +1016,10 @@ function buildHtml(data) {
 
     function renderStats() {
       const stats = [
-        ["Files", data.files.length],
-        ["Scripts", data.groups.find((item) => item.name === "Scripts")?.count || 0],
-        ["Wiki pages", data.wikiPages.length],
-        ["Raw notes", data.rawNotes.length],
+        ["文件", data.files.length],
+        ["脚本", data.groups.find((item) => item.name === "脚本")?.count || 0],
+        ["Wiki 页", data.wikiPages.length],
+        ["Raw 笔记", data.rawNotes.length],
       ];
       $("#stats").innerHTML = stats.map(([label, value]) =>
         '<div class="stat"><b>' + value + '</b><span>' + label + '</span></div>'
@@ -1052,7 +1052,7 @@ function buildHtml(data) {
       const task = currentTask();
       $("#taskTitle").textContent = task.title;
       $("#requirementInput").placeholder = task.placeholder;
-      $("#liveBrief").textContent = task.label + " · " + mode + " · " + requirement + " · likely files: " + files;
+      $("#liveBrief").textContent = task.label + " · " + mode + " · " + requirement + " · 可能相关文件：" + files;
     }
 
     function renderFileList(selector, files) {
@@ -1065,10 +1065,10 @@ function buildHtml(data) {
     function classify(file) {
       if (file.startsWith("Raw/")) return "Raw";
       if (file.startsWith("Wiki/")) return "Wiki";
-      if (file.startsWith("docs/")) return "Docs";
-      if (file.startsWith("scripts/")) return "Script";
+      if (file.startsWith("docs/")) return "文档";
+      if (file.startsWith("scripts/")) return "脚本";
       if (file.endsWith(".html")) return "HTML";
-      return "Core";
+      return "核心";
     }
 
     function renderApproaches() {
@@ -1076,7 +1076,7 @@ function buildHtml(data) {
         '<article class="approach' + (item.id === activeApproach ? " active" : "") + '" data-approach="' + item.id + '">' +
           '<h3>' + item.title + '</h3>' +
           '<p>' + item.summary + '</p>' +
-          '<table><tr><td>Cost</td><td>' + item.cost + '</td></tr><tr><td>Risk</td><td>' + item.risk + '</td></tr><tr><td>Best when</td><td>' + item.best + '</td></tr><tr><td>Touch</td><td>' + item.files + '</td></tr></table>' +
+          '<table><tr><td>成本</td><td>' + item.cost + '</td></tr><tr><td>风险</td><td>' + item.risk + '</td></tr><tr><td>适合</td><td>' + item.best + '</td></tr><tr><td>改动</td><td>' + item.files + '</td></tr></table>' +
         '</article>'
       )).join("");
       $$("[data-approach]").forEach((card) => card.addEventListener("click", () => {
@@ -1097,21 +1097,21 @@ function buildHtml(data) {
     function renderDemos() {
       const requirement = $("#requirementInput").value.trim() || "当前需求";
       $("#flowDemo").innerHTML = [
-        ["Input", "需求 + focus words"],
-        ["Context", "匹配文件 / Wiki / Raw"],
-        ["Plan", "方案 + milestones"],
-        ["Export", "LLM prompt / markdown"],
+        ["输入", "需求 + 关键词"],
+        ["上下文", "匹配文件 / Wiki / Raw"],
+        ["计划", "方案 + 阶段"],
+        ["导出", "LLM prompt / markdown"],
       ].map(([label, text]) => '<div><b>' + label + '</b><span>' + text + '</span></div>').join("");
 
       $("#riskDemo").innerHTML = [
-        ["Scope drift", "需求太散时先锁定 one-sentence goal。"],
-        ["Wrong context", "相关文件由 focus words 排序，执行前仍要读源码。"],
-        ["Demo rot", "demo 是计划辅助，不是生产逻辑。"],
-        ["Over-build", "先选 thin slice，只有复用明确时再 modular。"],
+        ["范围漂移", "需求太散时先锁定一句话目标。"],
+        ["上下文偏差", "相关文件由关键词排序，执行前仍要读源码。"],
+        ["Demo 过期", "demo 是计划辅助，不是生产逻辑。"],
+        ["过度设计", "日常先走稳健计划；需求不清楚才探索。"],
       ].map(([label, text]) => '<div><strong>' + label + '</strong><span>' + text + '</span></div>').join("");
 
-      $("#algorithmDemo").textContent = "示例：把需求拆成 tokens，给文件路径 / Wiki 标题 / Raw tags 打分；命中越多越靠前。当前需求：「" + requirement + "」。";
-      $("#testDemo").textContent = "验收故事：修改生成脚本后运行 node scripts/build-dev-cockpit.mjs；再解析嵌入 JS，检查导出 prompt、方案卡、demo slots 是否存在。";
+      $("#algorithmDemo").textContent = "示例：把需求拆成关键词，给文件路径 / Wiki 标题 / Raw 标签打分；命中越多越靠前。当前需求：「" + requirement + "」。";
+      $("#testDemo").textContent = "验收故事：修改生成脚本后运行 node scripts/build-dev-cockpit.mjs；再解析嵌入 JS，检查导出 prompt、方案卡、demo 草图是否存在。";
     }
 
     function renderRecentLog() {
@@ -1124,7 +1124,7 @@ function buildHtml(data) {
       const items = matchedPapers();
       $("#paperContext").innerHTML = items.length ? items.map((item) => (
         '<a class="file-row" href="' + item.file + '"><code>' + item.type + ' · ' + item.title + '</code><span>' + item.meta + '</span></a>'
-      )).join("") : '<div class="file-row"><code>No direct paper match</code><span>Use focus words to narrow research context.</span></div>';
+      )).join("") : '<div class="file-row"><code>没有直接匹配的论文上下文</code><span>可以用关键词缩小范围。</span></div>';
     }
 
     function planMarkdown() {
@@ -1132,21 +1132,21 @@ function buildHtml(data) {
       const slices = planTemplates[activeApproach];
       const task = currentTask();
       return [
-        "# Development Plan",
+        "# 开发计划",
         "",
-        "## Workflow",
+        "## 工作流",
         task.label + " — " + task.title,
         "",
-        "## Requirement",
-        $("#requirementInput").value.trim() || "[write requirement]",
+        "## 需求",
+        $("#requirementInput").value.trim() || "[写需求]",
         "",
-        "## Selected Approach",
+        "## 选定方案",
         approach.title + " — " + approach.summary,
         "",
-        "## Milestones",
+        "## 阶段",
         ...slices.flatMap((slice) => ["", "### " + slice[0] + " · " + slice[1], ...slice[2].map((item) => "- " + item)]),
         "",
-        "## Likely Files",
+        "## 可能相关文件",
         ...matchedFiles().map((file) => "- " + file),
       ].join("\\n");
     }
@@ -1160,7 +1160,7 @@ function buildHtml(data) {
         "请先读 AGENTS.md、schema.md、log.md 顶部，再根据任务读取相关文件。",
         "",
         "用户需求：",
-        $("#requirementInput").value.trim() || "[write requirement]",
+        $("#requirementInput").value.trim() || "[写需求]",
         "",
         "工作流：" + task.label + " — " + task.title,
         "开发模式：" + $("#modeInput").selectedOptions[0].textContent,
@@ -1226,22 +1226,22 @@ function buildHtml(data) {
 
     $("#copyPrompt").addEventListener("click", async () => {
       const ok = await copyText(promptText());
-      $("#copyPrompt").textContent = ok ? "Copied" : "Copy failed";
-      setTimeout(() => $("#copyPrompt").textContent = "Copy prompt", 900);
+      $("#copyPrompt").textContent = ok ? "已复制" : "复制失败";
+      setTimeout(() => $("#copyPrompt").textContent = "复制 prompt", 900);
     });
 
     $("#copyPlan").addEventListener("click", async () => {
       const ok = await copyText(planMarkdown());
-      $("#copyPlan").textContent = ok ? "Copied" : "Copy plan markdown";
-      setTimeout(() => $("#copyPlan").textContent = "Copy plan markdown", 900);
+      $("#copyPlan").textContent = ok ? "已复制" : "复制失败";
+      setTimeout(() => $("#copyPlan").textContent = "复制计划 markdown", 900);
     });
 
     $("#reset").addEventListener("click", () => {
       $("#requirementInput").value = "";
       $("#focusInput").value = "";
       $("#modeInput").value = "feature";
-      activeTask = "explore";
-      activeApproach = "thin";
+      activeTask = "plan";
+      activeApproach = "modular";
       $$("#constraintInputs input").forEach((input) => input.checked = true);
       render();
     });

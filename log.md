@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | localize dev cockpit and make plan default
+
+- **动机**：用户希望 `dev-cockpit.html` 的英文界面中文化，并进一步确认日常开发中 plan 最重要，担心页面仍偏冗余。
+- **更新**：用户可见文案基本改为中文；默认 workflow 从“探索”改为“做计划”，默认方案为“稳健计划”。
+- **流程判断**：最佳默认流程收敛为“选做计划 → 写一句需求 → 填关键词 → 看执行计划 / 风险 / demo → 复制 prompt”；探索、Demo、先理解作为辅助入口。
+- **文档**：中文化 `docs/dev-cockpit-workflow.md`，更新 README 说明日常开发默认优先“做计划”。
+- **Wiki touched**: none (developer workflow only)
+
 ## [2026-05-11] refactor | simplify dev cockpit into workflow chooser
 
 - **动机**：用户反馈 `dev-cockpit.html` 第一版太复杂，希望更接近 html-effectiveness 的简洁 exploration 风格，并先选择“我要干什么”。
