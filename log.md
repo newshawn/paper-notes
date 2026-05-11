@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | make dev cockpit generate review artifact
+
+- **动机**：用户指出当前 `dev-cockpit.html` 仍偏“表单拼 prompt”，最终目标应是“根据需求和上下文 prompt 生成一个 HTML artifact，先让人 review 需求实现是否合理，再交给 LLM 执行”。
+- **更新**：新增“需求评审稿”区域，汇总需求 / 上下文、推荐方案、执行计划、review 检查、相关文件、相关 Raw/Wiki 和交给 LLM 前的执行指令。
+- **导出**：新增“复制评审 HTML”，并将 markdown 计划升级为评审稿 markdown；prompt 内也嵌入评审稿内容。
+- **安全**：前端 artifact 渲染对用户输入做 HTML 转义，避免把粘贴内容当作页面 HTML 执行。
+- **Wiki touched**: none (developer workflow only)
+
 ## [2026-05-11] refactor | localize dev cockpit and make plan default
 
 - **动机**：用户希望 `dev-cockpit.html` 的英文界面中文化，并进一步确认日常开发中 plan 最重要，担心页面仍偏冗余。

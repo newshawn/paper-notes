@@ -635,6 +635,62 @@ function buildHtml(data) {
       padding: 14px;
     }
 
+    .artifact-preview {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fffefb;
+      box-shadow: var(--shadow);
+    }
+
+    .artifact-preview h1,
+    .artifact-preview h2,
+    .artifact-preview h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .artifact-preview h1 {
+      font-size: 24px;
+      line-height: 1.18;
+    }
+
+    .artifact-preview h2 {
+      margin-top: 4px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+      font-size: 17px;
+    }
+
+    .artifact-preview p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .artifact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .artifact-card {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdf9;
+    }
+
+    .artifact-card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .artifact-card li {
+      color: var(--muted);
+    }
+
     .prompt pre {
       max-height: 520px;
       margin: 0;
@@ -673,6 +729,7 @@ function buildHtml(data) {
       aside { position: relative; height: auto; }
       .hero, .workspace { grid-template-columns: 1fr; }
       .choice-grid, .approach-grid, .plan-grid, .mini-guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .artifact-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 680px) {
@@ -695,7 +752,8 @@ function buildHtml(data) {
         <a href="#work">填写需求</a>
         <a href="#approaches">比较方案</a>
         <a href="#demos">查看 Demo</a>
-        <a href="#export">导出 Prompt</a>
+        <a href="#artifact">评审稿</a>
+        <a href="#export">导出执行</a>
       </nav>
       <div class="quick-links">
         <a href="review.html">打开 review.html</a>
@@ -709,11 +767,11 @@ function buildHtml(data) {
       <section class="hero" id="top">
         <div class="panel">
           <h2>今天想让 LLM 帮你做什么？</h2>
-          <p>先选一个工作模式，再写一句需求。页面会把方案、计划、demo 和执行 prompt 摆出来，避免一上来就掉进长 markdown。</p>
+          <p>先粘贴需求和上下文，让页面生成一份“需求评审稿”。你看这份 HTML 是否合理，确认后再复制给 LLM 执行。</p>
         </div>
         <div class="panel">
           <h3>推荐流程</h3>
-          <p>日常开发优先选“做计划”：写一句需求 → 看计划和风险 → 复制 prompt。只有需求还不清楚时才先探索方案。</p>
+          <p>需求 / 上下文 → 生成评审稿 → 人类 review → 复制 HTML 或 markdown → LLM 执行。Plan 是主线，demo 和风险只是帮助 review。</p>
         </div>
       </section>
 
@@ -725,23 +783,23 @@ function buildHtml(data) {
         <div class="choice-grid" id="choiceGrid"></div>
         <div class="mini-guide">
           <div class="mini-step"><b>01</b><span>选任务</span></div>
-          <div class="mini-step"><b>02</b><span>写需求</span></div>
-          <div class="mini-step"><b>03</b><span>看计划</span></div>
-          <div class="mini-step"><b>04</b><span>扫风险</span></div>
-          <div class="mini-step"><b>05</b><span>复制 prompt</span></div>
+          <div class="mini-step"><b>02</b><span>粘贴上下文</span></div>
+          <div class="mini-step"><b>03</b><span>生成评审稿</span></div>
+          <div class="mini-step"><b>04</b><span>人工 review</span></div>
+          <div class="mini-step"><b>05</b><span>复制执行稿</span></div>
         </div>
       </section>
 
       <section id="work">
         <div class="section-head">
           <h2>需求简报</h2>
-          <p>只填两件事：你要做什么，以及相关关键词。其余内容由页面生成。</p>
+          <p>把你准备丢给 LLM 的需求和上下文先放在这里。页面会把它转成更适合人类 review 的 HTML artifact。</p>
         </div>
         <div class="workspace">
           <div class="stack">
             <div class="panel">
-              <h3 id="taskTitle">要做什么？</h3>
-              <textarea class="textarea" id="requirementInput" placeholder="先在上面选一个工作模式，或者直接写一句需求。"></textarea>
+              <h3 id="taskTitle">需求 / 上下文 Prompt</h3>
+              <textarea class="textarea" id="requirementInput" placeholder="粘贴需求、背景、上下文、约束、你希望 LLM 怎么改。页面会先生成评审稿，而不是直接让 LLM 执行。"></textarea>
             </div>
             <div class="panel">
               <h3>相关关键词</h3>
@@ -853,13 +911,22 @@ function buildHtml(data) {
         </div>
       </section>
 
+      <section id="artifact">
+        <div class="section-head">
+          <h2>需求评审稿</h2>
+          <p>这是这个页面的核心产物：先看这份 HTML artifact 是否合理，再决定是否交给 LLM 执行。</p>
+        </div>
+        <article class="artifact-preview" id="artifactPreview"></article>
+      </section>
+
       <section id="export">
         <div class="section-head">
-          <h2>导出 Prompt</h2>
-          <p>把当前选择导出给 LLM。这里故意偏具体，让执行者知道先读什么、改什么、怎么验收。</p>
+          <h2>导出执行稿</h2>
+          <p>review 通过后，再复制 HTML artifact、markdown 计划或执行 prompt 给 LLM。</p>
         </div>
         <div class="prompt">
           <div class="actions">
+            <button class="primary" id="copyArtifact">复制评审 HTML</button>
             <button class="primary" id="copyPrompt">复制 prompt</button>
             <button id="copyPlan">复制计划 markdown</button>
             <button id="reset">重置</button>
@@ -875,6 +942,14 @@ function buildHtml(data) {
     const data = JSON.parse(document.getElementById("repo-data").textContent);
     const $ = (selector) => document.querySelector(selector);
     const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+    function escapeClient(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
 
     const taskTemplates = [
       {
@@ -1127,6 +1202,72 @@ function buildHtml(data) {
       )).join("") : '<div class="file-row"><code>没有直接匹配的论文上下文</code><span>可以用关键词缩小范围。</span></div>';
     }
 
+    function artifactModel() {
+      const task = currentTask();
+      const approach = approachTemplates.find((item) => item.id === activeApproach);
+      const slices = planTemplates[activeApproach];
+      const requirement = $("#requirementInput").value.trim() || "还没有填写需求。请先粘贴需求和上下文。";
+      const focus = $("#focusInput").value.trim() || "未指定；先根据需求和仓库结构判断。";
+      return {
+        task,
+        approach,
+        slices,
+        requirement,
+        focus,
+        files: matchedFiles().slice(0, 8),
+        papers: matchedPapers().slice(0, 5),
+        constraints: selectedConstraints(),
+      };
+    }
+
+    function artifactHtml() {
+      const model = artifactModel();
+      const paperItems = model.papers.length ? model.papers.map((item) => '<li>' + escapeClient(item.type + ' · ' + item.title + ' (' + item.file + ')') + '</li>').join("") : "<li>无直接匹配；执行前按需补读相关文件。</li>";
+      return [
+        '<h1>需求评审稿：' + escapeClient(model.task.title) + '</h1>',
+        '<p>目标是先 review 需求和实现计划是否合理，再交给 LLM 执行。</p>',
+        '<div class="artifact-grid">',
+          '<section class="artifact-card"><h2>1. 需求和上下文</h2><p>' + escapeClient(model.requirement) + '</p><p><strong>关键词：</strong>' + escapeClient(model.focus) + '</p></section>',
+          '<section class="artifact-card"><h2>2. 推荐方案</h2><p><strong>' + escapeClient(model.approach.title) + '</strong></p><p>' + escapeClient(model.approach.summary) + '</p><ul><li>成本：' + escapeClient(model.approach.cost) + '</li><li>风险：' + escapeClient(model.approach.risk) + '</li><li>适合：' + escapeClient(model.approach.best) + '</li></ul></section>',
+          '<section class="artifact-card"><h2>3. 执行计划</h2><ul>' + model.slices.map((slice) => '<li><strong>' + escapeClient(slice[0] + ' · ' + slice[1]) + '</strong>：' + escapeClient(slice[2].join("；")) + '</li>').join("") + '</ul></section>',
+          '<section class="artifact-card"><h2>4. Review 检查</h2><ul><li>需求是否能用一句话验收？</li><li>改动文件是否集中？</li><li>是否有风险和 demo 支撑？</li><li>是否需要先读更多源码？</li></ul></section>',
+          '<section class="artifact-card"><h2>5. 相关文件</h2><ul>' + model.files.map((file) => '<li>' + escapeClient(file) + '</li>').join("") + '</ul></section>',
+          '<section class="artifact-card"><h2>6. 相关 Raw / Wiki</h2><ul>' + paperItems + '</ul></section>',
+        '</div>',
+        '<section class="artifact-card"><h2>7. 交给 LLM 前的执行指令</h2><p>如果这份评审稿合理，请让 LLM 先读 AGENTS.md、schema.md、log.md 顶部和相关文件，再按上面的计划执行；完成后运行生成/检查命令，更新 log，并按仓库规则提交推送。</p></section>',
+      ].join("");
+    }
+
+    function artifactMarkdown() {
+      const model = artifactModel();
+      return [
+        "# 需求评审稿：" + model.task.title,
+        "",
+        "## 1. 需求和上下文",
+        model.requirement,
+        "",
+        "关键词：" + model.focus,
+        "",
+        "## 2. 推荐方案",
+        model.approach.title + " — " + model.approach.summary,
+        "",
+        "## 3. 执行计划",
+        ...model.slices.flatMap((slice) => ["", "### " + slice[0] + " · " + slice[1], ...slice[2].map((item) => "- " + item)]),
+        "",
+        "## 4. Review 检查",
+        "- 需求是否能用一句话验收？",
+        "- 改动文件是否集中？",
+        "- 是否有风险和 demo 支撑？",
+        "- 是否需要先读更多源码？",
+        "",
+        "## 5. 相关文件",
+        ...model.files.map((file) => "- " + file),
+        "",
+        "## 6. 交给 LLM 前的执行指令",
+        "如果这份评审稿合理，请让 LLM 先读 AGENTS.md、schema.md、log.md 顶部和相关文件，再按计划执行；完成后运行生成/检查命令，更新 log，并按仓库规则提交推送。",
+      ].join("\\n");
+    }
+
     function planMarkdown() {
       const approach = approachTemplates.find((item) => item.id === activeApproach);
       const slices = planTemplates[activeApproach];
@@ -1174,7 +1315,7 @@ function buildHtml(data) {
         ...matchedFiles().map((file) => "- " + file),
         "",
         "实现计划：",
-        planMarkdown(),
+        artifactMarkdown(),
         "",
         "完成前请验证：",
         "- 生成脚本能重新运行。",
@@ -1185,6 +1326,10 @@ function buildHtml(data) {
 
     function renderPrompt() {
       $("#promptOutput").textContent = promptText();
+    }
+
+    function renderArtifact() {
+      $("#artifactPreview").innerHTML = artifactHtml();
     }
 
     async function copyText(text) {
@@ -1214,6 +1359,7 @@ function buildHtml(data) {
       renderDemos();
       renderRecentLog();
       renderPaperContext();
+      renderArtifact();
       renderPrompt();
     }
 
@@ -1230,8 +1376,14 @@ function buildHtml(data) {
       setTimeout(() => $("#copyPrompt").textContent = "复制 prompt", 900);
     });
 
+    $("#copyArtifact").addEventListener("click", async () => {
+      const ok = await copyText('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>需求评审稿</title><body>' + artifactHtml() + '</body></html>');
+      $("#copyArtifact").textContent = ok ? "已复制" : "复制失败";
+      setTimeout(() => $("#copyArtifact").textContent = "复制评审 HTML", 900);
+    });
+
     $("#copyPlan").addEventListener("click", async () => {
-      const ok = await copyText(planMarkdown());
+      const ok = await copyText(artifactMarkdown());
       $("#copyPlan").textContent = ok ? "已复制" : "复制失败";
       setTimeout(() => $("#copyPlan").textContent = "复制计划 markdown", 900);
     });
