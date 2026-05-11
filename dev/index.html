@@ -1,13 +1,4 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-
-const root = path.resolve(new URL("..", import.meta.url).pathname);
-const devDir = path.join(root, "dev");
-const outputPath = path.join(devDir, "index.html");
-const legacyOutputPath = path.join(root, "dev-cockpit.html");
-
-function buildHtml() {
-  return `<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
@@ -191,12 +182,12 @@ function buildHtml() {
 
     function inlineMarkdown(value) {
       return escapeHtml(value)
-        .replace(/\\\`([^\\\`]+)\\\`/g, "<code>$1</code>")
-        .replace(/\\*\\*([^*]+)\\*\\*/g, "<strong>$1</strong>");
+        .replace(/\`([^\`]+)\`/g, "<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
     }
 
     function renderMarkdown(markdown) {
-      const lines = String(markdown || "").split("\\n");
+      const lines = String(markdown || "").split("\n");
       const html = [];
       let listTag = "";
       let inCode = false;
@@ -211,7 +202,7 @@ function buildHtml() {
 
       function closeCode() {
         if (inCode) {
-          html.push("<pre><code>" + escapeHtml(codeLines.join("\\n")) + "</code></pre>");
+          html.push("<pre><code>" + escapeHtml(codeLines.join("\n")) + "</code></pre>");
           codeLines = [];
           inCode = false;
         }
@@ -234,41 +225,41 @@ function buildHtml() {
           continue;
         }
 
-        if (/^###\\s+/.test(line)) {
+        if (/^###\s+/.test(line)) {
           closeList();
-          html.push("<h3>" + inlineMarkdown(line.replace(/^###\\s+/, "")) + "</h3>");
+          html.push("<h3>" + inlineMarkdown(line.replace(/^###\s+/, "")) + "</h3>");
           continue;
         }
 
-        if (/^##\\s+/.test(line)) {
+        if (/^##\s+/.test(line)) {
           closeList();
-          html.push("<h2>" + inlineMarkdown(line.replace(/^##\\s+/, "")) + "</h2>");
+          html.push("<h2>" + inlineMarkdown(line.replace(/^##\s+/, "")) + "</h2>");
           continue;
         }
 
-        if (/^#\\s+/.test(line)) {
+        if (/^#\s+/.test(line)) {
           closeList();
-          html.push("<h1>" + inlineMarkdown(line.replace(/^#\\s+/, "")) + "</h1>");
+          html.push("<h1>" + inlineMarkdown(line.replace(/^#\s+/, "")) + "</h1>");
           continue;
         }
 
-        if (/^\\s*[-*]\\s+/.test(line)) {
+        if (/^\s*[-*]\s+/.test(line)) {
           if (listTag !== "ul") {
             closeList();
             html.push("<ul>");
             listTag = "ul";
           }
-          html.push("<li>" + inlineMarkdown(line.replace(/^\\s*[-*]\\s+/, "")) + "</li>");
+          html.push("<li>" + inlineMarkdown(line.replace(/^\s*[-*]\s+/, "")) + "</li>");
           continue;
         }
 
-        if (/^\\s*\\d+\\.\\s+/.test(line)) {
+        if (/^\s*\d+\.\s+/.test(line)) {
           if (listTag !== "ol") {
             closeList();
             html.push("<ol>");
             listTag = "ol";
           }
-          html.push("<li>" + inlineMarkdown(line.replace(/^\\s*\\d+\\.\\s+/, "")) + "</li>");
+          html.push("<li>" + inlineMarkdown(line.replace(/^\s*\d+\.\s+/, "")) + "</li>");
           continue;
         }
 
@@ -283,7 +274,7 @@ function buildHtml() {
 
       closeCode();
       closeList();
-      return html.join("\\n") || '<p class="empty">还没有 Markdown artifact。</p>';
+      return html.join("\n") || '<p class="empty">还没有 Markdown artifact。</p>';
     }
 
     function render() {
@@ -296,25 +287,4 @@ function buildHtml() {
     render();
   </script>
 </body>
-</html>`;
-}
-
-async function main() {
-  await fs.mkdir(devDir, { recursive: true });
-  await fs.writeFile(outputPath, buildHtml(), "utf8");
-  await fs.writeFile(legacyOutputPath, `<!doctype html>
-<html lang="zh-CN">
-<meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=dev/">
-    <title>跳转到 dev/</title>
-    <p><a href="dev/">打开开发渲染器</a></p>
 </html>
-`, "utf8");
-  console.log(`Generated ${path.relative(root, outputPath)}`);
-  console.log(`Generated ${path.relative(root, legacyOutputPath)}`);
-}
-
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});

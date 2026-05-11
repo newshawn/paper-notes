@@ -7,10 +7,10 @@
 ## Human Review
 
 - 在线审阅入口：[PaperNotes Review Cockpit](https://newshawn.github.io/paper-notes/review.html)
-- 开发协作入口：[dev-cockpit.html](dev-cockpit.html)
+- 开发协作入口：[dev/](dev/)
 - 仓库内 HTML 文件：[review.html](review.html)
-- 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)、[docs/dev-cockpit-workflow.md](docs/dev-cockpit-workflow.md)、[docs/plan-artifact-pipeline.md](docs/plan-artifact-pipeline.md)
-- `review.html` 用来看仓库 / Wiki 状态；`dev-cockpit.html` 是轻量 `HTML + Markdown` plan renderer。规则写在 `docs/plan-artifact-pipeline.md`，HTML 给人 review，Markdown 给 agent 执行。
+- 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)、[dev/README.md](dev/README.md)、[dev/plan-artifact-pipeline.md](dev/plan-artifact-pipeline.md)、[dev/project-map.md](dev/project-map.md)
+- `review.html` 用来看仓库 / Wiki 状态；`dev/` 专门放开发用的 renderer、plan 规则和项目地图。`dev/index.html` 只负责渲染 `plan-review.html` 和 `plan-review.md`。
 
 ## How It Works
 

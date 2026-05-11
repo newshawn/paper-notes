@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | move dev workflow into dev folder
+
+- **动机**：用户希望把专门用于开发的 renderer、pipeline 规则和项目分布说明放到一个 `dev/` 文件夹里。
+- **更新**：新增 `dev/` 作为开发协作入口，包含 `dev/index.html`、`dev/README.md`、`dev/plan-artifact-pipeline.md`、`dev/project-map.md`。
+- **兼容**：根目录 `dev-cockpit.html` 改为跳转到 `dev/`，避免旧链接失效。
+- **文档**：更新 README、`docs/html-review-workflow.md`、`scripts/build-review.mjs` 中的开发入口引用。
+- **Wiki touched**: none (developer workflow organization only)
+
 ## [2026-05-11] refactor | reduce dev cockpit to artifact renderer
 
 - **动机**：用户指出开发工作台仍然过复杂，真正需要的是一个 HTML+Markdown 渲染器，以及一份 markdown 规则来描述 plan artifact pipeline。

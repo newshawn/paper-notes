@@ -1,4 +1,4 @@
-# Plan Artifact Pipeline
+# 计划产物 Pipeline
 
 这份规则用于指导 agent 在进入 plan 模式后，先生成可供人类审阅的 `HTML + Markdown` plan artifact，再进入代码执行。
 
@@ -11,12 +11,35 @@
 
 HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达同一份 plan。
 
+## 项目地图
+
+在生成 plan artifact 前，agent 应先读取项目地图：
+
+- 默认文件：`dev/project-map.md`
+- 作用：说明每个模块在做什么、关键文件在哪里、常见改动入口是什么、哪些约束不能破坏。
+- 用法：先用项目地图定位相关模块，再深入读取具体源码 / 文档 / Raw / Wiki。
+
+如果项目还没有 `dev/project-map.md`，先生成一版最小项目地图：
+
+1. 读项目 README、agent 规则、schema / config、最近 log。
+2. 扫描顶层目录和关键源码目录。
+3. 为每个模块写：职责、关键文件、常见改动入口、验证命令、约束。
+4. 不要列出每个文件；只写能帮助 plan 和 review 的导航信息。
+5. 生成后把它作为后续 plan 的必读文件。
+
+维护规则：
+
+- 新增 / 重命名顶层模块时，更新项目地图。
+- 改变模块职责、边界、生成命令或验证命令时，更新项目地图。
+- 每次明显改变开发工作流时，更新项目地图和本 pipeline。
+
 ## 标准 pipeline
 
 1. 用户进入 plan 模式，说明需求、背景、约束和希望优化的目标。
 2. Agent 读取项目规则和相关文件。
    - 在 PaperNotes 中，先读 `AGENTS.md`、`schema.md`、`log.md` 顶部。
-   - 再根据需求读取相关源码、文档、Raw、Wiki 或参考文件。
+   - 再读 `dev/project-map.md`，根据项目地图定位相关模块。
+   - 最后根据需求读取相关源码、文档、Raw、Wiki 或参考文件。
 3. Agent 生成 plan artifact。
    - HTML 展示给人看。
    - Markdown 交给 agent 执行。
@@ -49,7 +72,7 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 
 1. 需求摘要。
 2. 必读文件。
-3. 相关文件和参考文件。
+3. 相关文件和参考文件，包括项目地图中指向的模块文档。
 4. 执行步骤。
 5. 需要保持的项目约束。
 6. 验证命令或人工验收方式。
@@ -85,6 +108,7 @@ HTML 和 Markdown 必须同步修改。
 对应 Markdown 应包含：
 
 - 先读 `AGENTS.md`、`schema.md`、`log.md` 顶部。
+- 再读 `dev/project-map.md`，定位 Raw / Wiki / HTML review layer / workflow docs 的职责。
 - 读取现有 Raw 样例，如 `Raw/2510-igpo.md` 或 `Raw/2601-at2po.md`。
 - 设计并实现 ingest lint / review report 的最小闭环。
 - 更新相关文档和 `log.md`。

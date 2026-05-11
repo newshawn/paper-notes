@@ -301,7 +301,7 @@ function makeAgentBrief({ wikiPages, rawNotes, pendingConcepts }) {
     "请先读 AGENTS.md、schema.md、index.md、log.md 顶部，再根据任务读取相关 Wiki/Raw。",
     "",
     "当前人类 review 入口：review.html。",
-    "开发规划入口：dev-cockpit.html。",
+    "开发规划入口：dev/。",
     `Wiki 概念页：${wikiPages.length} 个。Raw 论文笔记：${rawNotes.length} 篇。`,
     `待建概念候选：${pendingConcepts.map((item) => item.concept).join(", ") || "无"}`,
     "",
@@ -311,7 +311,7 @@ function makeAgentBrief({ wikiPages, rawNotes, pendingConcepts }) {
     "3. 重新生成 review.html，并说明哪些人类 review 流程被改善。",
     "4. 不要在未收到 compile 指令时修改 Wiki 内容。",
     "",
-    "如果任务是开发新功能、比较实现路线或生成执行计划：优先打开 dev-cockpit.html，并维护 scripts/build-dev-cockpit.mjs。",
+    "如果任务是开发新功能或生成执行计划：优先使用 dev/plan-artifact-pipeline.md 和 dev/project-map.md 生成 plan artifact，再用 dev/ 渲染审阅。",
   ].join("\n");
 }
 
@@ -934,14 +934,14 @@ function buildHtml(data) {
       <section class="hero">
         <div class="hero-copy">
           <h2>看清 PaperNotes 现在长什么样。</h2>
-          <p>这里是观察层：聚合 Raw、Wiki、概念覆盖、待建主题和最近状态。真正做开发规划时，打开 <a href="dev-cockpit.html">dev-cockpit.html</a>。</p>
+          <p>这里是观察层：聚合 Raw、Wiki、概念覆盖、待建主题和最近状态。真正做开发规划时，打开 <a href="dev/">dev/</a>。</p>
         </div>
         <div class="brief-panel">
           <h3>Working Contract</h3>
           <ul>
             <li>Source of truth: <code>Raw/</code>, <code>Wiki/</code>, <code>schema.md</code></li>
             <li>Observation layer: <code>review.html</code></li>
-            <li>Development layer: <code>dev-cockpit.html</code></li>
+            <li>Development layer: <code>dev/</code></li>
             <li>Generator: <code>scripts/build-review.mjs</code></li>
             <li>LLM handoff: compact prompt tab</li>
           </ul>

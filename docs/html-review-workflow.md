@@ -2,7 +2,7 @@
 
 `review.html` is the human-facing observation layer for this Markdown wiki. Its primary job is to make the current Raw/Wiki/log state easy to inspect before asking an LLM to change content.
 
-Development planning lives in [`dev-cockpit.html`](../dev-cockpit.html). Use that page to render and review `plan-review.html` plus `plan-review.md` before handing the markdown plan to an agent.
+Development planning rules live in [`dev/plan-artifact-pipeline.md`](../dev/plan-artifact-pipeline.md) and [`dev/project-map.md`](../dev/project-map.md). Use [`dev/`](../dev/) only to render and review `plan-review.html` plus `plan-review.md`.
 
 ## Source of Truth
 
@@ -10,7 +10,7 @@ Development planning lives in [`dev-cockpit.html`](../dev-cockpit.html). Use tha
 - `Wiki/` keeps cross-paper concept pages.
 - `schema.md`, `AGENTS.md`, `index.md`, and `log.md` define the agent workflow.
 - `review.html` is generated output. Do not treat it as the only source of truth.
-- `dev-cockpit.html` is also generated output. Its source of truth is `scripts/build-dev-cockpit.mjs` plus `docs/plan-artifact-pipeline.md`.
+- `dev/index.html` is also generated output. Its source of truth is `scripts/build-dev-cockpit.mjs`; the planning rules live in `dev/plan-artifact-pipeline.md` and `dev/project-map.md`.
 
 ## Generate
 
@@ -26,7 +26,7 @@ The generator reads `Raw/`, `Wiki/`, and `index.md`, then writes `review.html`.
 2. Check overall coverage, pending concepts, top tags, and concept pages.
 3. Use Wiki / Raw tabs to inspect source-linked evidence.
 4. Use the Prompt tab for compact handoff if the task is simple.
-5. For development work, switch to `dev-cockpit.html`.
+5. For development work, switch to `dev/`.
 6. Regenerate `review.html` after changing `scripts/build-review.mjs`.
 
 ## Agent Rule
