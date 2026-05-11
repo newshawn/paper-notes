@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | add runnable dev workflow demo
+
+- **动机**：用户希望 GitHub 上 `dev/README.md` 包含一个能让用户跑起来的 demo，执行代码与否可以后置。
+- **更新**：在 `dev/README.md` 新增“最小 demo：优化 ingest 模块”，包含在线 / 本地打开方式、可复制 prompt、粘贴 review artifact 的步骤和反馈迭代示例。
+- **边界**：demo 只跑通 plan artifact review，不要求立即执行实现。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] rename | dev renderer build script
 
 - **动机**：`build-dev-cockpit.mjs` 名称沿用了旧 cockpit 概念，但当前页面已经收敛为 HTML+Markdown plan artifact renderer。

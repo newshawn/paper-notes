@@ -37,6 +37,80 @@ node scripts/build-dev-renderer.mjs
 6. 反复迭代，直到 HTML 没问题。
 7. 复制最终 Markdown 给 agent 执行。
 
+## 最小 demo：优化 ingest 模块
+
+这个 demo 的目标不是马上执行代码，而是先跑通“生成可审阅 plan artifact”的流程。
+
+### 1. 打开渲染器
+
+在线使用：
+
+```text
+https://newshawn.github.io/paper-notes/dev/
+```
+
+本地使用：
+
+```bash
+node scripts/build-dev-renderer.mjs
+```
+
+然后打开 `dev/index.html`。
+
+### 2. 把这个 prompt 发给 agent
+
+```text
+请进入 plan 模式，不要直接改代码。
+
+需求：
+优化当前 ingest 模块：在生成 Raw 前后加入结构化校验和可审阅报告，
+确保 ID、受控 Tags、5-section、理解型元素、Related Wiki 和 log 记录都稳定；
+保持 ingest 只动 Raw/ 和 log.md，不触碰 Wiki/。
+
+请先读取：
+- AGENTS.md
+- schema.md
+- log.md 顶部
+- dev/plan-artifact-pipeline.md
+- dev/project-map.md
+- Raw/2510-igpo.md 或 Raw/2601-at2po.md 作为 Raw 样例
+
+请输出两份内容：
+1. plan-review.html：给人看的 HTML 评审稿。
+2. plan-review.md：给 agent 执行的 Markdown 计划。
+
+HTML 必须包含：
+- 当前 ingest 流程如何工作。
+- 这次优化会新增哪些模块，例如 Preflight、Template Guard、Tag Guard、Review Report。
+- 用户输入到 Raw/log 写入之间的数据流。
+- 至少 3 个具体例子：缺 Tags、tag 越界、缺理解型元素。
+- 风险边界：不得修改 Wiki/，不得 retroactively 改旧 Raw。
+- 验收方式。
+
+Markdown 必须和 HTML 同步，并且可以在我确认 HTML 合理后直接交给 agent 执行。
+```
+
+### 3. 粘贴并 review
+
+把 agent 返回的 `plan-review.html` 粘到 HTML 输入框，把 `plan-review.md` 粘到 Markdown 输入框。
+
+只看 HTML，重点检查：
+
+- 是否讲清楚现有 ingest 怎么做。
+- 是否讲清楚优化后的模块边界。
+- 数据流是否能解释“为什么这样改更稳定”。
+- 例子是否具体到可以判断 plan 好坏。
+- Markdown 是否能在 HTML 通过后交给 agent 执行。
+
+如果不满意，就直接反馈：
+
+```text
+这个 HTML 还没有讲清楚 Tag Guard 如何根据 schema.md 的受控标签判断越界。
+请补一个具体例子，并同步更新 plan-review.md。
+```
+
+确认 HTML 合理后，再决定是否把 Markdown 交给 agent 执行。
+
 ## 为什么需要 Markdown 规则和项目地图
 
 规则写在 Markdown 里，比写死在 HTML 里更容易维护，也更容易迁移到别的项目。项目地图把“这个项目有哪些模块、每个模块做什么、该去哪里读详细代码”单独抽出来，能帮助 agent 组织 prompt，也能让生成的 HTML 更贴近真实代码结构。
