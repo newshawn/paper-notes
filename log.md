@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | simplify dev cockpit into workflow chooser
+
+- **动机**：用户反馈 `dev-cockpit.html` 第一版太复杂，希望更接近 html-effectiveness 的简洁 exploration 风格，并先选择“我要干什么”。
+- **更新**：第一屏改为 4 个 workflow cards：Explore / Plan / Demo / Inspect；选择后再进入 Work Brief、方案比较、demo slots 和导出 prompt。
+- **简化**：移除第一屏统计干扰，把 repo snapshot 下沉到 Work Brief 侧栏；隐藏 Mode 下拉，改由 workflow 自动设置。
+- **文档**：更新 `README.md` 和 `docs/dev-cockpit-workflow.md` 的使用步骤。
+- **Wiki touched**: none (developer workflow only)
+
 ## [2026-05-11] refactor | split review and dev cockpit html workflows
 
 - **动机**：用户确认希望拆成两个 HTML：一个用于观看当前仓库 / Wiki 状态，另一个专门用于开发时和 LLM 协作 plan 与执行。

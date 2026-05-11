@@ -10,7 +10,7 @@
 - 开发协作入口：[dev-cockpit.html](dev-cockpit.html)
 - 仓库内 HTML 文件：[review.html](review.html)
 - 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)、[docs/dev-cockpit-workflow.md](docs/dev-cockpit-workflow.md)
-- `review.html` 用来看仓库 / Wiki 状态；`dev-cockpit.html` 用来做开发计划、方案比较、demo 草图和 LLM handoff。
+- `review.html` 用来看仓库 / Wiki 状态；`dev-cockpit.html` 先让你选择 Explore / Plan / Demo / Inspect，再生成开发计划、demo 草图和 LLM handoff。
 
 ## How It Works
 

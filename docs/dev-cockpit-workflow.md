@@ -19,12 +19,15 @@ The generator scans repository files, recent `log.md` entries, and lightweight R
 ## Development Loop
 
 1. Open `dev-cockpit.html`.
-2. Write the feature, algorithm, refactor, debug, research, or docs requirement.
-3. Add focus words such as file paths, modules, concepts, or tags.
-4. Compare the three implementation approaches.
-5. Pick one approach and review the generated milestones, demo slots, risks, matched files, and Raw/Wiki context.
-6. Copy the generated LLM prompt or markdown plan.
-7. Let the LLM execute in the repository, then regenerate `dev-cockpit.html` if its generator or scanned context changed.
+2. Choose one workflow card:
+   - `Explore`: compare possible implementation paths.
+   - `Plan`: turn a clear goal into milestones and checks.
+   - `Demo`: build a demo-backed prompt with examples.
+   - `Inspect`: understand the repo before editing.
+3. Write one requirement sentence.
+4. Add focus words such as file paths, modules, concepts, or tags.
+5. Compare approaches, skim the generated plan/demo/context, then copy the generated LLM prompt or markdown plan.
+6. Let the LLM execute in the repository, then regenerate `dev-cockpit.html` if its generator or scanned context changed.
 
 ## Maintenance Rule
 

@@ -311,6 +311,74 @@ function buildHtml(data) {
       font-size: 13px;
     }
 
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .choice-card {
+      min-height: 185px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .choice-card.active {
+      border-color: rgba(37, 99, 235, 0.46);
+      background: rgba(37, 99, 235, 0.07);
+    }
+
+    .choice-card small {
+      display: block;
+      color: var(--teal);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .choice-card h3 {
+      margin: 8px 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .choice-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .mini-guide {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-step {
+      min-height: 64px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdf9;
+    }
+
+    .mini-step b {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--teal);
+      font-size: 12px;
+    }
+
+    .mini-step span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     section {
       margin: 18px 0;
     }
@@ -604,13 +672,13 @@ function buildHtml(data) {
       .shell { grid-template-columns: 1fr; }
       aside { position: relative; height: auto; }
       .hero, .workspace { grid-template-columns: 1fr; }
-      .approach-grid, .plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .choice-grid, .approach-grid, .plan-grid, .mini-guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 680px) {
       main { padding: 16px; }
       .hero h2 { font-size: 26px; }
-      .stats, .approach-grid, .plan-grid, .demo-grid, .flow { grid-template-columns: 1fr; }
+      .stats, .choice-grid, .approach-grid, .plan-grid, .demo-grid, .flow, .mini-guide { grid-template-columns: 1fr; }
       .section-head { display: grid; }
     }
   </style>
@@ -623,11 +691,10 @@ function buildHtml(data) {
         <p>把“我要改什么”变成可比较、可演示、可交给 LLM 执行的计划。</p>
       </div>
       <nav class="nav" aria-label="Sections">
-        <a href="#requirement">Requirement</a>
-        <a href="#approaches">Approaches</a>
-        <a href="#plan">Plan</a>
+        <a href="#choose">Choose</a>
+        <a href="#work">Work</a>
+        <a href="#approaches">Compare</a>
         <a href="#demos">Demos</a>
-        <a href="#context">Repo Context</a>
         <a href="#export">Export Prompt</a>
       </nav>
       <div class="quick-links">
@@ -641,33 +708,46 @@ function buildHtml(data) {
     <main>
       <section class="hero" id="top">
         <div class="panel">
-          <h2>开发前，先把方向摆到桌面上。</h2>
-          <p>像 html-effectiveness 的 exploration / implementation plan：同一个需求先生成几条路线、风险表、关键文件和 demo，再导出给 LLM 执行。它不是源码真相源，而是开发决策界面。</p>
+          <h2>今天想让 LLM 帮你做什么？</h2>
+          <p>先选一个工作模式，再写一句需求。页面会把方案、计划、demo 和执行 prompt 摆出来，避免一上来就掉进长 markdown。</p>
         </div>
         <div class="panel">
-          <h3>Two HTMLs, Two Jobs</h3>
-          <p><strong>review.html</strong> 用来看仓库和知识库状态。<strong>dev-cockpit.html</strong> 用来拆需求、比较方案、组织 demo、导出执行 prompt。</p>
+          <h3>How to use</h3>
+          <p>选模式 → 写需求 → 看方案 → 看 demo → 复制 prompt。想看仓库全局状态时回到 <a href="review.html">review.html</a>。</p>
         </div>
       </section>
 
-      <div class="stats" id="stats"></div>
-
-      <section id="requirement">
+      <section id="choose">
         <div class="section-head">
-          <h2>Requirement</h2>
-          <p>先写需求，再让页面帮你组织上下文。这里的内容不会写回仓库，只用于生成计划和 prompt。</p>
+          <h2>Choose A Workflow</h2>
+          <p>像 html-effectiveness 的 exploration 页一样，先把任务类型并排放出来，让你点一个方向。</p>
+        </div>
+        <div class="choice-grid" id="choiceGrid"></div>
+        <div class="mini-guide">
+          <div class="mini-step"><b>01</b><span>Choose workflow</span></div>
+          <div class="mini-step"><b>02</b><span>Write requirement</span></div>
+          <div class="mini-step"><b>03</b><span>Pick approach</span></div>
+          <div class="mini-step"><b>04</b><span>Review demo</span></div>
+          <div class="mini-step"><b>05</b><span>Copy prompt</span></div>
+        </div>
+      </section>
+
+      <section id="work">
+        <div class="section-head">
+          <h2>Work Brief</h2>
+          <p>只填两件事：你要做什么，以及相关关键词。其余内容由页面生成。</p>
         </div>
         <div class="workspace">
           <div class="stack">
             <div class="panel">
-              <h3>What are we building?</h3>
-              <textarea class="textarea" id="requirementInput" placeholder="例如：给当前仓库加一个开发 cockpit，能比较实现方案、展示 demo、导出 LLM prompt。"></textarea>
+              <h3 id="taskTitle">What are we doing?</h3>
+              <textarea class="textarea" id="requirementInput" placeholder="先在上面选一个工作模式，或者直接写一句需求。"></textarea>
             </div>
             <div class="panel">
               <h3>Focus</h3>
               <input class="input" id="focusInput" placeholder="文件、模块、概念或关键词，例如 scripts / review.html / compile / entropy">
             </div>
-            <div class="panel">
+            <div class="panel hidden">
               <h3>Mode</h3>
               <select class="select" id="modeInput">
                 <option value="feature">Feature development</option>
@@ -694,6 +774,10 @@ function buildHtml(data) {
             <div class="panel">
               <h3>Live brief</h3>
               <p id="liveBrief"></p>
+            </div>
+            <div class="panel">
+              <h3>Repo snapshot</h3>
+              <div class="stats" id="stats"></div>
             </div>
             <div class="panel">
               <h3>Matched files</h3>
@@ -792,6 +876,45 @@ function buildHtml(data) {
     const $ = (selector) => document.querySelector(selector);
     const $$ = (selector) => [...document.querySelectorAll(selector)];
 
+    const taskTemplates = [
+      {
+        id: "explore",
+        label: "Explore",
+        title: "Compare implementation paths",
+        description: "我还不确定怎么做。先让页面生成几条路线，比较成本、风险和适用场景。",
+        mode: "feature",
+        approach: "thin",
+        placeholder: "例如：我要给当前仓库加一个 lint workflow，但不确定是脚本、HTML 入口，还是文档规则。",
+      },
+      {
+        id: "plan",
+        label: "Plan",
+        title: "Make an execution plan",
+        description: "目标比较明确。把它拆成 milestones、改动文件、验证命令和交付清单。",
+        mode: "feature",
+        approach: "modular",
+        placeholder: "例如：实现 Raw lint，检查 TL;DR、Tags、Related Wiki，并把结果写进 log。",
+      },
+      {
+        id: "demo",
+        label: "Demo",
+        title: "Build demo-backed prompt",
+        description: "我需要每个要点下面有可看的 demo：流程、风险、算法例子或测试故事。",
+        mode: "algorithm",
+        approach: "prototype",
+        placeholder: "例如：设计一个算法 demo，展示如何根据 focus words 匹配相关文件和 Raw/Wiki。",
+      },
+      {
+        id: "inspect",
+        label: "Inspect",
+        title: "Understand repo before editing",
+        description: "先看相关文件、最近 log 和上下文，再决定是否动手改代码。",
+        mode: "research",
+        approach: "thin",
+        placeholder: "例如：我想理解 review.html 和 dev-cockpit.html 的分工，以及下一步该改哪里。",
+      },
+    ];
+
     const approachTemplates = [
       {
         id: "thin",
@@ -843,7 +966,8 @@ function buildHtml(data) {
       ],
     };
 
-    let activeApproach = "modular";
+    let activeTask = "explore";
+    let activeApproach = "thin";
 
     function textMatch(value, query) {
       return String(value || "").toLowerCase().includes(query.toLowerCase());
@@ -864,6 +988,10 @@ function buildHtml(data) {
 
     function selectedConstraints() {
       return $$("#constraintInputs input:checked").map((input) => input.value);
+    }
+
+    function currentTask() {
+      return taskTemplates.find((item) => item.id === activeTask) || taskTemplates[0];
     }
 
     function matchedFiles() {
@@ -898,11 +1026,33 @@ function buildHtml(data) {
       ).join("");
     }
 
+    function renderChoices() {
+      $("#choiceGrid").innerHTML = taskTemplates.map((item) => (
+        '<button class="choice-card' + (item.id === activeTask ? " active" : "") + '" data-task="' + item.id + '">' +
+          '<small>' + item.label + '</small>' +
+          '<h3>' + item.title + '</h3>' +
+          '<p>' + item.description + '</p>' +
+        '</button>'
+      )).join("");
+      $$("[data-task]").forEach((card) => card.addEventListener("click", () => {
+        const task = taskTemplates.find((item) => item.id === card.dataset.task);
+        activeTask = task.id;
+        activeApproach = task.approach;
+        $("#modeInput").value = task.mode;
+        $("#requirementInput").placeholder = task.placeholder;
+        render();
+        $("#work").scrollIntoView({ behavior: "smooth", block: "start" });
+      }));
+    }
+
     function renderBrief() {
       const requirement = $("#requirementInput").value.trim() || "还没有写需求。先写一句话，页面会自动组织计划。";
       const mode = $("#modeInput").selectedOptions[0].textContent;
       const files = matchedFiles().slice(0, 4).join(", ");
-      $("#liveBrief").textContent = mode + " · " + requirement + " · likely files: " + files;
+      const task = currentTask();
+      $("#taskTitle").textContent = task.title;
+      $("#requirementInput").placeholder = task.placeholder;
+      $("#liveBrief").textContent = task.label + " · " + mode + " · " + requirement + " · likely files: " + files;
     }
 
     function renderFileList(selector, files) {
@@ -980,8 +1130,12 @@ function buildHtml(data) {
     function planMarkdown() {
       const approach = approachTemplates.find((item) => item.id === activeApproach);
       const slices = planTemplates[activeApproach];
+      const task = currentTask();
       return [
         "# Development Plan",
+        "",
+        "## Workflow",
+        task.label + " — " + task.title,
         "",
         "## Requirement",
         $("#requirementInput").value.trim() || "[write requirement]",
@@ -999,6 +1153,7 @@ function buildHtml(data) {
 
     function promptText() {
       const approach = approachTemplates.find((item) => item.id === activeApproach);
+      const task = currentTask();
       return [
         "你正在 /Users/xuexiang/Documents/PaperNotes 仓库中工作。",
         "",
@@ -1007,6 +1162,7 @@ function buildHtml(data) {
         "用户需求：",
         $("#requirementInput").value.trim() || "[write requirement]",
         "",
+        "工作流：" + task.label + " — " + task.title,
         "开发模式：" + $("#modeInput").selectedOptions[0].textContent,
         "选定方案：" + approach.title,
         approach.summary,
@@ -1049,6 +1205,7 @@ function buildHtml(data) {
     }
 
     function render() {
+      renderChoices();
       renderStats();
       renderBrief();
       renderFileList("#matchedFiles", matchedFiles());
@@ -1083,7 +1240,8 @@ function buildHtml(data) {
       $("#requirementInput").value = "";
       $("#focusInput").value = "";
       $("#modeInput").value = "feature";
-      activeApproach = "modular";
+      activeTask = "explore";
+      activeApproach = "thin";
       $$("#constraintInputs input").forEach((input) => input.checked = true);
       render();
     });
