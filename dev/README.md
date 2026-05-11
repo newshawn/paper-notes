@@ -37,14 +37,16 @@ node scripts/build-dev-renderer.mjs
 6. 反复迭代，直到 HTML 没问题。
 7. 复制最终 Markdown 给 agent 执行。
 
-审阅 HTML 时，优先看 6 件事：
+审阅 HTML 时，优先看 8 件事：
 
+- Review Verdict：顶部是否说明建议继续、需要补证据，还是不建议执行。
 - 当前状态：是否只展示和这次任务相关的模块、文件、流程和约束。
 - 证据来源：关键判断是否标明来自哪个文件，还是只是推断。
 - 目标状态：是否讲清改完以后流程如何变化。
-- 改动边界：是否明确哪些文件会改、哪些目录不能碰。
+- Change Scope：是否明确 will change / might change / must not change，尤其是会涉及哪些代码或文件。
 - 具体 demo：是否有输入、输出、错误 case 或 UI 状态，能帮助你判断 plan 好坏。
-- 可靠性：是否列出风险、不确定点和验收方式。
+- Human Decisions：是否把需要你拍板的事项单独列出来。
+- Acceptance Checklist：是否能让你逐项确认“我理解并接受这个计划”。
 
 ## 不会写 prompt 怎么办
 
@@ -86,12 +88,16 @@ node scripts/build-dev-renderer.mjs
 2. plan-review.md：给 agent 执行的 Markdown 计划。
 
 HTML 请优先讲清：
+- Review Verdict：建议继续 / 需要补证据 / 不建议执行，可靠性高 / 中 / 低，以及 blocking risk 和 human decisions 数量。
 - 当前工作区状态：只展示和这次任务相关的模块、文件、流程和约束。
-- 证据来源：关键判断来自哪些文件；不确定的内容标为“推断”或“待确认”。
+- Evidence-backed Claims：关键判断来自哪些文件；不确定的内容标为“推断”或“待确认”，并说明如果判断错了会有什么影响。
 - 当前流程和目标流程：改动前后数据流 / 控制流如何变化。
+- Change Scope：明确 will change / might change / must not change，尤其说明会涉及哪些代码或文件，以及为什么。
 - 改动前后对比：哪些行为保持不变，哪些会变化，哪些明确不做。
 - 具体 demo：从一个真实或最自然的用户输入开始，展示它在当前流程和目标流程中的流动，并给出成功输出与失败 / 边界 case。
-- 风险边界和验收方式。
+- Human Decisions：把需要我拍板的问题集中列出。
+- Acceptance Checklist：让我可以逐项确认是否通过 review。
+- Execution Handoff：说明只有 HTML verdict approved 且 blocking decisions resolved 后，Markdown 才能执行。
 
 如果我没有给具体例子，请你根据项目类型自行选择最自然的例子，并在 HTML 里说明为什么选这个例子。
 
@@ -158,14 +164,16 @@ HTML 请优先讲清：
 2. plan-review.md：给 agent 执行的 Markdown 计划。
 
 HTML 必须包含：
+- Review Verdict：是否建议执行、可靠性、blocking risk 和需要用户确认的事项。
 - 当前登录相关模块和职责。
 - 每个关键判断的证据来源；无法确认的地方标为推断。
 - 当前登录流程和目标登录流程。
+- Change Scope：预计涉及哪些前端、后端、API、测试或文档文件；哪些认证/session 文件不能乱动。
 - 优化后的错误分类表。
 - 改动前后对比。
 - 端到端具体例子：用户输入邮箱和密码后，如何经过前端校验、API 请求、后端响应和 UI 展示。
 - 至少 3 个失败 / 边界例子：邮箱格式错误、密码错误、网络失败。
-- 风险边界和验收方式。
+- Human Decisions、风险边界、验收方式和执行前 checklist。
 
 不要执行代码修改。等我 review HTML 通过后，再决定是否执行 Markdown 计划。
 ```
@@ -213,18 +221,20 @@ node scripts/build-dev-renderer.mjs
 2. plan-review.md：给 agent 执行的 Markdown 计划。
 
 HTML 必须包含：
+- Review Verdict：是否建议执行、可靠性、blocking risk 和需要用户确认的事项。
 - 当前 ingest 流程如何工作。
 - 这些判断分别来自 `AGENTS.md`、`schema.md`、`log.md`、Raw 样例还是推断。
 - 这次优化会新增哪些模块，例如 Preflight、Template Guard、Tag Guard、Review Report。
 - 用户输入到 Raw/log 写入之间的数据流。
+- Change Scope：明确可能新增或修改哪些文件，例如 `scripts/ingest-review.mjs`、`docs/ingest-review.md`、`AGENTS.md`、`dev/project-map.md`、`log.md`；并明确不得修改 `Wiki/`、`index.md`、已有 Raw。
 - 改动前后对比：保持不变、会变化、明确不做。
 - 端到端具体例子：用户输入 `帮我 ingest 这篇论文：https://arxiv.org/abs/2510.14967` 后，如何查重、发现已有 `Raw/2510-igpo.md`、生成 duplicate report 并停止写入。
 - 另给一个新论文链接样例，展示通过 preflight 后如何生成 Raw draft、跑 Template Guard / Tag Guard、生成 Review Report，再决定是否写入 Raw/log。
 - 至少 3 个失败 / 边界例子：缺 Tags、tag 越界、缺理解型元素。
-- 风险边界：不得修改 Wiki/，不得 retroactively 改旧 Raw。
-- 验收方式。
+- Human Decisions：例如缺理解型元素算 warning 还是 blocking、是否新增脚本、Review Report 是否落盘。
+- 风险边界、验收方式和执行前 checklist。
 
-Markdown 必须和 HTML 同步，并且可以在我确认 HTML 合理后直接交给 agent 执行。
+Markdown 必须和 HTML 同步；只有 HTML verdict approved 且 blocking decisions resolved 后，Markdown 才能交给 agent 执行。
 ```
 
 ### 3. 粘贴并 review
@@ -233,10 +243,13 @@ Markdown 必须和 HTML 同步，并且可以在我确认 HTML 合理后直接�
 
 只看 HTML，重点检查：
 
+- 顶部 Review Verdict 是否建议继续，还是需要补证据 / 先解决 blocking decision。
 - 是否讲清楚现有 ingest 怎么做。
 - 是否讲清楚优化后的模块边界。
+- Change Scope 是否说明会涉及哪些代码 / 文档文件，以及哪些目录绝对不能碰。
 - 数据流是否能解释“为什么这样改更稳定”。
 - 例子是否具体到可以判断 plan 好坏。
+- Human Decisions 是否集中列出，而不是散在正文里。
 - Markdown 是否能在 HTML 通过后交给 agent 执行。
 
 如果不满意，就直接反馈：

@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | add review verdict and change scope to plan artifacts
+
+- **动机**：用户希望 HTML 更像可审查的决策界面，并明确说明计划会涉及哪些代码 / 文件。
+- **更新**：将 `dev/plan-artifact-pipeline.md` 的 HTML 标准结构升级为 11 个区域，新增 Review Verdict、Evidence-backed Claims、Change Scope、Human Decisions、Acceptance Checklist 和 Execution Handoff。
+- **文档**：更新 `dev/README.md` 的新手模板和 demo 要求，明确 will change / might change / must not change，以及只有 HTML verdict approved 且 blocking decisions resolved 后 Markdown 才能执行。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | require end-to-end plan demos
 
 - **动机**：用户希望生成 HTML/Markdown 时结合更具体的例子，例如从论文链接 ingest 开始展示完整流程；其他项目由 agent 自行判断最自然的例子。

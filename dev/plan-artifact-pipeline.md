@@ -62,17 +62,36 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 
 `plan-review.html` 应该是一个小型设计评审页面，而不是普通 markdown 的换皮。
 
-推荐固定成 9 个区域：
+推荐固定成 11 个区域：
 
-1. **任务一句话**：用一句话说明这次要解决什么问题。
+1. **Review Verdict**：顶部给出建议结论、可靠性、blocking risk 数量、需要用户确认的事项数量。
 2. **当前工作区状态**：只展示当前任务相关模块、关键文件、最近约束和现有入口。
-3. **证据来源**：列出每个关键事实来自哪个文件；无法确认的内容标为推断。
+3. **Evidence-backed Claims**：每个关键判断都写 claim、evidence、confidence、impact if wrong。
 4. **当前流程 / 数据流**：展示改动前输入如何进入系统、经过哪些步骤、输出到哪里。
 5. **目标流程 / 数据流**：展示改动后流程如何变化，以及新增模块的职责边界。
-6. **改动前后对比**：用表格说明哪些行为保持不变、哪些会变化、哪些明确不做。
-7. **具体 demo**：从一个真实或高度贴近真实的用户输入开始，串起当前流程、目标流程、预期输出和错误例子。
-8. **可靠性评估**：说明这个 plan 为什么安全、哪里还有不确定点、需要人类确认什么。
-9. **验收方式**：说明如何判断 plan 和后续实现是正确的。
+6. **Change Scope**：明确 will change / might change / must not change，尤其说明会涉及哪些代码或文件。
+7. **改动前后对比**：用表格说明哪些行为保持不变、哪些会变化、哪些明确不做。
+8. **End-to-End Demos**：从真实用户输入开始，展示 success / blocked / warning 三条路径。
+9. **Human Decisions**：把需要用户拍板的事项单独列出，避免散在风险段落里。
+10. **Acceptance Checklist**：用 checklist 帮用户确认是否理解当前流程、目标流程、改动范围、风险和验收方式。
+11. **Execution Handoff**：说明 Markdown 只有在 verdict approved 且 blocking decisions resolved 后才能执行。
+
+Review Verdict 推荐格式：
+
+| 字段 | 值 |
+|---|---|
+| Recommendation | proceed after decisions / needs evidence / do not execute |
+| Confidence | high / medium / low |
+| Blocking risks | 数量 + 一句话摘要 |
+| Human decisions | 数量 + 一句话摘要 |
+| Execution state | not ready / ready after approval / approved |
+
+Change Scope 必须列清楚：
+
+- **Will change**：预计需要修改或新增的代码 / 文档 / 配置文件。
+- **Might change**：取决于用户决策或实现细节的文件。
+- **Must not change**：明确禁止修改的目录或文件。
+- **Why**：每个 will change 文件都要说明为什么会涉及。
 
 当前工作区状态必须是 task-scoped：
 
@@ -88,13 +107,19 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 - 展示至少一个成功输出和两个失败 / 边界例子。
 - 如果项目类型不明确，agent 应根据项目地图自行选择最自然的例子，并把选择理由写进 HTML。
 
-证据来源建议格式：
+Evidence-backed Claims 推荐格式：
 
-| 判断 | 来源 | 状态 |
-|---|---|---|
-| ingest 只动 Raw/ 和 log.md | `AGENTS.md` | confirmed |
-| Raw 需要 5-section | `schema.md` | confirmed |
-| 当前没有脚本化 ingest lint | repo scan | inferred |
+| Claim | Evidence | Confidence | Impact if wrong |
+|---|---|---|---|
+| ingest 只动 Raw/ 和 log.md | `AGENTS.md` | high | 可能误改 Wiki |
+| Raw 需要 5-section | `schema.md` | high | Raw 结构不稳定 |
+| 当前没有脚本化 ingest lint | repo scan | medium | 可能重复造工具 |
+
+End-to-End Demos 推荐固定三条：
+
+- **Success path**：合法输入如何通过当前流程和目标流程，最终输出什么。
+- **Blocked path**：重复、越界、非法输入如何被阻止。
+- **Warning path**：不确定或可修复问题如何交给用户判断。
 
 ## Markdown 必须包含
 
@@ -109,6 +134,7 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 5. 需要保持的项目约束。
 6. 验证命令或人工验收方式。
 7. 完成后的记录 / 提交要求。
+8. Execution gate：只有 HTML verdict approved 且 blocking decisions resolved 后才能执行。
 
 Markdown 应尽量短而准：
 
@@ -116,6 +142,7 @@ Markdown 应尽量短而准：
 - 清楚列出“要改的文件”和“不能碰的文件”。
 - 把 HTML 中的人类评审结论转成执行步骤。
 - 如果 HTML 里有待确认项，Markdown 中必须保留 blocking condition。
+- Markdown 顶部必须引用 HTML verdict；如果 verdict 不是 approved，不得进入代码修改。
 
 ## 同步规则
 
@@ -141,6 +168,7 @@ HTML 和 Markdown 必须同步修改。
 - 当前问题：规则靠 agent 记忆，tag 越界、ID 重复、section 缺失、Related Wiki 缺失、log 格式错误都可能晚发现。
 - 优化模块：`Preflight`、`Template Guard`、`Tag Guard`、`Review Report`。
 - 数据流：用户输入 -> preflight -> Raw draft -> template/tag lint -> review report -> 写 Raw/log。
+- Change Scope：可能新增 `scripts/ingest-review.mjs` 或 `docs/ingest-review.md`；可能更新 `AGENTS.md`、`dev/project-map.md` 和 `log.md`；必须不改 `Wiki/`、`index.md` 和已有 Raw。
 - 端到端例子：用户输入 `帮我 ingest 这篇论文：https://arxiv.org/abs/2510.14967` -> preflight 发现 `Raw/2510-igpo.md` 已存在 -> report 标为 duplicate blocking；另给一个新论文链接样例展示通过查重后如何生成 Raw draft。
 - 错误例子：缺 `Tags` 报错；出现 `#entropy-guided` 提示映射到 `#entropy`；缺 `What would break this` 给 warning。
 - 验收方式：构造最小 Raw 样例跑 lint；确认历史 Raw 只报告兼容问题，不自动 retrofit；确认 ingest 仍只动 `Raw/` 和 `log.md`。
