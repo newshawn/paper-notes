@@ -156,12 +156,14 @@
     <tr><td>Review Report</td><td><span class="ok">0 blocking</span>，允许写 <code>Raw/2605-shortname.md</code> 并追加 <code>log.md</code>。</td></tr>
   </table>
 
-  <h3>Blocked path：重复论文</h3>
+  <h3>重复论文：为什么这一步要停下来</h3>
   <table>
-    <tr><th>阶段</th><th>示例</th></tr>
+    <tr><th>你看到的内容</th><th>解释</th></tr>
     <tr><td>用户输入</td><td><code>帮我 ingest 这篇论文：https://arxiv.org/abs/2510.14967</code></td></tr>
-    <tr><td>Preflight</td><td>发现 <code>Raw/2510-igpo.md</code> 已含对应 AlphaXiv / arXiv ID。</td></tr>
-    <tr><td>Review Report</td><td><span class="block">blocking: duplicate</span>；停止写入 Raw 和 log。</td></tr>
+    <tr><td>系统发现了什么</td><td>仓库里已经有这篇论文的笔记：<code>Raw/2510-igpo.md</code>。它对应的论文链接是 <code>2510.14967</code>，所以这不是一篇新论文。</td></tr>
+    <tr><td>为什么不能继续</td><td>如果继续写入，会生成第二份 Raw，后续 compile 时同一篇论文可能被重复统计，也会让 <code>log.md</code> 多一条误导记录。</td></tr>
+    <tr><td>Review Report</td><td><span class="block">阻断：重复论文</span>。这表示“先不要写任何文件”，不是程序坏了。</td></tr>
+    <tr><td>用户下一步</td><td>打开已有的 <code>Raw/2510-igpo.md</code> 检查是否够用；如果只是想补充笔记，需要明确说“允许 append 到这篇已有 Raw”。默认不新增 Raw，也不追加 log。</td></tr>
   </table>
 
   <h3>Warning path：缺理解型元素</h3>

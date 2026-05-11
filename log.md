@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | clarify blocked demo language
+
+- **动机**：用户指出示例 HTML 中 `blocking: duplicate` 这类失败路径仍然晦涩，新手不容易理解为什么要停止。
+- **更新**：重写 `dev/examples/ingest-plan-review.html` 和对应 Markdown 中的重复论文示例，改为解释发生了什么、为什么不能继续、用户下一步怎么做。
+- **规则**：更新 `dev/plan-artifact-pipeline.md` 和 `dev/README.md`，要求失败 / 边界 demo 不能只写错误码，必须说明后果和下一步。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | explain plan artifact terms
 
 - **动机**：用户指出 blocking 等评审术语对新手不够直观，需要在 dev 工作流里解释清楚。

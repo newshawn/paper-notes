@@ -125,6 +125,7 @@ HTML 请优先讲清：
 - Change Scope：明确 will change / might change / must not change，尤其说明会涉及哪些代码或文件，以及为什么。
 - 改动前后对比：哪些行为保持不变，哪些会变化，哪些明确不做。
 - 具体 demo：从一个真实或最自然的用户输入开始，展示它在当前流程和目标流程中的流动，并给出成功输出与失败 / 边界 case。
+- 失败 / 边界 case：不要只写错误码；请说明发生了什么、为什么不能继续、我下一步应该怎么做。
 - Human Decisions：把需要我拍板的问题集中列出。
 - Acceptance Checklist：让我可以逐项确认是否通过 review。
 - Execution Handoff：说明只有 HTML verdict approved 且 blocking decisions resolved 后，Markdown 才能执行。
@@ -270,7 +271,7 @@ HTML 必须包含：
 - 改动前后对比：保持不变、会变化、明确不做。
 - 端到端具体例子：用户输入 `帮我 ingest 这篇论文：https://arxiv.org/abs/2510.14967` 后，如何查重、发现已有 `Raw/2510-igpo.md`、生成 duplicate report 并停止写入。
 - 另给一个新论文链接样例，展示通过 preflight 后如何生成 Raw draft、跑 Template Guard / Tag Guard、生成 Review Report，再决定是否写入 Raw/log。
-- 至少 3 个失败 / 边界例子：缺 Tags、tag 越界、缺理解型元素。
+- 至少 3 个失败 / 边界例子：缺 Tags、tag 越界、缺理解型元素；每个例子都要解释发生了什么、为什么要拦住或警告、用户下一步怎么处理。
 - Human Decisions：例如缺理解型元素算 warning 还是 blocking、是否新增脚本、Review Report 是否落盘。
 - 风险边界、验收方式和执行前 checklist。
 - Post-execution Handoff：执行后回填实际改动文件、验证结果、是否偏离 HTML plan，以及是否需要更新 `dev/project-map.md`。

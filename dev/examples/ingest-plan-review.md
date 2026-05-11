@@ -211,7 +211,7 @@
 8. Agent 在 `log.md` 顶部追加 ingest 记录。
 9. Post-write Check 确认只动了新 Raw 和 `log.md`。
 
-### Blocked path
+### 重复论文：为什么这一步要停下来
 
 用户输入：
 
@@ -221,16 +221,21 @@
 
 目标流程：
 
-1. Preflight 发现 `Raw/2510-igpo.md` 已包含对应 AlphaXiv / arXiv 论文。
-2. Review Report 输出：
+1. Preflight 发现仓库里已经有这篇论文的笔记：`Raw/2510-igpo.md`。
+2. Report 用人能理解的话解释：
+   - 发生了什么：这不是新论文，`2510.14967` 已经对应到 `Raw/2510-igpo.md`。
+   - 为什么要停：继续写入会产生重复 Raw，后续 compile 可能重复统计同一篇论文，`log.md` 也会多一条误导记录。
+   - 下一步怎么做：打开已有 Raw 检查是否够用；如果用户只是想补充内容，需要明确说“允许 append 到这篇已有 Raw”。
+3. Review Report 可以同时保留机器可读摘要：
 
 ```text
-BLOCKING duplicate-paper
+BLOCKING duplicate-paper：重复论文，先不要写文件
 Existing Raw: Raw/2510-igpo.md
-Action: stop. Do not write Raw or log.md.
+Reason: this paper is already ingested
+Next: review existing Raw, or ask user whether to append notes to the existing Raw
 ```
 
-3. Agent 停止，不写任何文件。
+4. Agent 停止，不写任何文件。
 
 ### Warning path
 
