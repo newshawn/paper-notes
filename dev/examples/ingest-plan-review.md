@@ -211,7 +211,7 @@
 8. Agent 在 `log.md` 顶部追加 ingest 记录。
 9. Post-write Check 确认只动了新 Raw 和 `log.md`。
 
-### 重复论文：为什么这一步要停下来
+### Blocked path：重复论文（为什么要停）
 
 用户输入：
 

@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | align demo path headings
+
+- **动机**：用户指出示例里 success / warning 都使用 path 命名，重复论文段落却变成纯中文标题，结构不一致。
+- **更新**：将示例标题统一为 `Blocked path：重复论文（为什么要停）`，同时保留新手友好的解释内容。
+- **规则**：更新 `dev/plan-artifact-pipeline.md`，要求 End-to-End Demos 的 Success / Blocked / Warning 三条路径标题格式保持一致。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | strengthen html readability constraints
 
 - **动机**：用户指出不能只改 demo，HTML plan artifact 的约束本身也要保证人能看清楚失败、风险和下一步。
