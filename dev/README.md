@@ -14,9 +14,11 @@
 -> agent 读取 pipeline 规则和项目地图
 -> agent 根据项目地图定位相关文件
 -> agent 生成 plan-review.html + plan-review.md
+-> 运行 artifact lint 检查结构完整性
 -> 人类审阅 HTML
 -> 有问题就反馈，agent 同步修改 HTML 和 Markdown
 -> HTML 通过后，把 Markdown 交给 agent 执行
+-> 执行后回填实际改动、验证结果和是否需要更新项目地图
 ```
 
 ## 生成页面
@@ -32,21 +34,33 @@ node scripts/build-dev-renderer.mjs
 1. 打开 `dev/`。
 2. 把 agent 生成的 `plan-review.html` 粘贴到 HTML 输入框。
 3. 把 agent 生成的 `plan-review.md` 粘贴到 Markdown 输入框。
-4. 先审阅 HTML：它是否把“当前工作区状态”和“计划要做的改动”放在同一个画布里讲清楚。
-5. 如果 HTML 有问题，把问题反馈给 agent，并要求同步修改 HTML 和 Markdown。
-6. 反复迭代，直到 HTML 没问题。
-7. 复制最终 Markdown 给 agent 执行。
+4. 可选但推荐：把两份内容保存成文件后运行 artifact lint。
+5. 先审阅 HTML：它是否把“当前工作区状态”和“计划要做的改动”放在同一个画布里讲清楚。
+6. 如果 HTML 有问题，把问题反馈给 agent，并要求同步修改 HTML 和 Markdown。
+7. 反复迭代，直到 HTML 没问题，且 lint 没有必需项缺失。
+8. 复制最终 Markdown 给 agent 执行。
+9. 执行结束后，让 agent 回填实际改动、验证结果、计划偏离和项目地图是否需要更新。
 
-审阅 HTML 时，优先看 8 件事：
+如果你把 artifact 保存为 `plan-review.html` 和 `plan-review.md`，可以这样检查：
+
+```bash
+node scripts/check-plan-artifact.mjs plan-review.html plan-review.md
+```
+
+这个检查只说明“结构是否完整”，不说明“方案一定正确”。报错时先补齐缺失部分；warning 通常代表 HTML 还能更好 review，或者 Markdown 的执行交接不够稳。
+
+审阅 HTML 时，优先看 10 件事：
 
 - Review Verdict：顶部是否说明建议继续、需要补证据，还是不建议执行。
 - 当前状态：是否只展示和这次任务相关的模块、文件、流程和约束。
 - 证据来源：关键判断是否标明来自哪个文件，还是只是推断。
 - 目标状态：是否讲清改完以后流程如何变化。
 - Change Scope：是否明确 will change / might change / must not change，尤其是会涉及哪些代码或文件。
+- 文件预览：每个 will change 文件是否说明“为什么会动”和“大概会怎么动”。
 - 具体 demo：是否有输入、输出、错误 case 或 UI 状态，能帮助你判断 plan 好坏。
-- Human Decisions：是否把需要你拍板的事项单独列出来。
+- Human Decisions：是否把需要你拍板的事项单独列出来，并给出推荐答案。
 - Acceptance Checklist：是否能让你逐项确认“我理解并接受这个计划”。
+- Execution Handoff：是否说明执行后要回填实际改动、验证结果和计划偏离。
 
 ## 不会写 prompt 怎么办
 
@@ -98,6 +112,7 @@ HTML 请优先讲清：
 - Human Decisions：把需要我拍板的问题集中列出。
 - Acceptance Checklist：让我可以逐项确认是否通过 review。
 - Execution Handoff：说明只有 HTML verdict approved 且 blocking decisions resolved 后，Markdown 才能执行。
+- Post-execution Handoff：说明执行后要回填实际改动文件、验证结果、计划偏离，以及是否需要更新 dev/project-map.md。
 
 如果我没有给具体例子，请你根据项目类型自行选择最自然的例子，并在 HTML 里说明为什么选这个例子。
 
@@ -174,6 +189,7 @@ HTML 必须包含：
 - 端到端具体例子：用户输入邮箱和密码后，如何经过前端校验、API 请求、后端响应和 UI 展示。
 - 至少 3 个失败 / 边界例子：邮箱格式错误、密码错误、网络失败。
 - Human Decisions、风险边界、验收方式和执行前 checklist。
+- Post-execution Handoff：执行后回填实际改动文件、验证结果、偏离计划的地方，以及是否需要更新项目地图。
 
 不要执行代码修改。等我 review HTML 通过后，再决定是否执行 Markdown 计划。
 ```
@@ -233,6 +249,7 @@ HTML 必须包含：
 - 至少 3 个失败 / 边界例子：缺 Tags、tag 越界、缺理解型元素。
 - Human Decisions：例如缺理解型元素算 warning 还是 blocking、是否新增脚本、Review Report 是否落盘。
 - 风险边界、验收方式和执行前 checklist。
+- Post-execution Handoff：执行后回填实际改动文件、验证结果、是否偏离 HTML plan，以及是否需要更新 `dev/project-map.md`。
 
 Markdown 必须和 HTML 同步；只有 HTML verdict approved 且 blocking decisions resolved 后，Markdown 才能交给 agent 执行。
 ```
@@ -251,6 +268,7 @@ Markdown 必须和 HTML 同步；只有 HTML verdict approved 且 blocking decis
 - 例子是否具体到可以判断 plan 好坏。
 - Human Decisions 是否集中列出，而不是散在正文里。
 - Markdown 是否能在 HTML 通过后交给 agent 执行。
+- 执行后回填是否要求 agent 说明实际改动、验证结果和计划偏离。
 
 如果不满意，就直接反馈：
 

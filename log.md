@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | add plan artifact lint and handoff rules
+
+- **动机**：用户希望开发用 HTML plan artifact 同时具备 artifact lint、改动文件预览、集中决策建议和执行后回填机制。
+- **更新**：新增 `scripts/check-plan-artifact.mjs`，检查 `plan-review.html` / `plan-review.md` 是否包含 Review Verdict、Evidence-backed Claims、Change Scope、End-to-End Demos、Human Decisions、Acceptance Checklist、Execution Handoff 和执行后回填等结构。
+- **文档**：更新 `dev/plan-artifact-pipeline.md`、`dev/README.md`、`dev/project-map.md`，明确 lint 用法、will/might/must-not 文件范围、Human Decisions 推荐答案，以及执行后回填实际改动、验证结果和计划偏离。
+- **Wiki touched**: none (developer workflow tooling only)
+
 ## [2026-05-11] refactor | add dev visual entry to README
 
 - **动机**：用户希望 README 里明确提供 `dev/` 的可视化入口，方便直接打开 plan artifact renderer。

@@ -101,18 +101,21 @@
 - `dev-cockpit.html`：兼容旧链接的跳转页。
 - `scripts/build-review.mjs`：生成 `review.html`。
 - `scripts/build-dev-renderer.mjs`：生成 `dev/index.html` 和 `dev-cockpit.html`。
+- `scripts/check-plan-artifact.mjs`：检查 `plan-review.html` / `plan-review.md` 是否包含必要的 review 和执行结构。
 
 常见改动入口：
 
 - 改 review 页面：编辑 `scripts/build-review.mjs`，再运行 `node scripts/build-review.mjs`。
 - 改 plan artifact renderer：编辑 `scripts/build-dev-renderer.mjs`，再运行 `node scripts/build-dev-renderer.mjs`。
 - 改 plan pipeline：编辑 `dev/plan-artifact-pipeline.md` 和本文件。
+- 检查 plan artifact：运行 `node scripts/check-plan-artifact.mjs plan-review.html plan-review.md`。
 
 约束：
 
 - HTML 文件是生成物，不直接手改。
 - 改生成器后必须重新生成对应 HTML。
 - `dev/index.html` 只负责渲染，不承担 prompt 生成、规则展示或复杂决策 UI。
+- Artifact lint 只检查结构完整性；最终是否执行仍由人类审阅 HTML 后决定。
 
 ### Workflow Docs
 
@@ -131,6 +134,7 @@
 - 流程抽象变化：优先更新 `dev/plan-artifact-pipeline.md`。
 - 模块分布变化：更新本文件。
 - 用户入口变化：更新 README 和相关 workflow 文档。
+- 新增执行后回填、lint 或自动检查规则时，同步更新 `dev/README.md` 和本文件。
 
 约束：
 

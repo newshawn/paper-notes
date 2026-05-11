@@ -54,9 +54,11 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 4. 人类审阅 HTML。
    - 如果 HTML 没讲清现有系统、目标方案、数据流、例子或风险，就提出问题。
    - Agent 根据反馈同步修改 HTML 和 Markdown。
-5. 重复审阅和修改，直到人类认为 HTML 没问题。
-6. 人类把最终 Markdown 交给 agent 执行。
-7. Agent 按 Markdown 执行代码修改、验证、记录和提交。
+5. 运行 artifact lint，检查 HTML / Markdown 是否包含必要的 review 和执行结构。
+6. 重复审阅和修改，直到人类认为 HTML 没问题，且 lint 没有必需项缺失。
+7. 人类把最终 Markdown 交给 agent 执行。
+8. Agent 按 Markdown 执行代码修改、验证、记录和提交。
+9. Agent 执行后回填实际改动、偏离计划的地方、验证结果，以及是否需要更新 `dev/project-map.md`。
 
 ## HTML 标准结构
 
@@ -92,6 +94,7 @@ Change Scope 必须列清楚：
 - **Might change**：取决于用户决策或实现细节的文件。
 - **Must not change**：明确禁止修改的目录或文件。
 - **Why**：每个 will change 文件都要说明为什么会涉及。
+- **Diff preview**：用一两句话说明每个文件预计会出现哪类变化，例如新增校验函数、补测试、更新文档、只追加 log。
 
 当前工作区状态必须是 task-scoped：
 
@@ -121,6 +124,26 @@ End-to-End Demos 推荐固定三条：
 - **Blocked path**：重复、越界、非法输入如何被阻止。
 - **Warning path**：不确定或可修复问题如何交给用户判断。
 
+Human Decisions 必须集中、可拍板：
+
+- 每个问题都写清为什么需要人决定。
+- 每个问题都给一个推荐答案和至少一个备选答案。
+- 如果推荐答案被接受，说明 Markdown 会如何执行。
+- 如果用户不拍板，Markdown 必须把它保留为 blocking condition。
+
+Artifact lint：
+
+- 生成或修改 `plan-review.html` / `plan-review.md` 后，推荐运行：
+
+```bash
+node scripts/check-plan-artifact.mjs plan-review.html plan-review.md
+```
+
+- lint 只检查结构完整性，不代表方案一定正确。
+- lint 报错表示缺少必要 review / 执行结构，应先补齐再让人 review。
+- lint warning 表示可读性或执行交接可能不够好，需要 agent 判断是否补强。
+- 通过 lint 后仍必须由人审阅 HTML；lint 不能代替人的判断。
+
 ## Markdown 必须包含
 
 `plan-review.md` 必须能直接交给 agent 执行。
@@ -135,6 +158,7 @@ End-to-End Demos 推荐固定三条：
 6. 验证命令或人工验收方式。
 7. 完成后的记录 / 提交要求。
 8. Execution gate：只有 HTML verdict approved 且 blocking decisions resolved 后才能执行。
+9. Post-execution handoff：执行后必须回填实际改动、验证结果、计划偏离和项目地图维护判断。
 
 Markdown 应尽量短而准：
 
@@ -143,6 +167,15 @@ Markdown 应尽量短而准：
 - 把 HTML 中的人类评审结论转成执行步骤。
 - 如果 HTML 里有待确认项，Markdown 中必须保留 blocking condition。
 - Markdown 顶部必须引用 HTML verdict；如果 verdict 不是 approved，不得进入代码修改。
+
+执行后回填必须包含：
+
+- 实际修改 / 新增的文件。
+- 和 HTML plan 一致的地方。
+- 偏离 HTML / Markdown 的地方，以及为什么偏离。
+- 实际运行的验证命令和结果。
+- 是否需要更新 `dev/project-map.md`、README、agent 规则或其他 workflow 文档。
+- 如果有未完成项，标成 follow-up，不要混在“已完成”里。
 
 ## 同步规则
 
