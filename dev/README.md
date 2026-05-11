@@ -200,6 +200,7 @@ HTML 必须包含：
 
 完整示例已经放在 `dev/examples/`：
 
+- 在线预览：[Ingest Plan Review Example](https://newshawn.github.io/paper-notes/dev/examples/ingest-plan-review.html)
 - [`examples/ingest-plan-review.html`](examples/ingest-plan-review.html)：粘到渲染器的 HTML 输入框。
 - [`examples/ingest-plan-review.md`](examples/ingest-plan-review.md)：粘到渲染器的 Markdown 输入框。
 

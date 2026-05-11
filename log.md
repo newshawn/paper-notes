@@ -4,6 +4,12 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | add deployed plan example link
+
+- **动机**：用户希望 dev 示例 HTML 有部署跳转链接，方便直接预览完整 plan review 页面。
+- **更新**：在 `dev/README.md` 的 PaperNotes demo 区域新增在线预览链接 `https://newshawn.github.io/paper-notes/dev/examples/ingest-plan-review.html`。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | add dev plan artifact example
 
 - **动机**：用户认为优化 ingest 的 HTML plan review 示例效果不错，希望作为 dev 工作流示例保留下来。
