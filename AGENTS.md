@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 这是 paper-notes LLM Wiki（Karpathy 模式的论文知识库，主方向 Agentic RL 中的 Credit Assignment）。每次在这个目录下工作，都按本文件和 [`schema.md`](schema.md) 执行。
 
@@ -11,7 +11,7 @@
 ## 工作红线
 
 1. **两阶段**：`ingest` 只动 `Raw/` 和 `log.md`，绝不改 `Wiki/`；`compile` 只在用户显式触发时进行。
-2. **Raw 只增不改**：所有已 ingest 的 Raw 保留现状，不 retrofit，除非用户明说。早期 10 篇是 5-section 简版；2603 之后用 5-section + 理解型元素格式。两种格式兼容共存。
+2. **Raw 只增不改**：已有早期 Raw 保留现状，不 retrofit，除非用户明说。
 3. **Tag 受控**：Raw 的 `Tags:` 只能从 `schema.md` 的受控标签中选；没有合适 tag 时，先让用户确认并登记到 `schema.md`。
 4. **Wiki 冲突累积不覆盖**：新论文与旧 claim 冲突时，写入该概念页的 `## Contradictions / Open Questions`，引用双方 `[paper-id](...)`；不要改动原 claim。
 5. **Git 自动提交**：完成用户要求的 repo 文件改动并通过基本检查后，默认直接 `git add` 相关改动、`git commit`、`git push`；除非用户明确说“先别提交 / 别 push / 只改文件”。不 force push、不跳 hooks、不提交 secrets。

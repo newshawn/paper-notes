@@ -4,6 +4,20 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | document default auto commit and push
+
+- **动机**：用户确认希望未来完成 repo 文件改动后自动提交并推送，减少手动收尾。
+- **规则更新**：`AGENTS.md` 和 `CLAUDE.md` 的 Git 红线改为默认 `git add` → `git commit` → `git push`，除非用户明确要求暂不提交或暂不推送。
+- **Wiki touched**: none (workflow preference only)
+
+## [2026-05-11] refactor | remove plugin layer and simplify workflow docs
+
+- **动机**：实际使用场景主要是自然语言投喂论文 / 笔记、显式 compile、按需查询 Wiki；Claude Code plugin、slash commands、marketplace 安装说明对个人研究库维护成本偏高。
+- **删除**：移除 `.claude-plugin/` 和 `plugin/` 下的 plugin manifest、commands、hooks、scripts、skill 模板与 plugin README。
+- **保留**：`Raw/`、`Wiki/`、`schema.md`、`index.md`、`log.md` 的 LLM Wiki 主体结构不变。
+- **文档更新**：重写 `README.md`、`AGENTS.md`、`CLAUDE.md`，改为自然语言工作流：ingest → review → compile → query。
+- **Wiki touched**: none (refactor only)
+
 ## [2026-04-20] refactor | 2604-ig-search Raw 补 Appendix J 数据
 
 - **动机**：先前 ingest 时 arxiv HTML fetch 被截断，Raw 里 Delta 段写的是"Appendix J 承诺 cross-protocol 对比（未在提供内容中显示）"，留了信息空洞

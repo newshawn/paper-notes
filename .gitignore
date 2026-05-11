@@ -3,6 +3,7 @@
 .obsidian/cache
 *.tmp
 .vscode/
+.claude/
 
 # Private research plans — don't push to public wiki repo
 research/
