@@ -2,6 +2,8 @@
 
 Wiki 概念页和 Raw 论文笔记的总览。自动维护。
 
+> 人类审阅入口：[PaperNotes Review Cockpit](https://newshawn.github.io/paper-notes/review.html)（由 [`review.html`](review.html) 生成展示）
+
 ## Wiki 概念页
 
 ### 核心概念

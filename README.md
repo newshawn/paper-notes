@@ -4,6 +4,12 @@
 
 核心想法很简单：你把论文链接、PDF 或自己的论文笔记丢进来，AI 先生成单篇论文的 `Raw/` 笔记；你确认后，再显式触发 `compile`，把它整合进跨论文的 `Wiki/` 概念页。需要写作、查方法演进或找 open questions 时，再调用 Wiki。
 
+## Human Review
+
+- 在线审阅入口：[PaperNotes Review Cockpit](https://newshawn.github.io/paper-notes/review.html)
+- 仓库内 HTML 文件：[review.html](review.html)
+- 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)
+
 ## How It Works
 
 ### 1. Ingest: 输入论文
