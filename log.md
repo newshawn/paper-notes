@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | document plan artifact pipeline tutorial
+
+- **动机**：用户希望有一份教程，说明 prompt → HTML+Markdown plan → 人类 review → LLM 执行的开发 pipeline。
+- **更新**：扩写 `docs/dev-cockpit-workflow.md`，补充入口选择、完整 pipeline、合格 plan HTML 的组成、review 检查清单。
+- **Demo**：用“优化当前 ingest 模块”作为最小示例，明确 HTML 需要展示现有 ingest 如何实现、优化模块如何设计，以及具体实现例子和验收方式。
+- **入口**：更新 `README.md` 的 Human Review 区域，指向 dev-cockpit 教程。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | add ingest optimization plan demo
 
 - **动机**：用户希望看到一个最小化 plan demo：以“优化当前 ingest 模块”为例，HTML 应展示现有 ingest 如何实现、优化模块如何设计，并附带具体实现例子。
