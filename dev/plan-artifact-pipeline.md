@@ -17,7 +17,7 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 
 - 默认文件：`dev/project-map.md`
 - 作用：说明每个模块在做什么、关键文件在哪里、常见改动入口是什么、哪些约束不能破坏。
-- 用法：先用项目地图定位相关模块，再深入读取具体源码 / 文档 / Raw / Wiki。
+- 用法：先用项目地图定位相关模块，再深入读取具体源码、文档、接口、测试、数据样例或领域资料。
 
 如果项目还没有 `dev/project-map.md`，先生成一版最小项目地图：
 
@@ -37,9 +37,10 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 
 1. 用户进入 plan 模式，说明需求、背景、约束和希望优化的目标。
 2. Agent 读取项目规则和相关文件。
-   - 在 PaperNotes 中，先读 `AGENTS.md`、`schema.md`、`log.md` 顶部。
-   - 再读 `dev/project-map.md`，根据项目地图定位相关模块。
-   - 最后根据需求读取相关源码、文档、Raw、Wiki 或参考文件。
+   - 通用项目：先读 `README`、agent 规则、配置文件、测试命令和最近变更记录。
+   - 再读 `dev/project-map.md`；如果没有项目地图，先生成最小版本。
+   - 最后根据需求读取相关源码、文档、接口、测试或参考文件。
+   - PaperNotes 示例：先读 `AGENTS.md`、`schema.md`、`log.md` 顶部，再读 `dev/project-map.md`，最后按需求读取 `Raw/`、`Wiki/` 或 HTML review 相关文件。
 3. Agent 生成 plan artifact。
    - HTML 展示给人看。
    - Markdown 交给 agent 执行。
@@ -86,7 +87,7 @@ HTML 和 Markdown 必须同步修改。
 - 如果 HTML 中新增风险，Markdown 也要加入注意事项或验证方式。
 - 如果 Markdown 中改变了文件路径，HTML 的相关模块和数据流也要同步。
 
-## 最小 demo：优化 ingest 模块
+## PaperNotes demo：优化 ingest 模块
 
 示例需求：
 

@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | generalize dev prompt templates
+
+- **动机**：用户指出 README 里的 prompt 模板仍然过于绑定 PaperNotes，别人用于自己的项目时不够泛化。
+- **更新**：将 `dev/README.md` 的新手模板改为通用项目模板，新增“先生成 project-map”的指令和“优化登录错误提示”的通用 demo；PaperNotes ingest demo 保留为项目专属示例。
+- **规则**：更新 `dev/plan-artifact-pipeline.md`，把 PaperNotes 读取顺序改为示例，默认流程改成 README / agent 规则 / 配置 / 测试命令 / 项目地图。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | add beginner prompt guidance
 
 - **动机**：用户指出新手不一定会写完整 plan prompt，需要明确指引。
