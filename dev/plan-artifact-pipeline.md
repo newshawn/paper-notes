@@ -70,7 +70,7 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 4. **当前流程 / 数据流**：展示改动前输入如何进入系统、经过哪些步骤、输出到哪里。
 5. **目标流程 / 数据流**：展示改动后流程如何变化，以及新增模块的职责边界。
 6. **改动前后对比**：用表格说明哪些行为保持不变、哪些会变化、哪些明确不做。
-7. **具体 demo**：给出最小输入、预期输出、错误例子、UI 状态或测试故事。
+7. **具体 demo**：从一个真实或高度贴近真实的用户输入开始，串起当前流程、目标流程、预期输出和错误例子。
 8. **可靠性评估**：说明这个 plan 为什么安全、哪里还有不确定点、需要人类确认什么。
 9. **验收方式**：说明如何判断 plan 和后续实现是正确的。
 
@@ -79,6 +79,14 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 - 应该展示：相关文件、相关模块、相关数据流、相关测试、相关约束。
 - 不应该展示：和任务无关的全仓库目录、无关模块介绍、装饰性统计。
 - 如果任务影响范围不清楚，HTML 应把“不确定影响范围”作为风险列出。
+
+具体 demo 必须端到端：
+
+- 从用户实际会输入的东西开始，例如论文链接、表单输入、API 请求、配置片段、数据样例或命令。
+- 展示这个输入在当前系统中会怎样流动。
+- 展示优化后会多经过哪些检查、模块或状态。
+- 展示至少一个成功输出和两个失败 / 边界例子。
+- 如果项目类型不明确，agent 应根据项目地图自行选择最自然的例子，并把选择理由写进 HTML。
 
 证据来源建议格式：
 
@@ -133,7 +141,8 @@ HTML 和 Markdown 必须同步修改。
 - 当前问题：规则靠 agent 记忆，tag 越界、ID 重复、section 缺失、Related Wiki 缺失、log 格式错误都可能晚发现。
 - 优化模块：`Preflight`、`Template Guard`、`Tag Guard`、`Review Report`。
 - 数据流：用户输入 -> preflight -> Raw draft -> template/tag lint -> review report -> 写 Raw/log。
-- 具体例子：缺 `Tags` 报错；出现 `#entropy-guided` 提示映射到 `#entropy`；缺 `What would break this` 给 warning。
+- 端到端例子：用户输入 `帮我 ingest 这篇论文：https://arxiv.org/abs/2510.14967` -> preflight 发现 `Raw/2510-igpo.md` 已存在 -> report 标为 duplicate blocking；另给一个新论文链接样例展示通过查重后如何生成 Raw draft。
+- 错误例子：缺 `Tags` 报错；出现 `#entropy-guided` 提示映射到 `#entropy`；缺 `What would break this` 给 warning。
 - 验收方式：构造最小 Raw 样例跑 lint；确认历史 Raw 只报告兼容问题，不自动 retrofit；确认 ingest 仍只动 `Raw/` 和 `log.md`。
 
 对应 Markdown 应包含：

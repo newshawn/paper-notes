@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | require end-to-end plan demos
+
+- **动机**：用户希望生成 HTML/Markdown 时结合更具体的例子，例如从论文链接 ingest 开始展示完整流程；其他项目由 agent 自行判断最自然的例子。
+- **更新**：在 `dev/plan-artifact-pipeline.md` 明确具体 demo 必须端到端：从真实用户输入开始，展示当前流程、目标流程、成功输出和失败 / 边界 case。
+- **文档**：更新 `dev/README.md` 的通用模板、登录 demo 和 PaperNotes ingest demo，要求 agent 在缺少例子时根据项目类型自行选择并说明理由。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | align beginner prompt example with ingest demo
 
 - **动机**：用户希望“不会写 prompt 怎么办”的三行示例也使用优化 ingest 模块，和后续 PaperNotes demo 保持一致。
