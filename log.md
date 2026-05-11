@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | strengthen plan artifact review schema
+
+- **动机**：用户希望通过 HTML 更详细地渲染当前工作区状态和 plan，使新手能判断计划是否可靠、哪里还能优化。
+- **更新**：强化 `dev/plan-artifact-pipeline.md` 的 HTML 标准结构，要求 task-scoped 工作区状态、证据来源、当前/目标流程、改动前后对比、具体 demo、可靠性评估和验收方式。
+- **文档**：更新 `dev/README.md` 的新手模板、通用 demo 和 PaperNotes demo，引导用户审阅证据来源、改动边界和可靠性。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | generalize dev prompt templates
 
 - **动机**：用户指出 README 里的 prompt 模板仍然过于绑定 PaperNotes，别人用于自己的项目时不够泛化。
