@@ -17,6 +17,7 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 - HTML 的目标是帮助人判断“这个 plan 是否可靠、哪里还不确定、哪里还能优化”。
 - Markdown 不重复 HTML 的展示逻辑，只保留 agent 可执行的步骤、约束和验收方式。
 - 关键判断必须标出证据来源；没有证据时明确写“推断”或“待确认”。
+- 面向新手时，HTML 必须解释关键术语，尤其是 blocking、warning、verdict、handoff、change scope、artifact lint 这类评审词。
 
 ## 项目地图
 
@@ -77,6 +78,19 @@ HTML 负责降低阅读成本，Markdown 负责稳定执行。两者必须表达
 9. **Human Decisions**：把需要用户拍板的事项单独列出，避免散在风险段落里。
 10. **Acceptance Checklist**：用 checklist 帮用户确认是否理解当前流程、目标流程、改动范围、风险和验收方式。
 11. **Execution Handoff**：说明 Markdown 只有在 verdict approved 且 blocking decisions resolved 后才能执行。
+
+如果页面里出现英文评审词，应在开头或 Review Verdict 附近加一个简短“术语小抄”：
+
+| 术语 | 给新手的解释 |
+|---|---|
+| blocking | 必须先解决，否则不能执行。 |
+| warning | 可以继续 review，但执行前最好确认或记录风险。 |
+| info | 只是提示信息，不影响执行。 |
+| verdict | 这份计划当前是否建议继续的总体判断。 |
+| approved | 人类已经确认 HTML 合理，可以进入执行阶段。 |
+| handoff | 从“评审用 HTML”交接到“执行用 Markdown”的边界和条件。 |
+| Change Scope | 这次会改、可能会改、绝对不能改的文件范围。 |
+| artifact lint | 检查 HTML/Markdown 是否包含必要结构；它不判断方案是否正确。 |
 
 Review Verdict 推荐格式：
 

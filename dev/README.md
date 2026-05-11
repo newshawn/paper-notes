@@ -49,6 +49,22 @@ node scripts/check-plan-artifact.mjs plan-review.html plan-review.md
 
 这个检查只说明“结构是否完整”，不说明“方案一定正确”。报错时先补齐缺失部分；warning 通常代表 HTML 还能更好 review，或者 Markdown 的执行交接不够稳。
 
+## 术语小抄
+
+这些词经常出现在 plan artifact 里，新手可以先按下面理解：
+
+| 术语 | 意思 |
+|---|---|
+| `blocking` | 阻断项。必须先解决，否则不要执行代码。比如会误改 `Wiki/`、缺少关键文件证据、用户还没拍板。 |
+| `warning` | 警告项。可以继续 review，但执行前最好确认或记录风险。比如旧文件格式不完整但不打算 retrofit。 |
+| `info` | 提示项。帮助理解上下文，不影响是否执行。 |
+| `verdict` | 评审结论。告诉你当前计划是“建议继续”“需要补证据”还是“不建议执行”。 |
+| `approved` | 人类已经确认 HTML 计划合理，可以把同步 Markdown 交给 agent 执行。 |
+| `handoff` | 交接。说明什么时候从“看 HTML 审计划”进入“按 Markdown 执行”。 |
+| `Change Scope` | 改动范围。列清 will change / might change / must not change，防止误伤无关文件。 |
+| `artifact lint` | 结构检查。它只检查 HTML/Markdown 有没有必要栏目，不代表方案一定正确。 |
+| `Evidence-backed Claims` | 有证据支撑的判断。每个关键判断都要说明来自哪个文件；没有证据就标成推断或待确认。 |
+
 审阅 HTML 时，优先看 10 件事：
 
 - Review Verdict：顶部是否说明建议继续、需要补证据，还是不建议执行。

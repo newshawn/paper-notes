@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | explain plan artifact terms
+
+- **动机**：用户指出 blocking 等评审术语对新手不够直观，需要在 dev 工作流里解释清楚。
+- **更新**：在 `dev/README.md` 增加术语小抄，解释 blocking、warning、verdict、approved、handoff、Change Scope、artifact lint 和 Evidence-backed Claims。
+- **规则 / 示例**：更新 `dev/plan-artifact-pipeline.md`，要求 HTML 解释关键评审词；同步更新 `dev/examples/ingest-plan-review.html` 和 `dev/examples/ingest-plan-review.md`。
+- **Wiki touched**: none (developer workflow documentation only)
+
 ## [2026-05-11] refactor | add deployed plan example link
 
 - **动机**：用户希望 dev 示例 HTML 有部署跳转链接，方便直接预览完整 plan review 页面。

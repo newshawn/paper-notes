@@ -42,6 +42,17 @@
     <tr><td>Execution state</td><td><span class="block">not ready</span>：只有 HTML verdict approved 且 blocking decisions resolved 后，Markdown 才能执行。</td></tr>
   </table>
 
+  <h2>术语小抄</h2>
+  <table>
+    <tr><th>术语</th><th>给新手的解释</th></tr>
+    <tr><td><code>blocking</code></td><td>阻断项。必须先解决，否则不要执行代码。例如可能误改 <code>Wiki/</code>，或者用户还没确认关键决策。</td></tr>
+    <tr><td><code>warning</code></td><td>警告项。可以继续 review，但执行前最好确认或记录风险。例如旧 Raw 格式不完整但不打算 retrofit。</td></tr>
+    <tr><td><code>verdict</code></td><td>评审结论。告诉你当前计划是建议继续、需要补证据，还是不建议执行。</td></tr>
+    <tr><td><code>approved</code></td><td>人类已经确认 HTML 合理，可以把同步 Markdown 交给 agent 执行。</td></tr>
+    <tr><td><code>handoff</code></td><td>交接。说明什么时候从“看 HTML 审计划”进入“按 Markdown 执行”。</td></tr>
+    <tr><td><code>Change Scope</code></td><td>改动范围。列清会改、可能会改、绝对不能改的文件，防止误伤无关内容。</td></tr>
+  </table>
+
   <h2>2. 当前工作区状态</h2>
   <div class="grid">
     <div class="card">

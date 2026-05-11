@@ -10,6 +10,18 @@
 - blocking decisions resolved。
 - 用户明确说可以执行本 Markdown 计划。
 
+## 术语小抄
+
+| 术语 | 给新手的解释 |
+|---|---|
+| `blocking` | 阻断项。必须先解决，否则不要执行代码。例如可能误改 `Wiki/`，或者用户还没确认关键决策。 |
+| `warning` | 警告项。可以继续 review，但执行前最好确认或记录风险。例如旧 Raw 格式不完整但不打算 retrofit。 |
+| `info` | 提示项。帮助理解上下文，不影响是否执行。 |
+| `verdict` | 评审结论。告诉你当前计划是建议继续、需要补证据，还是不建议执行。 |
+| `approved` | 人类已经确认 HTML 合理，可以把同步 Markdown 交给 agent 执行。 |
+| `handoff` | 交接。说明什么时候从“看 HTML 审计划”进入“按 Markdown 执行”。 |
+| `Change Scope` | 改动范围。列清会改、可能会改、绝对不能改的文件，防止误伤无关内容。 |
+
 ## 需求摘要
 
 优化当前 ingest 模块，让 Raw 生成前后更稳定：
