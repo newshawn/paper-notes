@@ -73,7 +73,7 @@ node scripts/check-plan-artifact.mjs plan-review.html plan-review.md
 - 目标状态：是否讲清改完以后流程如何变化。
 - Change Scope：是否明确 will change / might change / must not change，尤其是会涉及哪些代码或文件。
 - 文件预览：每个 will change 文件是否说明“为什么会动”和“大概会怎么动”。
-- 具体 demo：是否有输入、输出、错误 case 或 UI 状态，能帮助你判断 plan 好坏。
+- 具体 demo：是否有输入、输出、错误 case 或 UI 状态，能帮助你判断 plan 好坏；失败 case 必须写清“发生了什么、为什么重要、下一步怎么做”。
 - Human Decisions：是否把需要你拍板的事项单独列出来，并给出推荐答案。
 - Acceptance Checklist：是否能让你逐项确认“我理解并接受这个计划”。
 - Execution Handoff：是否说明执行后要回填实际改动、验证结果和计划偏离。
@@ -126,6 +126,7 @@ HTML 请优先讲清：
 - 改动前后对比：哪些行为保持不变，哪些会变化，哪些明确不做。
 - 具体 demo：从一个真实或最自然的用户输入开始，展示它在当前流程和目标流程中的流动，并给出成功输出与失败 / 边界 case。
 - 失败 / 边界 case：不要只写错误码；请说明发生了什么、为什么不能继续、我下一步应该怎么做。
+- 风险和决策：不要只写标签；请用自然语言解释它对用户意味着什么，以及如果判断错了会造成什么后果。
 - Human Decisions：把需要我拍板的问题集中列出。
 - Acceptance Checklist：让我可以逐项确认是否通过 review。
 - Execution Handoff：说明只有 HTML verdict approved 且 blocking decisions resolved 后，Markdown 才能执行。

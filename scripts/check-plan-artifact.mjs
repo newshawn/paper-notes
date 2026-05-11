@@ -35,6 +35,9 @@ const HTML_DETAIL_CHECKS = [
   ["success path", ["success path", "成功路径"]],
   ["blocked path", ["blocked path", "阻断路径", "blocking"]],
   ["warning path", ["warning path", "warning", "警告路径"]],
+  ["plain-language what happened", ["发生了什么", "发现了什么", "what happened"]],
+  ["plain-language why it matters", ["为什么重要", "为什么不能继续", "为什么要停", "why it matters", "why stop"]],
+  ["plain-language next step", ["下一步", "怎么做", "next step"]],
 ];
 
 const MARKDOWN_DETAIL_CHECKS = [

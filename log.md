@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | strengthen html readability constraints
+
+- **动机**：用户指出不能只改 demo，HTML plan artifact 的约束本身也要保证人能看清楚失败、风险和下一步。
+- **更新**：在 `dev/plan-artifact-pipeline.md` 增加 HTML 可读性约束，要求失败 / 边界 case 写清“发生了什么、为什么重要、下一步怎么做”，风险和决策也必须翻译成人话。
+- **检查**：更新 `scripts/check-plan-artifact.mjs`，把 plain-language what happened / why it matters / next step 纳入 artifact lint 的质量提醒；同步更新 `dev/README.md` 的新手模板和 review checklist。
+- **Wiki touched**: none (developer workflow tooling and documentation only)
+
 ## [2026-05-11] refactor | clarify blocked demo language
 
 - **动机**：用户指出示例 HTML 中 `blocking: duplicate` 这类失败路径仍然晦涩，新手不容易理解为什么要停止。
