@@ -22,7 +22,7 @@
 ## 生成页面
 
 ```bash
-node scripts/build-dev-cockpit.mjs
+node scripts/build-dev-renderer.mjs
 ```
 
 生成器会写入 `dev/index.html`，并在根目录生成一个兼容旧链接的 `dev-cockpit.html` 跳转页。
@@ -56,7 +56,7 @@ node scripts/build-dev-cockpit.mjs
 
 ## 维护规则
 
-- 改页面结构：编辑 `scripts/build-dev-cockpit.mjs`，再运行 `node scripts/build-dev-cockpit.mjs`。
+- 改页面结构：编辑 `scripts/build-dev-renderer.mjs`，再运行 `node scripts/build-dev-renderer.mjs`。
 - 改 pipeline：编辑 `dev/plan-artifact-pipeline.md`。
 - 改项目分布：编辑 `dev/project-map.md`。
 - `dev/index.html` 和根目录 `dev-cockpit.html` 是生成物，不手改。

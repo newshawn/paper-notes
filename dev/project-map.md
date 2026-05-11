@@ -100,12 +100,12 @@
 - `dev/index.html`：HTML + Markdown plan artifact renderer。
 - `dev-cockpit.html`：兼容旧链接的跳转页。
 - `scripts/build-review.mjs`：生成 `review.html`。
-- `scripts/build-dev-cockpit.mjs`：生成 `dev/index.html` 和 `dev-cockpit.html`。
+- `scripts/build-dev-renderer.mjs`：生成 `dev/index.html` 和 `dev-cockpit.html`。
 
 常见改动入口：
 
 - 改 review 页面：编辑 `scripts/build-review.mjs`，再运行 `node scripts/build-review.mjs`。
-- 改 plan artifact renderer：编辑 `scripts/build-dev-cockpit.mjs`，再运行 `node scripts/build-dev-cockpit.mjs`。
+- 改 plan artifact renderer：编辑 `scripts/build-dev-renderer.mjs`，再运行 `node scripts/build-dev-renderer.mjs`。
 - 改 plan pipeline：编辑 `dev/plan-artifact-pipeline.md` 和本文件。
 
 约束：

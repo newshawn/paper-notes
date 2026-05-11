@@ -10,7 +10,7 @@ Development planning rules live in [`dev/plan-artifact-pipeline.md`](../dev/plan
 - `Wiki/` keeps cross-paper concept pages.
 - `schema.md`, `AGENTS.md`, `index.md`, and `log.md` define the agent workflow.
 - `review.html` is generated output. Do not treat it as the only source of truth.
-- `dev/index.html` is also generated output. Its source of truth is `scripts/build-dev-cockpit.mjs`; the planning rules live in `dev/plan-artifact-pipeline.md` and `dev/project-map.md`.
+- `dev/index.html` is also generated output. Its source of truth is `scripts/build-dev-renderer.mjs`; the planning rules live in `dev/plan-artifact-pipeline.md` and `dev/project-map.md`.
 
 ## Generate
 

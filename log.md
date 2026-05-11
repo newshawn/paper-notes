@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] rename | dev renderer build script
+
+- **动机**：`build-dev-cockpit.mjs` 名称沿用了旧 cockpit 概念，但当前页面已经收敛为 HTML+Markdown plan artifact renderer。
+- **更新**：将脚本重命名为 `scripts/build-dev-renderer.mjs`，并同步更新 `dev/README.md`、`dev/project-map.md`、`docs/html-review-workflow.md` 的命令引用。
+- **兼容**：生成物仍然包含 `dev/index.html` 和根目录 `dev-cockpit.html` 跳转页，旧链接不受影响。
+- **Wiki touched**: none (developer workflow naming only)
+
 ## [2026-05-11] refactor | move dev workflow into dev folder
 
 - **动机**：用户希望把专门用于开发的 renderer、pipeline 规则和项目分布说明放到一个 `dev/` 文件夹里。
