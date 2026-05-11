@@ -7,9 +7,10 @@
 ## Human Review
 
 - 在线审阅入口：[PaperNotes Review Cockpit](https://newshawn.github.io/paper-notes/review.html)
+- 开发协作入口：[dev-cockpit.html](dev-cockpit.html)
 - 仓库内 HTML 文件：[review.html](review.html)
-- 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)
-- 默认入口是 `Workspace`：写下新需求或代码修改目标，页面会基于当前 Wiki/Raw 状态生成一段可复制给 LLM 的工作 prompt。
+- 生成说明：[docs/html-review-workflow.md](docs/html-review-workflow.md)、[docs/dev-cockpit-workflow.md](docs/dev-cockpit-workflow.md)
+- `review.html` 用来看仓库 / Wiki 状态；`dev-cockpit.html` 用来做开发计划、方案比较、demo 草图和 LLM handoff。
 
 ## How It Works
 

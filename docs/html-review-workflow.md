@@ -1,6 +1,8 @@
 # HTML Review Workflow
 
-`review.html` is the human-facing interaction layer for this Markdown wiki. Its primary job is to turn a new requirement into a stable LLM handoff prompt with repository state, likely relevant Raw/Wiki files, workflow rules, and completion checks.
+`review.html` is the human-facing observation layer for this Markdown wiki. Its primary job is to make the current Raw/Wiki/log state easy to inspect before asking an LLM to change content.
+
+Development planning lives in [`dev-cockpit.html`](../dev-cockpit.html). Use that page when the task is to modify code, compare implementation approaches, sketch demos, or export an execution prompt.
 
 ## Source of Truth
 
@@ -8,6 +10,7 @@
 - `Wiki/` keeps cross-paper concept pages.
 - `schema.md`, `AGENTS.md`, `index.md`, and `log.md` define the agent workflow.
 - `review.html` is generated output. Do not treat it as the only source of truth.
+- `dev-cockpit.html` is also generated output. It is a planning interface, not a source of truth.
 
 ## Generate
 
@@ -17,17 +20,14 @@ node scripts/build-review.mjs
 
 The generator reads `Raw/`, `Wiki/`, and `index.md`, then writes `review.html`.
 
-## LLM Interaction Loop
+## Review Loop
 
 1. Open `review.html`.
-2. Start in the Workspace tab.
-3. Choose the task type: Code / HTML, Research Query, Ingest, Compile, Lint, or Writing.
-4. Write the new requirement and optional focus words.
-5. Review matched Wiki and Raw context, then copy the generated Workspace prompt to the LLM.
-6. Let the LLM modify Markdown content, wiki structure, or the HTML generator according to `AGENTS.md` and `schema.md`.
-7. Regenerate `review.html` and review the next prompt/workflow state.
-
-The Overview, Wiki, Raw, and Prompt tabs remain useful for browsing and compact handoff, but Workspace is the default entry point when the goal is to change code, clarify a new requirement, or ask a research question.
+2. Check overall coverage, pending concepts, top tags, and concept pages.
+3. Use Wiki / Raw tabs to inspect source-linked evidence.
+4. Use the Prompt tab for compact handoff if the task is simple.
+5. For development work, switch to `dev-cockpit.html`.
+6. Regenerate `review.html` after changing `scripts/build-review.mjs`.
 
 ## Agent Rule
 

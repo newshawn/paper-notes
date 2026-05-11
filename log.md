@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | split review and dev cockpit html workflows
+
+- **动机**：用户确认希望拆成两个 HTML：一个用于观看当前仓库 / Wiki 状态，另一个专门用于开发时和 LLM 协作 plan 与执行。
+- **新增**：`scripts/build-dev-cockpit.mjs` 和生成物 `dev-cockpit.html`，提供需求输入、focus words、三种实现方案对比、implementation plan、demo slots、相关文件 / Raw / Wiki 匹配、导出 LLM prompt。
+- **调整**：`review.html` 默认回到 Overview 观察层，并链接到 `dev-cockpit.html`；开发规划职责迁移到新页面。
+- **文档**：新增 `docs/dev-cockpit-workflow.md`，更新 `README.md` 和 `docs/html-review-workflow.md` 说明两个 HTML 的分工。
+- **Wiki touched**: none (developer workflow only)
+
 ## [2026-05-11] refactor | turn review.html into LLM interaction workspace
 
 - **动机**：用户指出现有 HTML 更像仓库概览，而目标是“修改代码或提出新需求时，通过 HTML 与 LLM 交互，从而更稳地把握仓库状态和需求”。

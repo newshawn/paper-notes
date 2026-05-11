@@ -301,14 +301,17 @@ function makeAgentBrief({ wikiPages, rawNotes, pendingConcepts }) {
     "请先读 AGENTS.md、schema.md、index.md、log.md 顶部，再根据任务读取相关 Wiki/Raw。",
     "",
     "当前人类 review 入口：review.html。",
+    "开发规划入口：dev-cockpit.html。",
     `Wiki 概念页：${wikiPages.length} 个。Raw 论文笔记：${rawNotes.length} 篇。`,
     `待建概念候选：${pendingConcepts.map((item) => item.concept).join(", ") || "无"}`,
     "",
-    "如果任务是改 LLM wiki 的风格或功能：",
+    "如果任务是改 review 层的风格或功能：",
     "1. 保持 Markdown/Raw/Wiki 作为 source of truth。",
     "2. 修改 scripts/build-review.mjs 或 review.html 的生成模板。",
     "3. 重新生成 review.html，并说明哪些人类 review 流程被改善。",
     "4. 不要在未收到 compile 指令时修改 Wiki 内容。",
+    "",
+    "如果任务是开发新功能、比较实现路线或生成执行计划：优先打开 dev-cockpit.html，并维护 scripts/build-dev-cockpit.mjs。",
   ].join("\n");
 }
 
@@ -930,24 +933,25 @@ function buildHtml(data) {
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <h2>把新需求先变成一段稳定的 LLM 工作上下文。</h2>
-          <p>这个页面不只展示 PaperNotes 的现状，也把“我要改什么”组织成可执行 prompt：仓库状态、相关 Raw/Wiki、工作红线和检查项会一起带给 LLM。</p>
+          <h2>看清 PaperNotes 现在长什么样。</h2>
+          <p>这里是观察层：聚合 Raw、Wiki、概念覆盖、待建主题和最近状态。真正做开发规划时，打开 <a href="dev-cockpit.html">dev-cockpit.html</a>。</p>
         </div>
         <div class="brief-panel">
           <h3>Working Contract</h3>
           <ul>
             <li>Source of truth: <code>Raw/</code>, <code>Wiki/</code>, <code>schema.md</code></li>
-            <li>Interaction layer: <code>review.html</code></li>
+            <li>Observation layer: <code>review.html</code></li>
+            <li>Development layer: <code>dev-cockpit.html</code></li>
             <li>Generator: <code>scripts/build-review.mjs</code></li>
-            <li>LLM handoff: Workspace prompt</li>
+            <li>LLM handoff: compact prompt tab</li>
           </ul>
         </div>
       </section>
 
       <div class="toolbar">
         <div class="tabs" aria-label="Views">
-          <button class="tab-button active" data-tab="workspace">Workspace</button>
-          <button class="tab-button" data-tab="overview">Overview</button>
+          <button class="tab-button" data-tab="workspace">Handoff</button>
+          <button class="tab-button active" data-tab="overview">Overview</button>
           <button class="tab-button" data-tab="wiki">Wiki</button>
           <button class="tab-button" data-tab="raw">Raw</button>
           <button class="tab-button" data-tab="prompt">Prompt</button>
@@ -956,7 +960,7 @@ function buildHtml(data) {
         <button class="copy-button" id="copyBrief">Copy Current Prompt</button>
       </div>
 
-      <section id="workspaceView">
+      <section id="workspaceView" class="hidden">
         <div class="workspace-grid">
           <div class="control-stack">
             <div class="field">
@@ -1015,7 +1019,7 @@ function buildHtml(data) {
         </div>
       </section>
 
-      <section id="overviewView" class="hidden">
+      <section id="overviewView">
         <div class="stats" id="stats"></div>
         <div class="grid">
           <div class="content-panel">
@@ -1061,7 +1065,7 @@ function buildHtml(data) {
       { id: "write", label: "Writing", hint: "写 related work / 草稿", rule: "回答或写作必须保留可追溯引用，优先链接 Wiki，再回 Raw 核数字。" },
     ];
     const repositorySnapshot = ${JSON.stringify(makeRepositorySnapshot(data)).replaceAll("</script", "<\\/script")};
-    let activeTab = "workspace";
+    let activeTab = "overview";
     let activeWiki = data.wikiPages[0]?.file;
     let activeMode = "refactor";
 
