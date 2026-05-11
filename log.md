@@ -4,6 +4,14 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | reduce dev cockpit to artifact renderer
+
+- **动机**：用户指出开发工作台仍然过复杂，真正需要的是一个 HTML+Markdown 渲染器，以及一份 markdown 规则来描述 plan artifact pipeline。
+- **更新**：重写 `dev-cockpit.html` 生成为轻量 renderer：粘贴 / 预览 `plan-review.html` 和 `plan-review.md`，复制规则、复制 plan 生成指令、复制最终 Markdown 执行稿。
+- **新增规则**：新增 `docs/plan-artifact-pipeline.md`，明确需求 prompt → 读取相关文件 → 生成 HTML+Markdown plan → 人类审阅 HTML → 同步修改 HTML/Markdown → Markdown 交给 agent 执行。
+- **文档**：简化 `docs/dev-cockpit-workflow.md` 和 README，去掉任务入口、方案比较等复杂流程说明。
+- **Wiki touched**: none (developer workflow UI/docs only)
+
 ## [2026-05-11] refactor | simplify dev cockpit export and context wording
 
 - **动机**：用户指出导出执行稿区域冗余，并询问“仓库上下文”的实际作用和跨项目可复用性。

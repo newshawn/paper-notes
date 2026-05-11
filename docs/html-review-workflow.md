@@ -2,7 +2,7 @@
 
 `review.html` is the human-facing observation layer for this Markdown wiki. Its primary job is to make the current Raw/Wiki/log state easy to inspect before asking an LLM to change content.
 
-Development planning lives in [`dev-cockpit.html`](../dev-cockpit.html). Use that page when the task is to modify code, compare implementation approaches, sketch demos, or export an execution prompt.
+Development planning lives in [`dev-cockpit.html`](../dev-cockpit.html). Use that page to render and review `plan-review.html` plus `plan-review.md` before handing the markdown plan to an agent.
 
 ## Source of Truth
 
@@ -10,7 +10,7 @@ Development planning lives in [`dev-cockpit.html`](../dev-cockpit.html). Use tha
 - `Wiki/` keeps cross-paper concept pages.
 - `schema.md`, `AGENTS.md`, `index.md`, and `log.md` define the agent workflow.
 - `review.html` is generated output. Do not treat it as the only source of truth.
-- `dev-cockpit.html` is also generated output. It is a planning interface, not a source of truth.
+- `dev-cockpit.html` is also generated output. Its source of truth is `scripts/build-dev-cockpit.mjs` plus `docs/plan-artifact-pipeline.md`.
 
 ## Generate
 
