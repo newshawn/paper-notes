@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | add dev plan artifact example
+
+- **动机**：用户认为优化 ingest 的 HTML plan review 示例效果不错，希望作为 dev 工作流示例保留下来。
+- **更新**：新增 `dev/examples/ingest-plan-review.html` 和 `dev/examples/ingest-plan-review.md`，作为可直接粘贴到 `dev/` 渲染器的完整 plan artifact 示例。
+- **文档**：更新 `dev/README.md` 和 `dev/project-map.md`，提供示例入口并说明维护位置。
+- **Wiki touched**: none (developer workflow example only)
+
 ## [2026-05-11] refactor | add plan artifact lint and handoff rules
 
 - **动机**：用户希望开发用 HTML plan artifact 同时具备 artifact lint、改动文件预览、集中决策建议和执行后回填机制。

@@ -198,6 +198,13 @@ HTML 必须包含：
 
 这个 demo 的目标不是马上执行代码，而是先跑通“生成可审阅 plan artifact”的流程。
 
+完整示例已经放在 `dev/examples/`：
+
+- [`examples/ingest-plan-review.html`](examples/ingest-plan-review.html)：粘到渲染器的 HTML 输入框。
+- [`examples/ingest-plan-review.md`](examples/ingest-plan-review.md)：粘到渲染器的 Markdown 输入框。
+
+它展示了一个合格 plan artifact 应该怎么把当前仓库状态、证据来源、目标流程、Change Scope、端到端 demo、Human Decisions、Acceptance Checklist 和执行交接放在同一个 review 页面里。
+
 ### 1. 打开渲染器
 
 在线使用：

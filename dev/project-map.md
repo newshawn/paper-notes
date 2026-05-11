@@ -126,6 +126,7 @@
 - `dev/plan-artifact-pipeline.md`：生成 HTML+Markdown plan artifact 的规则。
 - `dev/project-map.md`：当前项目模块分布说明。
 - `dev/README.md`：dev renderer 使用方式。
+- `dev/examples/ingest-plan-review.html`、`dev/examples/ingest-plan-review.md`：PaperNotes ingest 优化的完整 plan artifact 示例。
 - `docs/html-review-workflow.md`：review.html 使用方式。
 - `docs/architecture.md`、`docs/why.md`、`docs/fork-guide.md`、`docs/schema-template.md`：背景、架构和迁移说明。
 
@@ -134,6 +135,7 @@
 - 流程抽象变化：优先更新 `dev/plan-artifact-pipeline.md`。
 - 模块分布变化：更新本文件。
 - 用户入口变化：更新 README 和相关 workflow 文档。
+- 更新完整 artifact 示例时，同步检查 `dev/examples/ingest-plan-review.html` 和 `dev/examples/ingest-plan-review.md`。
 - 新增执行后回填、lint 或自动检查规则时，同步更新 `dev/README.md` 和本文件。
 
 约束：
