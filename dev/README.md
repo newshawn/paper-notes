@@ -170,48 +170,6 @@ HTML 请优先讲清：
 等我回答后，再生成 plan-review.html 和 plan-review.md。
 ```
 
-## 通用 demo：优化登录错误提示
-
-这个 demo 可以放到大多数 Web / App 项目里试跑。它不要求真的执行代码，只要求 agent 先产出 HTML+Markdown plan artifact。
-
-```text
-请进入 plan 模式，不要直接改代码。
-
-我会用 dev/ 渲染你生成的 plan artifact。请先读取：
-- dev/plan-artifact-pipeline.md
-- dev/project-map.md（如果没有，请先生成最小项目地图）
-- README、项目配置文件、测试命令说明
-- 和登录 / 认证 / 表单 / API 请求相关的文件
-
-需求：
-优化登录错误提示。现在用户登录失败时，不清楚是邮箱格式错误、密码错误、网络失败、账号不存在，还是后端返回了不可展示的错误。
-
-目标：
-- 先画清当前登录流程：表单输入 -> 前端校验 -> API 请求 -> 后端响应 -> UI 展示。
-- 设计更稳定的错误分类和展示方式。
-- 避免泄露敏感信息，例如不要明确告诉攻击者“这个邮箱已注册”。
-- 不影响注册、找回密码和已有 session 逻辑。
-
-请输出两份同步内容：
-1. plan-review.html：给人看的 HTML 评审稿。
-2. plan-review.md：给 agent 执行的 Markdown 计划。
-
-HTML 必须包含：
-- Review Verdict：是否建议执行、可靠性、blocking risk 和需要用户确认的事项。
-- 当前登录相关模块和职责。
-- 每个关键判断的证据来源；无法确认的地方标为推断。
-- 当前登录流程和目标登录流程。
-- Change Scope：预计涉及哪些前端、后端、API、测试或文档文件；哪些认证/session 文件不能乱动。
-- 优化后的错误分类表。
-- 改动前后对比。
-- 端到端具体例子：用户输入邮箱和密码后，如何经过前端校验、API 请求、后端响应和 UI 展示。
-- 至少 3 个失败 / 边界例子：邮箱格式错误、密码错误、网络失败。
-- Human Decisions、风险边界、验收方式和执行前 checklist。
-- Post-execution Handoff：执行后回填实际改动文件、验证结果、偏离计划的地方，以及是否需要更新项目地图。
-
-不要执行代码修改。等我 review HTML 通过后，再决定是否执行 Markdown 计划。
-```
-
 ## PaperNotes demo：优化 ingest 模块
 
 这个 demo 的目标不是马上执行代码，而是先跑通“生成可审阅 plan artifact”的流程。

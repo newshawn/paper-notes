@@ -5,207 +5,248 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Plan Review: 优化 PaperNotes ingest 稳定性</title>
   <style>
-    body { margin: 0; font: 15px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #202420; background: #f7f8f4; }
-    main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 48px; }
-    h1 { font-size: 34px; margin: 0 0 8px; }
-    h2 { font-size: 22px; margin: 34px 0 12px; border-bottom: 1px solid #dbe2d7; padding-bottom: 6px; }
-    h3 { font-size: 17px; margin: 18px 0 8px; }
+    :root {
+      --bg: #f7f8f4;
+      --surface: #fffefb;
+      --surface-2: #eef3ea;
+      --ink: #202420;
+      --muted: #687064;
+      --line: #dbe2d7;
+      --ok: #176b3a;
+      --warn: #956100;
+      --block: #a61b1b;
+      --blue: #244f87;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    h1 { margin: 0 0 8px; font-size: 34px; line-height: 1.12; letter-spacing: 0; }
+    h2 { margin: 34px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font-size: 22px; }
+    h3 { margin: 16px 0 8px; font-size: 17px; }
     p { margin: 8px 0; }
-    code { background: #eef3ea; padding: 1px 5px; border-radius: 5px; }
-    table { width: 100%; border-collapse: collapse; margin: 12px 0; background: #fffefb; }
-    th, td { border: 1px solid #dbe2d7; padding: 9px 10px; text-align: left; vertical-align: top; }
-    th { background: #eef3ea; }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-    .card { border: 1px solid #dbe2d7; background: #fffefb; border-radius: 8px; padding: 14px; }
-    .ok { color: #176b3a; font-weight: 700; }
-    .warn { color: #9a5b00; font-weight: 700; }
-    .block { color: #a61b1b; font-weight: 700; }
-    .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .step { background: #fffefb; border: 1px solid #dbe2d7; border-radius: 8px; padding: 8px 10px; }
-    .arrow { color: #667064; }
+    code { border-radius: 5px; background: var(--surface-2); padding: 1px 5px; }
     ul { padding-left: 22px; }
-    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; background: var(--surface); }
+    th, td { border: 1px solid var(--line); padding: 9px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--surface-2); }
+
+    .lead { max-width: 860px; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .cards-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 14px; }
+    .label { color: var(--muted); font-size: 13px; }
+    .ok { color: var(--ok); font-weight: 700; }
+    .warn { color: var(--warn); font-weight: 700; }
+    .block { color: var(--block); font-weight: 700; }
+    .blue { color: var(--blue); font-weight: 700; }
+    .pill { display: inline-block; margin: 2px 4px 2px 0; border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; background: #ffffff; }
+    .flow { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 8px; align-items: stretch; }
+    .step { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 10px; }
+    .step strong { display: block; margin-bottom: 4px; }
+    .demo { border-left: 4px solid var(--blue); padding-left: 12px; }
+    .demo.blocked { border-left-color: var(--block); }
+    .demo.warning { border-left-color: var(--warn); }
+    .checklist li { margin: 5px 0; }
+
+    @media (max-width: 860px) {
+      .grid, .cards-3, .flow { grid-template-columns: 1fr; }
+      h1 { font-size: 28px; }
+    }
   </style>
 </head>
 <body>
 <main>
   <h1>Plan Review: 优化 PaperNotes ingest 稳定性</h1>
-  <p>目标：在生成 Raw 前后加入结构化校验和可审阅报告，让 ID、受控 Tags、5-section、理解型元素、Related Wiki 和 log 记录更稳定，同时保持 ingest 只动 <code>Raw/</code> 和 <code>log.md</code>，不触碰 <code>Wiki/</code>。</p>
+  <p class="lead">这份 HTML 不是让 agent 直接开工，而是帮人先看懂：当前 ingest 怎么工作、为什么会不稳定、这次会加哪些 guard、哪些文件会动、哪些边界绝对不能碰。只有你确认这个页面合理后，下面同步的 Markdown 才能交给 agent 执行。</p>
 
   <h2>1. Review Verdict</h2>
-  <table>
-    <tr><th>字段</th><th>结论</th></tr>
-    <tr><td>Recommendation</td><td><span class="warn">proceed after decisions</span>：建议继续，但先确认 3 个实现决策。</td></tr>
-    <tr><td>Confidence</td><td>medium-high。规则来源清楚，但当前仓库没有专门的 ingest 脚本，所以“新增模块”属于建议实现。</td></tr>
-    <tr><td>Blocking risks</td><td>2 个：误改 <code>Wiki/</code> / 旧 Raw；把兼容旧 Raw 的 warning 错当成必须修复。</td></tr>
-    <tr><td>Human decisions</td><td>3 个：是否新增脚本；哪些问题 blocking；Review Report 是否落盘。</td></tr>
-    <tr><td>Execution state</td><td><span class="block">not ready</span>：只有 HTML verdict approved 且 blocking decisions resolved 后，Markdown 才能执行。</td></tr>
-  </table>
+  <div class="cards-3">
+    <div class="card">
+      <div class="label">Recommendation</div>
+      <h3 class="warn">建议继续，但先拍板</h3>
+      <p>方向合理；先确认脚本形态、blocking 规则和报告是否落盘。</p>
+    </div>
+    <div class="card">
+      <div class="label">Confidence</div>
+      <h3 class="blue">中高</h3>
+      <p>仓库规则、Raw 格式、tag 约束都有证据；“新增 ingest review 脚本”是建议方案，不是现有事实。</p>
+    </div>
+    <div class="card">
+      <div class="label">Execution state</div>
+      <h3 class="block">Not ready</h3>
+      <p>只有 HTML approved 且 blocking decisions resolved 后，Markdown 才能执行。</p>
+    </div>
+  </div>
+  <p><span class="pill">Blocking risks: 2</span><span class="pill">Human decisions: 3</span><span class="pill">Must not touch: Wiki / index / old Raw</span></p>
 
   <h2>术语小抄</h2>
   <table>
     <tr><th>术语</th><th>给新手的解释</th></tr>
-    <tr><td><code>blocking</code></td><td>阻断项。必须先解决，否则不要执行代码。例如可能误改 <code>Wiki/</code>，或者用户还没确认关键决策。</td></tr>
-    <tr><td><code>warning</code></td><td>警告项。可以继续 review，但执行前最好确认或记录风险。例如旧 Raw 格式不完整但不打算 retrofit。</td></tr>
-    <tr><td><code>verdict</code></td><td>评审结论。告诉你当前计划是建议继续、需要补证据，还是不建议执行。</td></tr>
-    <tr><td><code>approved</code></td><td>人类已经确认 HTML 合理，可以把同步 Markdown 交给 agent 执行。</td></tr>
-    <tr><td><code>handoff</code></td><td>交接。说明什么时候从“看 HTML 审计划”进入“按 Markdown 执行”。</td></tr>
-    <tr><td><code>Change Scope</code></td><td>改动范围。列清会改、可能会改、绝对不能改的文件，防止误伤无关内容。</td></tr>
+    <tr><td><code>blocking</code></td><td>阻断项。必须先解决，否则不要执行代码。</td></tr>
+    <tr><td><code>warning</code></td><td>警告项。可以继续 review，但执行前要知道风险。</td></tr>
+    <tr><td><code>verdict</code></td><td>评审结论：这份计划现在能不能继续。</td></tr>
+    <tr><td><code>handoff</code></td><td>交接条件：什么时候从“看 HTML 审计划”进入“按 Markdown 执行”。</td></tr>
+    <tr><td><code>Change Scope</code></td><td>改动范围：会改、可能改、绝对不能改的文件。</td></tr>
   </table>
 
   <h2>2. 当前工作区状态</h2>
   <div class="grid">
     <div class="card">
-      <h3>相关模块</h3>
+      <h3>和这次任务有关的模块</h3>
       <ul>
-        <li><code>Raw/</code>：单篇论文笔记，append-only。</li>
-        <li><code>log.md</code>：newest first 时间线。</li>
-        <li><code>schema.md</code>：Raw 格式、受控 tag、Wiki 规则的真相源。</li>
+        <li><code>Raw/</code>：单篇论文笔记。</li>
+        <li><code>log.md</code>：ingest / compile / refactor 时间线。</li>
+        <li><code>schema.md</code>：Raw 结构和 Approved Tags 的规则源。</li>
         <li><code>AGENTS.md</code> / <code>CLAUDE.md</code>：agent 工作红线。</li>
-        <li><code>scripts/</code>：已有 Node 脚本，但没有专门的 ingest 校验脚本。</li>
+        <li><code>scripts/</code>：已有 review/dev 脚本，但没有专门 ingest review 脚本。</li>
       </ul>
     </div>
     <div class="card">
-      <h3>当前约束</h3>
+      <h3>现在必须守住的边界</h3>
       <ul>
         <li>ingest 只动 <code>Raw/</code> 和 <code>log.md</code>。</li>
-        <li>compile 才能改 <code>Wiki/</code> 和 <code>index.md</code>。</li>
-        <li>已有 Raw 不 retrofit，尤其早期 Raw 兼容旧格式。</li>
-        <li>Tags 只能使用 <code>schema.md</code> 的 Approved Tags。</li>
+        <li>compile 才能更新 <code>Wiki/</code> 和 <code>index.md</code>。</li>
+        <li>已有 Raw 默认 append-only，不 retrofit。</li>
+        <li>Tags 只能来自 <code>schema.md</code> 的 Approved Tags。</li>
       </ul>
     </div>
   </div>
-  <p>缺失项：没有发现 <code>package.json</code>、lockfile、Makefile 或测试配置文件；当前验证方式应使用直接 Node 命令和人工样例。</p>
 
   <h2>3. Evidence-backed Claims</h2>
   <table>
-    <tr><th>Claim</th><th>Evidence</th><th>Confidence</th><th>Impact if wrong</th></tr>
-    <tr><td>ingest 只允许写 <code>Raw/</code> 和 <code>log.md</code></td><td><code>AGENTS.md</code>、<code>README.md</code>、<code>dev/project-map.md</code></td><td>high</td><td>可能误改 <code>Wiki/</code>，破坏两阶段流程。</td></tr>
-    <tr><td>新 Raw 需要 5-section + 理解型元素</td><td><code>schema.md</code>、<code>Raw/2510-igpo.md</code>、<code>Raw/2601-at2po.md</code></td><td>high</td><td>Raw 结构不稳定，后续 compile / query 质量下降。</td></tr>
-    <tr><td>Tags 必须受控</td><td><code>schema.md</code> Approved Tags section</td><td>high</td><td>tag 漂移导致 Wiki 概念分裂。</td></tr>
-    <tr><td>当前没有脚本化 ingest guard</td><td>repo scan：<code>scripts/</code> 只有 review/dev renderer/artifact lint</td><td>medium</td><td>如果隐藏在自然语言流程里，新增脚本可能重复；目前未发现。</td></tr>
-    <tr><td>旧 Raw 不应被批量修复</td><td><code>AGENTS.md</code>、<code>CLAUDE.md</code>、<code>README.md</code></td><td>high</td><td>会违反 append-only / no retrofit 约束。</td></tr>
+    <tr><th>判断</th><th>证据</th><th>可靠性</th><th>如果错了会怎样</th></tr>
+    <tr><td>ingest 只允许写 <code>Raw/</code> 和 <code>log.md</code></td><td><code>AGENTS.md</code>, <code>README.md</code>, <code>dev/project-map.md</code></td><td>high</td><td>可能误改 Wiki，破坏两阶段流程。</td></tr>
+    <tr><td>新 Raw 需要 5-section + 理解型元素</td><td><code>schema.md</code>, <code>Raw/2510-igpo.md</code>, <code>Raw/2601-at2po.md</code></td><td>high</td><td>Raw 质量不稳定，后续 compile / query 质量下降。</td></tr>
+    <tr><td>Tag 必须受控</td><td><code>schema.md</code> Approved Tags</td><td>high</td><td>tag 漂移会让 Wiki 概念分裂。</td></tr>
+    <tr><td>当前没有专门 ingest guard 脚本</td><td>repo scan: 只看到 <code>build-review</code>, <code>build-dev-renderer</code>, <code>check-plan-artifact</code></td><td>medium</td><td>若隐藏在别处，可能重复造工具；目前未发现。</td></tr>
   </table>
 
   <h2>4. 当前流程 / 数据流</h2>
   <div class="flow">
-    <span class="step">用户输入论文链接 / PDF / 笔记</span><span class="arrow">→</span>
-    <span class="step">agent 读取 schema + log 顶部</span><span class="arrow">→</span>
-    <span class="step">检查 Raw 是否已有</span><span class="arrow">→</span>
-    <span class="step">生成 Raw 草稿</span><span class="arrow">→</span>
-    <span class="step">写 Raw 文件</span><span class="arrow">→</span>
-    <span class="step">追加 log.md</span>
+    <div class="step"><strong>1. 用户输入</strong>论文链接 / PDF / 笔记</div>
+    <div class="step"><strong>2. 读取规则</strong><code>schema.md</code> + <code>log.md</code> 顶部</div>
+    <div class="step"><strong>3. 人工式查重</strong>搜索 <code>Raw/</code> 是否已有</div>
+    <div class="step"><strong>4. 生成 Raw</strong>靠 prompt 对齐格式</div>
+    <div class="step"><strong>5. 写入</strong>新 Raw + 追加 <code>log.md</code></div>
   </div>
-  <p>问题：当前约束主要靠 agent 记忆执行；缺少一个在写入前后都能复查 ID、Tags、section、理解型元素、Related Wiki 和 log 格式的结构化报告。</p>
+  <p><strong>当前问题：</strong>关键约束主要靠 agent 记忆执行。ID 重复、tag 越界、section 缺失、Related Wiki 缺失、log 格式错误，通常要到写完后才发现。</p>
 
   <h2>5. 目标流程 / 数据流</h2>
   <div class="flow">
-    <span class="step">用户输入</span><span class="arrow">→</span>
-    <span class="step">Preflight</span><span class="arrow">→</span>
-    <span class="step">Raw Draft</span><span class="arrow">→</span>
-    <span class="step">Template Guard</span><span class="arrow">→</span>
-    <span class="step">Tag Guard</span><span class="arrow">→</span>
-    <span class="step">Related Wiki Guard</span><span class="arrow">→</span>
-    <span class="step">Review Report</span><span class="arrow">→</span>
-    <span class="step">写 Raw/log</span><span class="arrow">→</span>
-    <span class="step">Post-write Check</span>
+    <div class="step"><strong>1. 用户输入</strong>论文链接或 draft</div>
+    <div class="step"><strong>2. Preflight</strong>先查重、识别 ID、确认只读</div>
+    <div class="step"><strong>3. Raw Draft</strong>生成但先不落盘</div>
+    <div class="step"><strong>4. Guards</strong>Template / Tag / Related Wiki / Log</div>
+    <div class="step"><strong>5. Review Report</strong>人确认后再写 Raw/log</div>
   </div>
   <table>
-    <tr><th>模块</th><th>职责</th><th>边界</th></tr>
-    <tr><td>Preflight</td><td>解析 arXiv ID / PDF / 标题，检查 <code>Raw/</code> 是否已有相同链接、ID 或明显同题。</td><td>只读 repo；发现重复时阻断。</td></tr>
-    <tr><td>Template Guard</td><td>检查 Raw draft 是否包含 ID、TL;DR、Method、Key Results、Takeaway、Open Questions、Related Wiki。</td><td>只检查草稿或新 Raw，不批量修旧 Raw。</td></tr>
-    <tr><td>Tag Guard</td><td>从 <code>schema.md</code> 读取 Approved Tags，检查 draft 的 <code>Tags:</code> 是否越界。</td><td>遇到新 tag 时提示用户确认，不自动改 schema。</td></tr>
-    <tr><td>Review Report</td><td>把 blocking / warning / info 分类展示给人看。</td><td>默认输出到终端；是否落盘待用户决定。</td></tr>
-    <tr><td>Post-write Check</td><td>写入后确认只出现允许的文件变化，且 <code>log.md</code> 追加在顶部。</td><td>不得触碰 <code>Wiki/</code>、<code>index.md</code>、已有 Raw。</td></tr>
+    <tr><th>新增模块</th><th>它解决什么问题</th><th>它不做什么</th></tr>
+    <tr><td>Preflight</td><td>在写文件前发现重复论文、明显同题、ID 冲突。</td><td>不写 Raw，不写 log。</td></tr>
+    <tr><td>Template Guard</td><td>检查 5-section、ID、Related Wiki 和理解型元素。</td><td>不批量修旧 Raw。</td></tr>
+    <tr><td>Tag Guard</td><td>用 <code>schema.md</code> 检查 Tags 是否越界。</td><td>不自动新增 schema tag。</td></tr>
+    <tr><td>Review Report</td><td>把 blocking / warning / info 翻译成人能看懂的报告。</td><td>默认不落盘，是否写文件由用户拍板。</td></tr>
   </table>
 
   <h2>6. Change Scope</h2>
   <table>
-    <tr><th>类别</th><th>文件</th><th>Why</th><th>Diff preview</th></tr>
-    <tr><td>Will change</td><td><code>scripts/ingest-review.mjs</code></td><td>新增结构化校验和 report 的最小闭环。</td><td>新增 Node CLI：读取 schema/log/Raw，校验 draft 或目标 Raw，输出 blocking/warning/info。</td></tr>
-    <tr><td>Will change</td><td><code>docs/ingest-review.md</code></td><td>说明何时运行、如何解读 report、哪些问题 blocking。</td><td>新增使用教程和示例输出。</td></tr>
-    <tr><td>Will change</td><td><code>AGENTS.md</code>、<code>CLAUDE.md</code></td><td>把 ingest 前后运行 review report 固化进 agent 工作流。</td><td>在 Ingest 流程中加入 preflight / post-write check，不改变两阶段红线。</td></tr>
-    <tr><td>Will change</td><td><code>dev/project-map.md</code></td><td>记录新增 ingest review 入口，帮助后续 plan 定位。</td><td>HTML Review Layer 或 Raw Notes 增加脚本说明。</td></tr>
-    <tr><td>Will change</td><td><code>log.md</code></td><td>仓库规则要求记录 repo 文件变更。</td><td>顶部追加 refactor 记录。</td></tr>
-    <tr><td>Might change</td><td><code>README.md</code></td><td>如果希望用户入口也展示 ingest review 命令。</td><td>在 How It Works / Human Review 加一行命令；可选。</td></tr>
-    <tr><td>Might change</td><td><code>scripts/build-review.mjs</code></td><td>如果想在 <code>review.html</code> 显示 ingest health。</td><td>本轮不推荐，避免扩大范围。</td></tr>
-    <tr><td>Must not change</td><td><code>Wiki/</code>、<code>index.md</code>、已有 <code>Raw/*.md</code>、<code>Raw/pdfs/</code></td><td>用户明确担心误改 Wiki 或旧 Raw；仓库规则也禁止 retrofit。</td><td>不得出现 diff。</td></tr>
+    <tr><th>范围</th><th>文件</th><th>为什么动</th><th>大概怎么动</th></tr>
+    <tr><td>Will change</td><td><code>scripts/ingest-review.mjs</code></td><td>新增结构化 ingest review 的最小工具。</td><td>Node CLI，支持 preflight / draft check / post-write check。</td></tr>
+    <tr><td>Will change</td><td><code>docs/ingest-review.md</code></td><td>给人和 agent 解释怎么用 report。</td><td>写命令、示例输出、blocking/warning 规则。</td></tr>
+    <tr><td>Will change</td><td><code>AGENTS.md</code>, <code>CLAUDE.md</code></td><td>把新 guard 固化进自然语言 ingest 工作流。</td><td>在 Ingest section 增加 preflight / guard / post-write check。</td></tr>
+    <tr><td>Will change</td><td><code>dev/project-map.md</code>, <code>log.md</code></td><td>记录新入口和本次变更。</td><td>project-map 加脚本入口；log 顶部追加 refactor。</td></tr>
+    <tr><td>Might change</td><td><code>README.md</code></td><td>如果希望普通用户也看到命令。</td><td>只加简短入口，不扩展成长教程。</td></tr>
+    <tr><td>Must not change</td><td><code>Wiki/</code>, <code>index.md</code>, 已有 <code>Raw/*.md</code>, <code>Raw/pdfs/</code></td><td>用户担心误改；仓库规则禁止 ingest 阶段碰这些。</td><td>这些路径不应出现在 diff 里。</td></tr>
   </table>
 
   <h2>7. 改动前后对比</h2>
   <table>
-    <tr><th>行为</th><th>Before</th><th>After</th></tr>
-    <tr><td>重复论文检查</td><td>agent 自行搜索判断。</td><td>Preflight 报告重复 ID / 链接 / 同题候选，重复时 blocking。</td></tr>
-    <tr><td>Tags</td><td>靠 agent 对照 schema。</td><td>Tag Guard 从 schema 抽取受控词汇，越界 blocking，新 tag 需用户确认。</td></tr>
-    <tr><td>Raw 结构</td><td>靠 prompt 约束。</td><td>Template Guard 检查 5-section、ID、Related Wiki 和理解型元素。</td></tr>
-    <tr><td>log</td><td>人工追加或 agent 追加。</td><td>Post-write Check 确认 newest first 和格式。</td></tr>
-    <tr><td>Wiki</td><td>规则上 ingest 不改 Wiki。</td><td>继续不改，并在 post-write check 中显式确认。</td></tr>
-    <tr><td>旧 Raw</td><td>早期格式兼容存在。</td><td>只报告兼容问题，不自动修复。</td></tr>
+    <tr><th>行为</th><th>保持不变</th><th>会变化</th><th>明确不做</th></tr>
+    <tr><td>写入边界</td><td>ingest 仍只动 Raw/log。</td><td>写入前后多一步边界检查。</td><td>不在 ingest 阶段改 Wiki。</td></tr>
+    <tr><td>Raw 结构</td><td>仍用 5-section + 理解型元素。</td><td>缺关键结构时先报告，不直接落盘。</td><td>不批量修旧 Raw。</td></tr>
+    <tr><td>Tags</td><td>仍以 schema Approved Tags 为准。</td><td>越界 tag 会被明确拦住或要求用户确认。</td><td>不偷偷自造 tag。</td></tr>
+    <tr><td>log</td><td>仍 newest first。</td><td>写入后检查格式和位置。</td><td>不为失败 preflight 追加 ingest log。</td></tr>
   </table>
 
   <h2>8. End-to-End Demos</h2>
-  <p>选择这个例子的原因：PaperNotes 最自然的 ingest 输入就是论文链接，README 和 dev demo 都使用 arXiv / AlphaXiv 链接作为入口。</p>
+  <p>选择这个例子的原因：PaperNotes 最常见 ingest 输入是论文链接，README 也使用 arXiv / PDF / 笔记作为入口。这里用一个已存在链接和一个假想新链接，分别展示“该停”和“可继续”。</p>
 
-  <h3>Success path：新论文链接通过校验</h3>
-  <table>
-    <tr><th>阶段</th><th>示例</th></tr>
-    <tr><td>用户输入</td><td><code>帮我 ingest 这篇论文：https://arxiv.org/abs/2605.12345</code></td></tr>
-    <tr><td>Preflight</td><td>未在 <code>Raw/</code> 找到同 arXiv ID；建议新 ID <code>2605-shortname</code>。</td></tr>
-    <tr><td>Raw Draft</td><td>生成包含 ID、Tags、TL;DR、Method、Key Results、Takeaway、Open Questions、Related Wiki 的草稿。</td></tr>
-    <tr><td>Guards</td><td>Tags 全部来自 schema；理解型元素齐全；Related Wiki 链接格式正确。</td></tr>
-    <tr><td>Review Report</td><td><span class="ok">0 blocking</span>，允许写 <code>Raw/2605-shortname.md</code> 并追加 <code>log.md</code>。</td></tr>
-  </table>
+  <div class="demo blocked">
+    <h3>Blocked path：重复论文（应该停）</h3>
+    <table>
+      <tr><th>问题</th><th>给人的解释</th></tr>
+      <tr><td>用户输入</td><td><code>帮我 ingest 这篇论文：https://arxiv.org/abs/2510.14967</code></td></tr>
+      <tr><td>发生了什么</td><td>Preflight 发现仓库已经有这篇论文：<code>Raw/2510-igpo.md</code>。这不是新论文。</td></tr>
+      <tr><td>为什么重要</td><td>如果继续写，会出现第二份 Raw；后续 compile 可能重复统计同一篇论文，<code>log.md</code> 也会留下误导记录。</td></tr>
+      <tr><td>下一步怎么做</td><td>打开已有 Raw 看是否够用；如果只是补充笔记，用户要明确允许 append 到已有 Raw。默认不新增 Raw，也不追加 log。</td></tr>
+      <tr><td>Report 摘要</td><td><span class="block">阻断：重复论文</span>。这不是程序坏了，而是在保护仓库不要重复 ingest。</td></tr>
+    </table>
+  </div>
 
-  <h3>Blocked path：重复论文（为什么要停）</h3>
-  <table>
-    <tr><th>你看到的内容</th><th>解释</th></tr>
-    <tr><td>用户输入</td><td><code>帮我 ingest 这篇论文：https://arxiv.org/abs/2510.14967</code></td></tr>
-    <tr><td>系统发现了什么</td><td>仓库里已经有这篇论文的笔记：<code>Raw/2510-igpo.md</code>。它对应的论文链接是 <code>2510.14967</code>，所以这不是一篇新论文。</td></tr>
-    <tr><td>为什么不能继续</td><td>如果继续写入，会生成第二份 Raw，后续 compile 时同一篇论文可能被重复统计，也会让 <code>log.md</code> 多一条误导记录。</td></tr>
-    <tr><td>Review Report</td><td><span class="block">阻断：重复论文</span>。这表示“先不要写任何文件”，不是程序坏了。</td></tr>
-    <tr><td>用户下一步</td><td>打开已有的 <code>Raw/2510-igpo.md</code> 检查是否够用；如果只是想补充笔记，需要明确说“允许 append 到这篇已有 Raw”。默认不新增 Raw，也不追加 log。</td></tr>
-  </table>
+  <div class="demo">
+    <h3>Success path：新论文链接通过校验</h3>
+    <table>
+      <tr><th>阶段</th><th>给人的解释</th></tr>
+      <tr><td>用户输入</td><td><code>帮我 ingest 这篇论文：https://arxiv.org/abs/2605.12345</code></td></tr>
+      <tr><td>Preflight</td><td>没有在 <code>Raw/</code> 找到同 arXiv ID；建议新 ID <code>2605-shortname</code>。</td></tr>
+      <tr><td>Draft</td><td>agent 先生成 Raw 草稿，不立即写入。</td></tr>
+      <tr><td>Guards</td><td>Template Guard 检查 5-section；Tag Guard 检查 schema tags；Related Wiki Guard 检查链接格式。</td></tr>
+      <tr><td>下一步怎么做</td><td>如果 report 是 <span class="ok">0 blocking</span>，再允许写入 <code>Raw/2605-shortname.md</code> 并追加 <code>log.md</code>。</td></tr>
+    </table>
+  </div>
 
-  <h3>Warning path：缺理解型元素</h3>
-  <table>
-    <tr><th>问题</th><th>处理</th></tr>
-    <tr><td>缺 <code>What would break this</code></td><td>新 Raw 推荐 blocking；如果是早期旧 Raw，只报告 warning，不 retrofit。</td></tr>
-    <tr><td>缺 <code>Tags</code></td><td><span class="block">blocking</span>：无法 compile 到稳定概念。</td></tr>
-    <tr><td>出现 <code>#entropy-guided</code></td><td><span class="block">blocking</span>：schema 中没有；建议映射到 <code>#entropy</code>，或先让用户确认新增 tag。</td></tr>
-  </table>
+  <div class="demo warning">
+    <h3>Warning path：缺理解型元素（要判断严重性）</h3>
+    <table>
+      <tr><th>情况</th><th>发生了什么</th><th>为什么重要</th><th>下一步怎么做</th></tr>
+      <tr><td>缺 <code>Tags</code></td><td>Raw draft 没有 Tags 行。</td><td>compile 时无法稳定定位概念。</td><td><span class="block">阻断</span>，补 Tags 后再写入。</td></tr>
+      <tr><td>出现 <code>#entropy-guided</code></td><td>schema 没有这个 tag。</td><td>tag 漂移会让 Wiki 概念分裂。</td><td><span class="block">阻断</span>，映射到 <code>#entropy</code> 或让用户确认新增 tag。</td></tr>
+      <tr><td>缺 <code>What would break this</code></td><td>新 Raw 少了边界条件分析。</td><td>读者不知道方法什么时候会失效。</td><td>新 Raw 建议 blocking；旧 Raw 只 warning，不 retrofit。</td></tr>
+    </table>
+  </div>
 
   <h2>9. Human Decisions</h2>
   <table>
-    <tr><th>问题</th><th>推荐答案</th><th>备选</th><th>不拍板时</th></tr>
-    <tr><td>是否新增 <code>scripts/ingest-review.mjs</code>？</td><td>推荐新增。它把校验从自然语言记忆变成可重复检查。</td><td>只写文档，不加脚本；成本低但稳定性弱。</td><td>Markdown 保持 blocking，不执行。</td></tr>
-    <tr><td>缺理解型元素算 warning 还是 blocking？</td><td>新 Raw blocking；旧 Raw warning-only。</td><td>全部 warning，减少阻断；但新 ingest 质量不够稳。</td><td>Markdown 保持 blocking，不执行。</td></tr>
-    <tr><td>Review Report 是否落盘？</td><td>默认不落盘，只终端输出；成功 ingest 的摘要写进 <code>log.md</code>。</td><td>增加 <code>--report</code> 输出到临时路径或 <code>Raw/</code> 下指定文件。</td><td>Markdown 按默认不落盘执行。</td></tr>
+    <tr><th>需要你拍板</th><th>推荐答案</th><th>备选</th><th>不拍板会怎样</th></tr>
+    <tr><td>是否新增 <code>scripts/ingest-review.mjs</code></td><td>新增。它让校验可重复。</td><td>只写文档，不加脚本。</td><td>不执行 Markdown。</td></tr>
+    <tr><td>缺理解型元素算 warning 还是 blocking</td><td>新 Raw blocking；旧 Raw warning-only。</td><td>全部 warning，减少阻断。</td><td>不执行 Markdown。</td></tr>
+    <tr><td>Review Report 是否落盘</td><td>默认不落盘，只终端输出。</td><td>加 <code>--report</code> 写到指定路径。</td><td>按默认不落盘执行。</td></tr>
   </table>
 
   <h2>10. Acceptance Checklist</h2>
-  <ul>
+  <ul class="checklist">
     <li>我能看懂当前 ingest 是自然语言工作流，不是已有专门脚本。</li>
-    <li>我确认新增 guard 的目标是稳定新 Raw，不 retroactively 修旧 Raw。</li>
-    <li>我确认 <code>Wiki/</code>、<code>index.md</code>、已有 Raw 和 PDF 不应被修改。</li>
-    <li>我确认 Change Scope 中的 will / might / must not change 合理。</li>
-    <li>我确认 success / blocked / warning 三条 demo 能覆盖主要风险。</li>
-    <li>我已拍板 Human Decisions 中的 blocking 问题。</li>
+    <li>我确认新增 guard 是为了稳定新 Raw，不是批量修旧 Raw。</li>
+    <li>我确认 <code>Wiki/</code>、<code>index.md</code>、已有 Raw、PDF 不应被修改。</li>
+    <li>我确认失败 demo 已说明发生了什么、为什么重要、下一步怎么做。</li>
+    <li>我确认 Human Decisions 中的 blocking 问题已经拍板。</li>
     <li>我接受执行后需要回填实际改动、验证结果和计划偏离。</li>
   </ul>
 
   <h2>11. Execution Handoff</h2>
-  <p><span class="block">执行门槛</span>：只有当本 HTML 被你明确批准，并且 Human Decisions 的 blocking 问题已解决后，才能执行同步的 <code>plan-review.md</code>。</p>
-  <p>建议执行前运行 artifact lint：</p>
+  <p><span class="block">执行门槛：</span>只有当这个 HTML 被明确 approved，并且 Human Decisions 的 blocking 项都已解决后，才能执行同步 Markdown。</p>
+  <p>执行前建议检查 artifact 结构：</p>
   <pre><code>node scripts/check-plan-artifact.mjs plan-review.html plan-review.md</code></pre>
 
   <h2>12. Post-execution Handoff</h2>
-  <p>执行完成后，agent 必须回填：</p>
   <ul>
-    <li>实际修改 / 新增的文件。</li>
-    <li>哪些与 HTML plan 一致。</li>
-    <li>哪些偏离 HTML / Markdown，以及为什么偏离。</li>
-    <li>实际运行的验证命令和结果。</li>
-    <li>是否需要继续更新 <code>dev/project-map.md</code>、README 或 agent 规则。</li>
+    <li>回填实际修改 / 新增的文件。</li>
+    <li>说明哪些与 HTML plan 一致。</li>
+    <li>说明是否偏离 HTML / Markdown，以及为什么偏离。</li>
+    <li>列出实际运行的验证命令和结果。</li>
+    <li>说明是否更新了 <code>dev/project-map.md</code>。</li>
   </ul>
 </main>
 </body>

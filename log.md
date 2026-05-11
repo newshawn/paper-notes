@@ -4,6 +4,13 @@
 > 格式：`## [YYYY-MM-DD] <action> | <target>`
 > action ∈ {ingest, compile, lint, rename, refactor}
 
+## [2026-05-11] refactor | refresh ingest plan artifact example
+
+- **动机**：用户希望重新生成一版更清晰的 ingest plan review 示例，并删除 README 中的通用登录错误提示 demo。
+- **更新**：重写 `dev/examples/ingest-plan-review.html` 和 `dev/examples/ingest-plan-review.md`，让示例更突出评审结论、当前/目标流程、Change Scope、端到端成功/阻断/警告路径，以及“发生了什么、为什么重要、下一步怎么做”。
+- **文档**：删除 `dev/README.md` 中的“通用 demo：优化登录错误提示”，保持 dev demo 聚焦 PaperNotes ingest 示例。
+- **Wiki touched**: none (developer workflow example only)
+
 ## [2026-05-11] refactor | align demo path headings
 
 - **动机**：用户指出示例里 success / warning 都使用 path 命名，重复论文段落却变成纯中文标题，结构不一致。
